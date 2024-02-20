@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map name="data">
+    <list name="items">
+            <map>
+                <value name="label">"曲目信息"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-70</value>
+                        <value name="horizon">0</value>
+                        <value name="width">250</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="hAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#marquee","parameter":{"direction":0,"limit":20}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"title"}</value>
+                        </map>
+                        <value name="height">40</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-30</value>
+                        <value name="horizon">0</value>
+                        <value name="width">230</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="hAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#marquee","parameter":{"direction":0,"limit":15}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"artist"}</value>
+                        </map>
+                        <value name="height">40</value>
+                    </map>
+                    <map>
+                        <value name="content">"bar-gauge"</value>
+                        <value name="opacity">1</value>
+                        <value name="vertical">66</value>
+                        <value name="horizon">0</value>
+                        <value name="width">230</value>
+                        <value name="height">22</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="barColor">"#ffffff"</value>
+                            <value name="scale">false</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[],"source":"nvg://media.gpbeta.com/data/player#cad","value":"progress"}</value>
+                            <value name="animation">true</value>
+                            <value name="barLeft">50</value>
+                            <value name="barRight">50</value>
+                            <value name="barTileH">1</value>
+                            <value name="barTileV">0</value>
+                            <value name="barImage">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/bar.png"</value>
+                        </map>
+                        <value name="label">"进度"</value>
+                        <value name="rotation">0</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">65</value>
+                        <value name="horizon">-41</value>
+                        <value name="width">120</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":20,"weight":50}</value>
+                            <value name="style">1</value>
+                            <value name="styleColor">"#ffffff"</value>
+                            <value name="color">"#808080"</value>
+                            <value name="hAlign">0</value>
+                            <value name="vAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"time"}</value>
+                        </map>
+                        <value name="label">"播放时间"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">65</value>
+                        <value name="horizon">41</value>
+                        <value name="width">120</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":20,"weight":50}</value>
+                            <value name="style">1</value>
+                            <value name="styleColor">"#ffffff"</value>
+                            <value name="color">"#808080"</value>
+                            <value name="hAlign">1</value>
+                            <value name="vAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"update":"%length%","source":"nvg://media.gpbeta.com/data/player#cad","value":"custom"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"bar-gauge"</value>
+                        <value name="opacity">0.5000000000000001</value>
+                        <value name="vertical">66</value>
+                        <value name="horizon">0</value>
+                        <value name="width">230</value>
+                        <value name="height">22</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="barColor">"#bdbdbd"</value>
+                            <value name="scale">false</value>
+                            <value name="data">{"mode":2,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"progress"}</value>
+                            <value name="animation">true</value>
+                            <value name="barLeft">50</value>
+                            <value name="barRight">50</value>
+                            <value name="barTileH">1</value>
+                            <value name="barTileV">0</value>
+                            <value name="barImage">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/bar.png"</value>
+                        </map>
+                        <value name="label">"进度背景"</value>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">70</value>
+                <value name="width">230</value>
+                <value name="height">180</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"背景"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">43</value>
+                        <value name="width">580</value>
+                        <value name="height">280</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/background.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">80</value>
+                <value name="width">355</value>
+                <value name="height">180</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">200</value>
+                        <value name="height">200</value>
+                        <map name="view">
+                            <value name="mode">false</value>
+                            <value name="radius">109</value>
+                            <value name="strokeSize">0</value>
+                            <value name="offset">180</value>
+                            <value name="hole">0</value>
+                            <value name="fillColor">"#000000"</value>
+                        </map>
+                        <value name="label">"黑胶"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">200</value>
+                        <value name="height">200</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">85</value>
+                            <value name="strokeSize">9</value>
+                            <value name="offset">180</value>
+                            <value name="hole">1</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"progress"}</value>
+                            <value name="animation">true</value>
+                        </map>
+                        <value name="label">"播放进度"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="opacity">0.6000000000000001</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">200</value>
+                        <value name="height">200</value>
+                        <map name="view">
+                            <value name="radius">111</value>
+                            <value name="strokeSize">0</value>
+                            <value name="hole">0.97</value>
+                            <value name="fillColor">"#ffffff"</value>
+                        </map>
+                        <value name="label">"外圈"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">false</value>
+                            <value name="radius">85</value>
+                            <value name="strokeSize">0</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">0.88</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"volume"}</value>
+                        </map>
+                        <value name="label">"中圈"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">25</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="width">150</value>
+                        <value name="height">150</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"cover"}</value>
+                            <value name="radius">150</value>
+                            <value name="spinFPS">60</value>
+                            <value name="spin">true</value>
+                            <value name="spinRPM">3</value>
+                        </map>
+                        <value name="label">"封面"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="opacity">0.5999999999999999</value>
+                        <value name="width">200</value>
+                        <value name="height">200</value>
+                        <map name="view">
+                            <value name="radius">76</value>
+                            <value name="strokeSize">0</value>
+                            <value name="hole">0.9600000000000001</value>
+                            <value name="fillColor">"#ffffff"</value>
+                        </map>
+                        <value name="label">"内圈"</value>
+                    </map>
+                </list>
+                <value name="label">"唱片"</value>
+                <value name="horizon">-156</value>
+                <value name="width">250</value>
+                <value name="height">250</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"音量"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="opacity">0.7000000000000001</value>
+                        <value name="rotation">0</value>
+                        <map name="view">
+                            <value name="mode">false</value>
+                            <value name="radius">91</value>
+                            <value name="strokeSize">3</value>
+                            <value name="offset">90</value>
+                            <value name="angle">170</value>
+                            <value name="hole">1</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"volume"}</value>
+                        </map>
+                        <value name="horizon">-2</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="rotation">0</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">91</value>
+                            <value name="strokeSize">3</value>
+                            <value name="offset">90</value>
+                            <value name="angle">170</value>
+                            <value name="hole">1</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"volume"}</value>
+                        </map>
+                        <value name="horizon">-2</value>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">171</value>
+                <value name="opacity">1</value>
+                <value name="width">54</value>
+                <value name="height">250</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"暂停"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Font Awesome 5 Pro","pixelSize":35,"weight":50}</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.output === 1 ? '' : '';"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"pause"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="vertical">18</value>
+                <value name="horizon">70</value>
+                <value name="width">100</value>
+                <value name="height">50</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"下一首"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <value name="width">30</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/next.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"next"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="vertical">18</value>
+                <value name="horizon">145</value>
+                <value name="width">50</value>
+                <value name="height">50</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"上一首"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <value name="width">30</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/last.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"prev"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="vertical">18</value>
+                <value name="horizon">-5</value>
+                <value name="width">50</value>
+                <value name="height">50</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"音量减"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <value name="width">30</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/subtract.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"vol-"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="vertical">35</value>
+                <value name="horizon">217</value>
+                <value name="width">60</value>
+                <value name="height">60</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+            <map>
+                <value name="label">"音量加"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">30</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/add.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"vol+"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="vertical">-35</value>
+                <value name="horizon">217</value>
+                <value name="width">60</value>
+                <value name="height">60</value>
+                <map name="craft"/>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status;"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+            </map>
+    </list>
+    <map name="craft">
+    </map>
+    <value name="background">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/background#Transparent.9.png"}</value>
+</map>

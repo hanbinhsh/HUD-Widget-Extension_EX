@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">12</value>
+                        <value name="horizon">6</value>
+                        <value name="width">442</value>
+                        <value name="height">190</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/灰/左上.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="width">423.8</value>
+                <value name="height">166</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"上一首"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":30,"weight":50}</value>
+                            <value name="text">"&lt;"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">36</value>
+                <value name="horizon">-185</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+                <value name="action">{"data":"prev","source":"nvg://media.gpbeta.com/action/player#system"}</value>
+            </map>
+            <map>
+                <value name="label">"下一首"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":30,"weight":50}</value>
+                            <value name="text">"&gt;"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":"next","source":"nvg://media.gpbeta.com/action/player#system"}</value>
+                <value name="vertical">36</value>
+                <value name="horizon">-15</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"歌名"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">116</value>
+                        <value name="height">50</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="sizeMode">3</value>
+                            <value name="hAlign">2</value>
+                            <value name="vAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#marquee","parameter":{"direction":0,"limit":0}}],"source":"nvg://media.gpbeta.com/data/player#netease","value":"title"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">36</value>
+                <value name="horizon">-100</value>
+                <value name="width">116</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+                <value name="action">{"data":"pause","source":"nvg://media.gpbeta.com/action/player#system"}</value>
+            </map>
+        </list>
+        <map name="craft">
+            <value name="grid">20</value>
+            <value name="snap">true</value>
+        </map>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+    <value name="visible">true</value>
+</map>

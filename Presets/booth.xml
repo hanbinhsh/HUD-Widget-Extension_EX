@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">-4</value>
+                        <value name="horizon">0</value>
+                        <value name="width">497</value>
+                        <value name="height">62</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/展台.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">120</value>
+                <value name="horizon">0</value>
+                <value name="opacity">1</value>
+                <value name="width">260</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+                <value name="label">"展台"</value>
+            </map>
+            <map>
+                <value name="label">"Leafa"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">100</value>
+                        <value name="height">100</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/原子.gif"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="opacity">0.5000000000000001</value>
+                <value name="width">100</value>
+                <value name="height">100</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"分"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">85</value>
+                            <value name="strokeSize">5</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">1</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":1000,"update":"%M","source":"nvg://system/data#system","value":"current-time"}],"actions":[],"init":"this.minimum = 0;\nthis.maximum = 60;","execute":"const value = values[0].output();\nthis.current = value;\nthis.status = nvg.Value.Ready;"},"process":[],"source":"nvg://system/data#misc","value":"script-value"}</value>
+                            <value name="animation">true</value>
+                            <value name="strokeColor">"#8bc34a"</value>
+                        </map>
+                        <value name="label">"分"</value>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="opacity">0.5000000000000001</value>
+                <value name="width">200</value>
+                <value name="height">200</value>
+                <map name="craft"/>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":1000,"update":"%M","source":"nvg://system/data#system","value":"current-time"}],"actions":[],"init":"this.minimum = 0;\nthis.maximum = 60;","execute":"this.current = values[0].output();"},"source":"nvg://system/data#misc","value":"script-value"}</value>
+            </map>
+            <map>
+                <value name="label">"秒"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">85</value>
+                            <value name="strokeSize">5</value>
+                            <value name="hole">1</value>
+                            <value name="mode">false</value>
+                            <value name="fillColor">"#bdbdbd"</value>
+                        </map>
+                        <value name="opacity">0.62</value>
+                        <value name="horizon">0</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">85</value>
+                            <value name="strokeSize">5</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">1</value>
+                            <value name="animation">true</value>
+                            <value name="strokeColor">"#ff5722"</value>
+                            <value name="fillColor">"#bdbdbd"</value>
+                        </map>
+                        <value name="label">"秒"</value>
+                    </map>
+                </list>
+                <value name="opacity">0.5000000000000001</value>
+                <value name="width">200</value>
+                <value name="height">200</value>
+                <map name="craft"/>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":1000,"update":"%S","source":"nvg://system/data#system","value":"current-time"}],"actions":[],"init":"this.minimum = 0;\nthis.maximum = 60;","execute":"this.current = values[0].output();"},"source":"nvg://system/data#misc","value":"script-value"}</value>
+            </map>
+            <map>
+                <value name="label">"时"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">85</value>
+                            <value name="strokeSize">5</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">1</value>
+                            <value name="animation">true</value>
+                            <value name="strokeColor">"#673ab7"</value>
+                        </map>
+                        <value name="label">"时"</value>
+                    </map>
+                </list>
+                <value name="opacity">0.5000000000000001</value>
+                <value name="width">200</value>
+                <value name="height">200</value>
+                <map name="craft"/>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":60000,"update":"%H","source":"nvg://system/data#system","value":"current-date"}],"actions":[],"init":"this.minimum = 0;\nthis.maximum = 12;","execute":"this.current = values[0].output();\nif (this.current &gt;= 12) this.current-=12 ;"},"source":"nvg://system/data#misc","value":"script-value"}</value>
+            </map>
+            <map>
+                <value name="label">"月"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">75</value>
+                            <value name="strokeSize">5</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">1</value>
+                            <value name="animation">true</value>
+                            <value name="strokeColor">"#03a9f4"</value>
+                        </map>
+                        <value name="label">"时"</value>
+                        <value name="opacity">1</value>
+                    </map>
+                </list>
+                <value name="opacity">0.5000000000000001</value>
+                <value name="width">200</value>
+                <value name="height">200</value>
+                <map name="craft"/>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":60000,"update":"%m","source":"nvg://system/data#system","value":"current-date"}],"actions":[],"init":"this.minimum = 1;\nthis.maximum = 12;","execute":"this.current = values[0].output();"},"source":"nvg://system/data#misc","value":"script-value"}</value>
+            </map>
+            <map>
+                <value name="label">"星期"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">false</value>
+                            <value name="radius">75</value>
+                            <value name="strokeSize">5</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">1</value>
+                            <value name="animation">true</value>
+                        </map>
+                        <value name="label">"环"</value>
+                        <value name="opacity">0.5</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">75</value>
+                            <value name="strokeSize">5</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">1</value>
+                            <value name="animation">true</value>
+                            <value name="strokeColor">"#8bc34a"</value>
+                        </map>
+                        <value name="label">"时"</value>
+                        <value name="opacity">1</value>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="opacity">0.5000000000000001</value>
+                <value name="width">200</value>
+                <value name="height">200</value>
+                <map name="craft"/>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":60000,"update":"%w","source":"nvg://system/data#system","value":"current-date"}],"actions":[],"init":"this.minimum = 1;\nthis.maximum = 7;","execute":"this.current = values[0].output();"},"source":"nvg://system/data#misc","value":"script-value"}</value>
+                <value name="horizon">0</value>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+    <value name="visible">true</value>
+</map>

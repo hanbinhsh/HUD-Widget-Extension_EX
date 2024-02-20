@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">457</value>
+                        <value name="height">319</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/蓝/左下1.png"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-70</value>
+                        <value name="horizon">-192</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":25,"weight":50}</value>
+                            <value name="style">1</value>
+                            <value name="output">0</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"update":0,"source":"nvg://system/data#cpu","value":"load"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">130</value>
+                        <value name="horizon">101</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":30,"weight":50}</value>
+                            <value name="style">1</value>
+                            <value name="data">{"mode":0,"unit":"°C","interval":60000,"update":{"address":"中华人民共和国四川省成都市","geocode":"30.66,104.063","placeid":"15668827c92ba1226b0add3a375f7407fb58588dd8efcb195452e72e1d5302cb","postalkey":"6100:CN"},"source":"nvg://weather.data.gpbeta.com/data#general","value":"temperature"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">130</value>
+                        <value name="horizon">35</value>
+                        <value name="width">35</value>
+                        <value name="height">35</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/气温.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

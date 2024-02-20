@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">219</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="hAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[],"source":"nvg://system/data#system","value":"device-uptime"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">-26</value>
+                <value name="horizon">-38</value>
+                <value name="width">140</value>
+                <value name="height">31</value>
+                <map name="craft"/>
+                <value name="label">"登录时间"</value>
+            </map>
+            <map>
+                <value name="label">"账户名称"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view"/>
+                        <value name="label">"IceRinne"</value>
+                    </map>
+                </list>
+                <value name="vertical">-70</value>
+                <value name="horizon">-41</value>
+                <value name="width">118</value>
+                <value name="height">34</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"框架"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">18</value>
+                        <value name="horizon">-22</value>
+                        <value name="width">530</value>
+                        <value name="height">215</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/灰/右上.png"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">-52</value>
+                        <value name="horizon">189</value>
+                        <value name="width">100</value>
+                        <value name="height">100</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/用户头像.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="width">480</value>
+                <value name="height">178</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

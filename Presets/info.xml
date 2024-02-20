@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"nvg://hud_edit.widget.hanbinhsh.com/element/image-advanced"</value>
+                        <value name="opacity">0.35000000000000003</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="rotation">0</value>
+                        <map name="view">
+                            <value name="radius">0</value>
+                            <value name="gaussianBlur">false</value>
+                            <value name="enableInnerShadow">false</value>
+                            <value name="enableDropShadow">false</value>
+                            <value name="enableGlow">false</value>
+                            <value name="cycleTime">2500</value>
+                            <value name="enableColorAnimation">true</value>
+                            <value name="enableColorAnimationCache">true</value>
+                            <value name="animationVertical">-230</value>
+                            <value name="animationDirect">0</value>
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/time.png"</value>
+                            <value name="hoveredColor">"#3f51b5"</value>
+                            <value name="pressedColor">"#ffc107"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"nvg://hud_edit.widget.hanbinhsh.com/element/image-advanced"</value>
+                        <value name="vertical">93</value>
+                        <value name="horizon">217</value>
+                        <value name="rotationDisplay">true</value>
+                        <value name="rotation">190.5</value>
+                        <value name="width">200</value>
+                        <value name="height">200</value>
+                        <map name="view">
+                            <value name="enableColorAnimation">true</value>
+                            <value name="enableColorAnimationCache">true</value>
+                            <value name="animationHorizontalRadius">300</value>
+                            <value name="animationVerticalRadius">300</value>
+                            <value name="animationDirect">4</value>
+                            <value name="normal">"file:///E:/windows/Desktop/未标题-1.png"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"nvg://hud_edit.widget.hanbinhsh.com/element/text-advanced"</value>
+                        <value name="vertical">-59</value>
+                        <value name="horizon">-55</value>
+                        <value name="width">540</value>
+                        <map name="view">
+                            <value name="enableColorAnimation">true</value>
+                            <value name="animationVertical">-45</value>
+                            <value name="animationDirect">5</value>
+                            <value name="text">"HUD 挂件的修改版
+在原来的基础上加了许多没用(划掉)炫酷的功能
+以及全新设计的桌面挂件
+使用方法见文件夹内的说明文档
+更多的功能请期待后续的更新"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"nvg://hud_edit.widget.hanbinhsh.com/element/text-advanced"</value>
+                        <value name="vertical">-166</value>
+                        <value name="horizon">-146</value>
+                        <map name="view">
+                            <value name="enableColorAnimation">true</value>
+                            <value name="animationDirect">0</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="text">"给你的桌面加点RGB吧!"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"nvg://hud_edit.widget.hanbinhsh.com/element/image-advanced"</value>
+                        <value name="vertical">187</value>
+                        <value name="horizon">-265</value>
+                        <map name="view">
+                            <value name="enableColorAnimation">true</value>
+                            <value name="animationDirect">2</value>
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/audio.gif"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="width">672</value>
+                <value name="height">425</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

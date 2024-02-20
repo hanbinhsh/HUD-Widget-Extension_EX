@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <value name="label">"Silica"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="opacity">0.5</value>
+                        <map name="view">
+                            <value name="mode">false</value>
+                            <value name="radius">113</value>
+                            <value name="strokeSize">0</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">0.64</value>
+                            <value name="fillColor">"#808080"</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"source":"nvg://system/data#power","value":"life-time"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <value name="opacity">0.5</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">113</value>
+                            <value name="strokeSize">0</value>
+                            <value name="offset">180</value>
+                            <value name="angle">360</value>
+                            <value name="hole">0.64</value>
+                            <value name="fillColor">"#7dcfb2"</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"source":"nvg://system/data#power","value":"life-time"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":25,"weight":50}</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"update":"%H:%M","source":"nvg://system/data#system","value":"current-time"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="width">260</value>
+                <value name="height">260</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">120</value>
+                            <value name="strokeSize">8</value>
+                            <value name="angle">120</value>
+                            <value name="strokeColor">"#99ffffff"</value>
+                            <value name="hole">1</value>
+                            <value name="offset">60</value>
+                            <value name="mode">true</value>
+                            <value name="animation">true</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"update":0,"source":"nvg://system/data#gpu","value":"load"}</value>
+                        </map>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">260</value>
+                        <value name="height">260</value>
+                        <value name="label">"GPU动态"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">120</value>
+                            <value name="strokeSize">8</value>
+                            <value name="angle">120</value>
+                            <value name="strokeColor">"#99ffffff"</value>
+                            <value name="hole">1</value>
+                            <value name="offset">300</value>
+                            <value name="mode">true</value>
+                            <value name="animation">true</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"update":0,"source":"nvg://system/data#cpu","value":"load"}</value>
+                        </map>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">260</value>
+                        <value name="height">260</value>
+                        <value name="label">"cpu动态"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">120</value>
+                            <value name="strokeSize">8</value>
+                            <value name="angle">120</value>
+                            <value name="strokeColor">"#99ffffff"</value>
+                            <value name="hole">1</value>
+                            <value name="offset">180</value>
+                            <value name="mode">true</value>
+                            <value name="animation">true</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"source":"nvg://system/data#ram","value":"physical"}</value>
+                        </map>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">260</value>
+                        <value name="height">260</value>
+                        <value name="label">"ram动态"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">81</value>
+                        <value name="horizon">0</value>
+                        <value name="width">30</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"bold":false}</value>
+                        </map>
+                        <value name="label">"RAM"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-41</value>
+                        <value name="horizon">-70</value>
+                        <value name="width">30</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"bold":false}</value>
+                        </map>
+                        <value name="rotation">-60</value>
+                        <value name="label">"CPU"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-40</value>
+                        <value name="horizon">70</value>
+                        <value name="width">30</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"bold":false}</value>
+                        </map>
+                        <value name="rotation">60</value>
+                        <value name="label">"GPU"</value>
+                    </map>
+                    <map>
+                        <value name="content">"line-chart"</value>
+                        <value name="vertical">64</value>
+                        <value name="horizon">0</value>
+                        <value name="width">159</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="strokeGlow">false</value>
+                            <value name="gridline">false</value>
+                            <value name="data">{"mode":0,"unit":"B/s","interval":700,"update":{"bandwidth":12,"adapter":""},"source":"nvg://system/data#network","value":"download"}</value>
+                            <value name="dynamic">false</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"line-chart"</value>
+                        <value name="vertical">-64</value>
+                        <value name="horizon">0</value>
+                        <value name="rotation">180</value>
+                        <value name="width">159</value>
+                        <value name="height">30</value>
+                        <map name="view">
+                            <value name="strokeGlow">false</value>
+                            <value name="gridline">false</value>
+                            <value name="data">{"mode":0,"unit":"B/s","interval":700,"update":{"bandwidth":12,"adapter":""},"source":"nvg://system/data#network","value":"upload"}</value>
+                            <value name="dynamic">false</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">120</value>
+                            <value name="strokeSize">10</value>
+                            <value name="angle">120</value>
+                            <value name="strokeColor">"#66666666"</value>
+                            <value name="hole">0.8</value>
+                            <value name="fillColor">"#ffffff"</value>
+                            <value name="offset">180</value>
+                        </map>
+                        <value name="width">260</value>
+                        <value name="height">260</value>
+                        <value name="label">"RAM环"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">103</value>
+                        <value name="rotation">0</value>
+                        <value name="width">50</value>
+                        <value name="height">29</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"weight":50}</value>
+                            <value name="color">"#999999"</value>
+                            <value name="hAlign">2</value>
+                            <value name="vAlign">0</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"source":"nvg://system/data#ram","value":"physical"}</value>
+                        </map>
+                        <value name="label">"RAM%"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">120</value>
+                            <value name="strokeSize">10</value>
+                            <value name="angle">120</value>
+                            <value name="strokeColor">"#66666666"</value>
+                            <value name="hole">0.8</value>
+                            <value name="fillColor">"#99ccff"</value>
+                            <value name="offset">300</value>
+                        </map>
+                        <value name="width">260</value>
+                        <value name="height">260</value>
+                        <value name="label">"CPU环"</value>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">120</value>
+                            <value name="strokeSize">10</value>
+                            <value name="angle">120</value>
+                            <value name="strokeColor">"#66666666"</value>
+                            <value name="hole">0.8</value>
+                            <value name="fillColor">"#336699"</value>
+                            <value name="offset">60</value>
+                        </map>
+                        <value name="width">260</value>
+                        <value name="height">260</value>
+                        <value name="label">"GPU环"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="horizon">83</value>
+                        <value name="width">50</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"weight":50}</value>
+                            <value name="hAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"update":0,"source":"nvg://system/data#gpu","value":"load"}</value>
+                            <value name="color">"#81a7cc"</value>
+                        </map>
+                        <value name="vertical">-46</value>
+                        <value name="rotation">60</value>
+                        <value name="height">37</value>
+                        <value name="label">"gpu%"</value>
+                        <value name="alignment">0</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-46</value>
+                        <value name="horizon">-83</value>
+                        <value name="rotation">-60</value>
+                        <value name="width">50</value>
+                        <value name="height">37</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"weight":50}</value>
+                            <value name="color">"#326da6"</value>
+                            <value name="hAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"%","interval":1000,"update":0,"source":"nvg://system/data#cpu","value":"load"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="top">1</value>
+                <value name="left">0</value>
+                <value name="width">260</value>
+                <value name="height">260</value>
+                <value name="data">{"mode":0,"unit":"","interval":0,"source":"nvg://system/data#system","value":"os-name"}</value>
+                <value name="label">"GPU"</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="font">{"family":"Source Han Sans SC","pixelSize":12,"bold":false}</value>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

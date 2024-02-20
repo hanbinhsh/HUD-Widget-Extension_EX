@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/常用图标/更多应用.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"keys":"win+tab"},"source":"nvg://system/action#keys"}</value>
+                <value name="vertical">-219</value>
+                <value name="horizon">-6</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/常用图标/回收站.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"::{645FF040-5081-101B-9F08-00AA002F954E}","directory":""},"source":"nvg://system/action#cmd"}</value>
+                <value name="vertical">129</value>
+                <value name="horizon">-6</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+                <value name="rotation">0</value>
+                <value name="opacity">1</value>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/常用图标/steam.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"type":0,"url":"file:///F:/steam/steam.exe"},"source":"nvg://system/action#open"}</value>
+                <value name="vertical">66</value>
+                <value name="horizon">-6</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/常用图标/相机.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"type":0,"url":"file:///F:/files/sao/链接/Microsoft Edge.lnk"},"source":"nvg://system/action#open"}</value>
+                <value name="vertical">194</value>
+                <value name="horizon">-6</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/常用图标/游戏.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"::{20D04FE0-3AEA-1069-A2D8-08002B30309D}","directory":""},"source":"nvg://system/action#cmd"}</value>
+                <value name="vertical">256</value>
+                <value name="horizon">-6</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Klein"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">21</value>
+                        <value name="width">120</value>
+                        <value name="height">679</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/白/左中.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">-8</value>
+                <value name="horizon">1</value>
+                <value name="width">60</value>
+                <value name="height">607</value>
+                <map name="craft"/>
+                <value name="z">-50</value>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"nvg://hud_edit.widget.hanbinhsh.com/images#resource/常用图标/设置.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"keys":"Win+i"},"source":"nvg://system/action#keys"}</value>
+                <value name="vertical">-61</value>
+                <value name="horizon">-6</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft">
+            <value name="grid">20</value>
+        </map>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

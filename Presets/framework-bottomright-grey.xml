@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">51</value>
+                        <value name="horizon">-81</value>
+                        <value name="width">620</value>
+                        <value name="height">49</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":27,"weight":50}</value>
+                            <value name="hAlign">2</value>
+                            <value name="vAlign">2</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"update":{"values":[{"mode":0,"unit":"","interval":1000,"update":"%H","source":"nvg://system/data#system","value":"current-time"}],"actions":[],"init":"","execute":"const value = values[0].output();\nif(value&gt;=20&amp;&amp;value&lt;=23)this.current = '晚上好呀,今晚能不能看见星星呢';\nif(value&gt;=17&amp;&amp;value&lt;=19)this.current = '晚饭,吃点什么呢';\nif(value&gt;=14&amp;&amp;value&lt;=16)this.current = '下午了,要不要来一杯下午茶呢';\nif(value&gt;=11&amp;&amp;value&lt;=13)this.current = '中午好呀,午饭吃点什么好呢';\nif(value&gt;=5&amp;&amp;value&lt;=10)this.current = '新的一天开始了,祝你一整天都有好心情';\nif(value&gt;=3&amp;&amp;value&lt;=4)this.current = '夜深人静的时候,很适合专注呢,但还是要注意身体哦';\nif(value&gt;=0&amp;&amp;value&lt;=2)this.current = '忙碌了一天,早点休息哦';"},"source":"nvg://system/data#misc","value":"script-value"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">-22</value>
+                        <value name="horizon">-20</value>
+                        <value name="width">1280</value>
+                        <value name="height">204</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/灰/下.png"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">44</value>
+                        <value name="horizon">486</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="style">1</value>
+                            <value name="data">{"mode":0,"unit":"","interval":60000,"update":"","source":"nvg://system/data#system","value":"current-date"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-4</value>
+                        <value name="horizon">534</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="style">1</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"update":"","source":"nvg://system/data#system","value":"current-time"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="opacity">0.64</value>
+                        <value name="vertical">62</value>
+                        <value name="horizon">-458</value>
+                        <value name="width">159</value>
+                        <value name="height">90</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/audio.gif"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="opacity">0.7200000000000001</value>
+                <value name="width">1240</value>
+                <value name="height">156</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

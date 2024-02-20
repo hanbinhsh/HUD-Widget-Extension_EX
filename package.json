@@ -1,0 +1,196 @@
+{
+    "name": "com.hanbinhsh.widget.hud_edit",
+    "version": "0.4.0",
+    
+    "title": {
+        "en": "HUD Widget Extension_Changed",
+        "zh": "HUD 状态栏挂件扩展_改"
+    },
+
+    "description": {
+        "en": "Many functions have been added on the basis of the original version, but what functions are they...",
+        "zh": "在原版的基础上加入了很多功能,但是是什么功能呢..."
+    },
+
+    "bugs": { "email": "hanbinhsh@qq.com" },
+    "author": { "name": "Joshua GPBeta edited by IceRinne" },
+
+    "engines": {
+        "qt.quick": ">=2.12",
+        "nvg.api": "~1"
+    },
+
+    "resources": [
+        {
+            "location": "/widget/adv",
+            "catalog": "widget",
+            "title": {
+                "en": "HUD Custom_Changed",
+                "zh": "HUD 自定义挂件_改",
+                "zh_TW": "HUD 客製化掛件_改",
+                "ja": "HUD カスタム_改"
+            },
+            "preview": "Images/preview-adv.png",
+            "entry": "qml-adv/HUDWidget.qml"
+        }, {
+            "location": "/element/image-advanced",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Advanced Image",
+                "zh": "高级图像",
+                "zh_TW": "高级图像"
+            },
+            "entry": "qml-adv/elements/ImageElementAdvanced.qml"
+        }, {
+            "location": "/element/text-advanced",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Advanced Text",
+                "zh": "高级文本",
+                "zh_TW": "高级文本"
+            },
+            "entry": "qml-adv/elements/TextElementAdvanced.qml"
+        }, {
+            "location": "/preset/info",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "插件信息"
+            },
+           "preview": "Presets/info.png",
+           "entry": "Presets/info.json"
+        }, {
+            "location": "/preset/framework-bottomleft-grey",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-左下-灰"
+            },
+           "preview": "Presets/framework-bottomleft-grey.png",
+           "entry": "Presets/framework-bottomleft-grey.json"
+        }, {
+            "location": "/preset/framework-bottomleft-blue",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-左下-蓝"
+            },
+           "preview": "Presets/framework-bottomleft-blue.png",
+           "entry": "Presets/framework-bottomleft-blue.json"
+        }, {
+            "location": "/preset/framework-topleft-grey",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-左上-灰"
+            },
+           "preview": "Presets/framework-topleft-grey.png",
+           "entry": "Presets/framework-topleft-grey.json"
+        }, {
+            "location": "/preset/framework-top-grey",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-上-灰"
+            },
+           "preview": "Presets/framework-top-grey.png",
+           "entry": "Presets/framework-top-grey.json"
+        }, {
+            "location": "/preset/framework-topright-grey",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-右上-灰"
+            },
+           "preview": "Presets/framework-topright-grey.png",
+           "entry": "Presets/framework-topright-grey.json"
+        }, {
+            "location": "/preset/framework-topright-blue",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-右上-蓝"
+            },
+           "preview": "Presets/framework-topright-blue.png",
+           "entry": "Presets/framework-topright-blue.json"
+        }, {
+            "location": "/preset/framework-bottomright-grey",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-右下-灰"
+            },
+           "preview": "Presets/framework-bottomright-grey.png",
+           "entry": "Presets/framework-bottomright-grey.json"
+        }, {
+            "location": "/preset/framework-bottomright-blue",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-右下-蓝"
+            },
+           "preview": "Presets/framework-bottomright-blue.png",
+           "entry": "Presets/framework-bottomright-blue.json"
+        }, {
+            "location": "/preset/framework-left-grey",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-左-灰"
+            },
+           "preview": "Presets/framework-left-grey.png",
+           "entry": "Presets/framework-left-grey.json"
+        }, {
+            "location": "/preset/framework-left-white.xml",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-左-白"
+            },
+           "preview": "Presets/framework-left-white.png",
+           "entry": "Presets/framework-left-white.json"
+        }, {
+            "location": "/preset/framework-left-blue.xml",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "框架-左-蓝"
+            },
+           "preview": "Presets/framework-left-blue.png",
+           "entry": "Presets/framework-left-blue.json"
+        }, {
+            "location": "/preset/data",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "系统数据"
+            },
+           "preview": "Presets/data.png",
+           "entry": "Presets/data.json"
+        }, {
+            "location": "/preset/booth",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "展台"
+            },
+           "preview": "Presets/booth.png",
+           "entry": "Presets/booth.json"
+        }, {
+            "location": "/preset/cad_player",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "CAD播放器"
+            },
+           "preview": "Presets/cad_player.png",
+           "entry": "Presets/cad_player.json"
+        },{
+            "location": "/preset/cad_player2",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "CAD播放器2"
+            },
+           "preview": "Presets/cad_player2.png",
+           "entry": "Presets/cad_player2.json"
+        }, {
+            "location": "/preset/cad_player3",
+            "catalog": "preset/widget",
+            "title": {
+                "zh": "CAD播放器3"
+            },
+           "preview": "Presets/cad_player3.png",
+           "entry": "Presets/cad_player3.json"
+        }, {
+            "title":"hud_edit",
+            "location":"/images",
+            "catalog":"image",
+            "entry":"Images"
+        }
+    ]
+}

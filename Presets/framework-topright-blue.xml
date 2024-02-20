@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">1</value>
+                        <value name="horizon">-94</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":30,"weight":50}</value>
+                        </map>
+                        <value name="label">"SUT"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">1</value>
+                        <value name="horizon">35</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":30,"weight":50}</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://system/data#system","value":"device-uptime"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">-54</value>
+                <value name="horizon">-41</value>
+                <value name="width">250</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Rizbet"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"line-chart"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">-81</value>
+                        <value name="width">140</value>
+                        <value name="height">40</value>
+                        <map name="view">
+                            <value name="strokeGlow">false</value>
+                            <value name="gridline">false</value>
+                            <value name="data">{"mode":0,"unit":"B/s","interval":500,"update":{"bandwidth":12,"adapter":""},"source":"nvg://system/data#network","value":"download"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"line-chart"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">78</value>
+                        <value name="width">140</value>
+                        <value name="height">40</value>
+                        <map name="view">
+                            <value name="strokeGlow">false</value>
+                            <value name="gridline">false</value>
+                            <value name="data">{"mode":0,"unit":"B/s","interval":500,"update":{"bandwidth":12,"adapter":""},"source":"nvg://system/data#network","value":"upload"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-9</value>
+                        <value name="horizon">-143</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"weight":50}</value>
+                        </map>
+                        <value name="label">"▼"</value>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-9</value>
+                        <value name="horizon">16</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":15,"weight":50}</value>
+                        </map>
+                        <value name="label">"▲"</value>
+                    </map>
+                </list>
+                <value name="vertical">-101</value>
+                <value name="horizon">-17</value>
+                <value name="width">303</value>
+                <value name="height">41</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Egil"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <value name="width">649</value>
+                        <value name="height">297</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/蓝/右上.png"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">-88</value>
+                        <value name="horizon">264</value>
+                        <value name="width">133</value>
+                        <value name="height">124</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/用户头像.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">0</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+    <value name="visible">true</value>
+</map>

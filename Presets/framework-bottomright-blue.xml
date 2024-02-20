@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">-35</value>
+                        <value name="horizon">-26</value>
+                        <value name="width">1480</value>
+                        <value name="height">240</value>
+                        <map name="view">
+                            <value name="normal">"nvg://hud_edit.widget.hanbinhsh.com/images#resource/框架/蓝/下.png"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">-12</value>
+                        <value name="horizon">612</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"update":"","source":"nvg://system/data#system","value":"current-time"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">39</value>
+                        <value name="horizon">561</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="data">{"mode":0,"unit":"","interval":60000,"update":"","source":"nvg://system/data#system","value":"current-date"}</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">48</value>
+                        <value name="horizon">-605</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="text">"C:"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">48</value>
+                        <value name="horizon">-340</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="text">"D:"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">48</value>
+                        <value name="horizon">-80</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="text">"E:"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"text"</value>
+                        <value name="vertical">48</value>
+                        <value name="horizon">185</value>
+                        <map name="view">
+                            <value name="font">{"family":"Source Han Sans SC","pixelSize":35,"weight":50}</value>
+                            <value name="text">"F:"</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"bar-gauge"</value>
+                        <value name="vertical">52</value>
+                        <value name="horizon">-485</value>
+                        <value name="width">160</value>
+                        <map name="view">
+                            <value name="data">{"mode":0,"unit":"%","interval":60000,"update":"C:\\","source":"nvg://system/data#hdd","value":"space"}</value>
+                            <value name="animation">true</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"bar-gauge"</value>
+                        <value name="vertical">52</value>
+                        <value name="horizon">-220</value>
+                        <value name="width">160</value>
+                        <map name="view">
+                            <value name="data">{"mode":0,"unit":"%","interval":60000,"update":"D:\\","source":"nvg://system/data#hdd","value":"space"}</value>
+                            <value name="animation">true</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"bar-gauge"</value>
+                        <value name="vertical">52</value>
+                        <value name="horizon">40</value>
+                        <value name="width">160</value>
+                        <map name="view">
+                            <value name="data">{"mode":0,"unit":"%","interval":60000,"update":"E:\\","source":"nvg://system/data#hdd","value":"space"}</value>
+                            <value name="animation">true</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"bar-gauge"</value>
+                        <value name="vertical">52</value>
+                        <value name="horizon">305</value>
+                        <value name="width">160</value>
+                        <map name="view">
+                            <value name="data">{"mode":0,"unit":"%","interval":60000,"update":"F:\\","source":"nvg://system/data#hdd","value":"space"}</value>
+                            <value name="animation">true</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="vertical">0</value>
+                <value name="horizon">-3</value>
+                <value name="width">1430</value>
+                <value name="height">160</value>
+                <map name="craft"/>
+            </map>
+        </list>
+        <map name="craft"/>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>

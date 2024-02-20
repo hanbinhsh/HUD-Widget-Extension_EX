@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <map name="data">
+        <list name="items">
+            <map>
+                <value name="label">"Leafa"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="vertical">0</value>
+                        <value name="horizon">0</value>
+                        <map name="view">
+                            <value name="normal">"file:///F:/files/sao/图片/主题/bgbb.png"</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+                <value name="color">"#454447"</value>
+                <value name="visibility">"data&amp;hovered"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                <value name="vertical">0</value>
+                <value name="horizon">20</value>
+                <value name="opacity">1</value>
+                <value name="width">163</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <list name="elements">
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">32</value>
+                            <value name="hole">0</value>
+                            <value name="fillColor">"#000000"</value>
+                            <value name="mode">false</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"circle-graph"</value>
+                        <map name="view">
+                            <value name="radius">7</value>
+                        </map>
+                    </map>
+                    <map>
+                        <value name="content">"image"</value>
+                        <value name="width">55</value>
+                        <value name="height">55</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="radius">150</value>
+                            <value name="spin">true</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"source":"nvg://media.gpbeta.com/data/player#cad","value":"cover"}</value>
+                        </map>
+                        <value name="rotationFPS">60</value>
+                        <value name="rotationDisplay">true</value>
+                        <value name="rotationSpeed">3</value>
+                        <value name="rotation">242.700000000043</value>
+                    </map>
+                </list>
+                <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                <value name="vertical">0</value>
+                <value name="horizon">-65</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Rizbet"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="font">{"family":"Font Awesome 5 Pro","pixelSize":24,"weight":50}</value>
+                            <value name="text">""</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"prev"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="visibility">"data&amp;hovered"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                <value name="horizon">-15</value>
+                <value name="width">40</value>
+                <value name="height">40</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Rizbet"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="mode">true</value>
+                            <value name="font">{"family":"Font Awesome 5 Pro","pixelSize":24,"weight":50}</value>
+                            <value name="text">""</value>
+                            <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.output === 1 ? '' : '';"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"pause"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="visibility">"data&amp;hovered"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                <value name="vertical">0</value>
+                <value name="horizon">25</value>
+                <value name="width">40</value>
+                <value name="height">40</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Rizbet"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"text"</value>
+                        <map name="view">
+                            <value name="font">{"family":"Font Awesome 5 Pro","pixelSize":24,"weight":50}</value>
+                            <value name="text">""</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"command":"next"},"source":"nvg://media.gpbeta.com/action/player#cad"}</value>
+                <value name="visibility">"data&amp;hovered"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = context.status"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                <value name="vertical">0</value>
+                <value name="horizon">65</value>
+                <value name="width">40</value>
+                <value name="height">40</value>
+                <map name="craft"/>
+            </map>
+            <map>
+                <value name="label">"Sachi"</value>
+                <list name="elements">
+                    <map>
+                        <value name="content">"icon"</value>
+                        <map name="view">
+                            <value name="icon">{"normal":"file:///F:/steam/steamapps/common/SAO Utils 2/Packages/com.gpbeta.theme.sao/Images/symbol/setting-hovered.png"}</value>
+                        </map>
+                    </map>
+                </list>
+                <value name="action">{"data":{"keys":"win+i"},"source":"nvg://system/action#keys"}</value>
+                <value name="visibility">"data"</value>
+                <value name="data">{"mode":0,"unit":"","interval":1000,"process":[{"source":"nvg://system/process#script","parameter":{"init":"","execute":"context.output = !context.status"}}],"source":"nvg://media.gpbeta.com/data/player#cad","value":"state"}</value>
+                <value name="horizon">-80</value>
+                <value name="width">54</value>
+                <value name="height">54</value>
+                <map name="craft"/>
+                <value name="rotationFPS">1</value>
+            </map>
+        </list>
+        <map name="craft">
+            <value name="grid">26</value>
+        </map>
+        <value name="background">{"normal":"nvg://hud.widget.gpbeta.com/background#Transparent.9.png"}</value>
+    </map>
+</map>
