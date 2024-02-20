@@ -129,6 +129,14 @@ DataSourceElement {
                                 label: " - " + qsTr("Image Folder")
                                 visible: enableGalleryMode.value
                             }
+                            // // TODO 填充模式
+                            // P.SelectPreference {
+                            //     name: "galleryImageFillMode"
+                            //     label: qsTr("Gallery Image Fill Mode")
+                            //     model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
+                            //     defaultValue: 1
+                            //     visible: enableGalleryMode.value
+                            // }
                             //背景颜色
                             P.ColorPreference {
                                 name: "fillColor"
@@ -288,6 +296,22 @@ DataSourceElement {
                                 onPreferenceEdited: Qt.callLater(aniTransition.restart)
                                 visible: enableGalleryMode.value&&enableAutoPaly.value
                             }
+                            //点击事件 播放/暂停 播放 停止 下一张 上一张 刷新图库 无事发生
+                            P.SelectPreference {
+                                name: "onClick"
+                                label: " - " + qsTr("On Click")
+                                model: [
+                                    qsTr("Play / Pause"),
+                                    qsTr("Play"),
+                                    qsTr("Stop"),
+                                    qsTr("Next Image"),
+                                    qsTr("Previous Image"),
+                                    qsTr("Refresh Gallery"),
+                                    qsTr("None"),
+                                ]
+                                defaultValue: 0
+                                visible: enableGalleryMode.value&&(!settings.action||!enableAction.value)
+                            }
                         //图片设置
                             P.ImagePreference {
                                 name: "normal"
@@ -342,7 +366,7 @@ DataSourceElement {
                             P.ActionPreference {
                                 name: "action"
                                 label: " - " + qsTr("Action")
-                                message: value ? "" : qsTr("Defaults to toggle slideshow")
+                                //message: value ? "" : qsTr("Defaults to toggle slideshow")
                                 visible: enableAction.value
                             }
                         }
@@ -2365,8 +2389,20 @@ DataSourceElement {
         anchors.fill: settings.enableAction||settings.enableGalleryMode ? parent : undefined
 
         onClicked: {
-            if (settings.action) {
+            //选择了动作
+            if (settings.action&&settings.enableAction) {
                 actionSource.trigger(this);
+                return;
+            }
+            //设置了点击事件
+            switch(settings.onClick) {
+                case 0: toggleSlideshow();return;
+                case 1: playSlideshow();return;
+                case 2: stopSlideshow();return;
+                case 3: rollImage(true);return;
+                case 4: rollImage(false);return;
+                case 5: refreshGallery();return;
+                case 6: return;
                 return;
             }
 
@@ -2396,7 +2432,7 @@ DataSourceElement {
                 property int _transition: 0
                 property real progress: 0
                 property real ratio: width / height
-                fragmentShader: Shared.generateShader(transitionType, settings.fill === 1)
+                fragmentShader: Shared.generateShader(transitionType, Number(settings.galleryImageFillMode) === 1)
             }
         }
         NVG.BackgroundSource {
