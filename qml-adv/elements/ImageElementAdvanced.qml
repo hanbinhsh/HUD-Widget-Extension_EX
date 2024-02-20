@@ -2401,7 +2401,7 @@ DataSourceElement {
         }
         NVG.BackgroundSource {
             id: frameBackground
-            anchors.fill: parent
+            anchors.fill: settings.enableGalleryMode ? parent : undefined
             configuration: settings.frame
             z: (settings.framePosition ?? true) ? 1 : -1
         }
