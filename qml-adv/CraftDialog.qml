@@ -437,7 +437,7 @@ NVG.Window {
                             {
                                     case 0: return layoutEffects.height + 56;
                                     case 1: return layoutTransform.height + 56;
-                                    //case 2: return layoutColor.height + 56;
+                                    case 2: return layoutActionSetting.height + 56;
                                     return 0;
                             }
                             header:TabBar {
@@ -445,10 +445,10 @@ NVG.Window {
                                 width: parent.width
                                 clip:true//超出父项直接裁剪
                                 Repeater {//效果，变换(平移，镜像，透明度，旋转)
-                                    model: [qsTr("Effects"),qsTr("Transform")]
+                                    model: [qsTr("Effects"),qsTr("Transform"),qsTr("Action")]
                                     TabButton {
                                         text: modelData
-                                        width: Math.max(108, elemBar.width / 2)
+                                        width: Math.max(108, elemBar.width / 3)
                                     }
                                 }
                             }
@@ -873,10 +873,203 @@ NVG.Window {
                                         }
                                     }
                                 }
+                                //动作设置
+                                Item{
+                                    //必须资源
+                                    Flickable {
+                                        anchors.fill: parent
+                                        contentWidth: width
+                                        contentHeight: layoutActionSetting.height
+                                        topMargin: 16
+                                        bottomMargin: 16
+                                        Column {
+                                            id: layoutActionSetting
+                                            width: parent.width
+                                            P.ObjectPreferenceGroup {
+                                                syncProperties: true
+                                                enabled: currentElement
+                                                defaultValue: currentElement
+                                                width: parent.width
+                                                //必须资源
+                                                //动作
+                                                P.SwitchPreference {
+                                                    id: enableAction
+                                                    name: "enableAction"
+                                                    label: qsTr("Enable Action")
+                                                }
+                                                P.ActionPreference {
+                                                    name: "action"
+                                                    label: " - " + qsTr("Action")
+                                                    //message: value ? "" : qsTr("Defaults to toggle slideshow")
+                                                    visible: enableAction.value
+                                                }
+                                                // TODO 悬停动作 （移动，缩放）
+                                            //悬停移动
+                                                P.SwitchPreference {
+                                                    id: moveOnHover
+                                                    name: "moveOnHover"
+                                                    label: qsTr("Move On Hover")
+                                                    visible: enableAction.value
+                                                }
+                                                //距离
+                                                P.SpinPreference {
+                                                    name: "moveHover_Distance"
+                                                    label: " - " + qsTr("Distance")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&moveOnHover.value
+                                                    defaultValue: 10
+                                                    from: -1000
+                                                    to: 1000
+                                                    stepSize: 10
+                                                }
+                                                //方向
+                                                P.SpinPreference {
+                                                    name: "moveHover_Direction"
+                                                    label: " - " + qsTr("Direction")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&moveOnHover.value
+                                                    defaultValue: 0
+                                                    from: -180
+                                                    to: 180
+                                                    stepSize: 5
+                                                }
+                                                //持续时间
+                                                P.SpinPreference {
+                                                    name: "moveHover_Duration"
+                                                    label: " - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&moveOnHover.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                            //悬停缩放
+                                                P.SwitchPreference {
+                                                    id: zoomOnHover
+                                                    name: "zoomOnHover"
+                                                    label: qsTr("Zoom On Hover")
+                                                    visible: enableAction.value
+                                                }
+                                                //大小
+                                                P.SpinPreference {
+                                                    name: "zoomHover_XSize"
+                                                    label: " - " + qsTr("X Scale")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnHover.value
+                                                    defaultValue: 100
+                                                    from: -100000
+                                                    to: 100000
+                                                    stepSize: 10
+                                                }
+                                                P.SpinPreference {
+                                                    name: "zoomHover_YSize"
+                                                    label: " - " + qsTr("Y Scale")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnHover.value
+                                                    defaultValue: 100
+                                                    from: -100000
+                                                    to: 100000
+                                                    stepSize: 10
+                                                }
+                                                //中心
+                                                P.SpinPreference {
+                                                    name: "zoomHover_OriginX"
+                                                    label: " - " + qsTr("Origin X")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnHover.value
+                                                    defaultValue: 0
+                                                    from: -10000
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                P.SpinPreference {
+                                                    name: "zoomHover_OriginY"
+                                                    label: " - " + qsTr("Origin Y")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnHover.value
+                                                    defaultValue: 0
+                                                    from: -10000
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                //持续时间
+                                                P.SpinPreference {
+                                                    name: "zoomHover_Duration"
+                                                    label: " - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnHover.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                            //悬停旋转
+                                                P.SwitchPreference {
+                                                    id: spinOnHover
+                                                    name: "spinOnHover"
+                                                    label: qsTr("Spin On Hover")
+                                                    visible: enableAction.value
+                                                }
+                                                //角度
+                                                P.SpinPreference {
+                                                    name: "spinHover_Direction"
+                                                    label: " - " + qsTr("Direction")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&spinOnHover.value
+                                                    defaultValue: 360
+                                                    from: -3600
+                                                    to: 3600
+                                                    stepSize: 180
+                                                }
+                                                //时间
+                                                P.SpinPreference {
+                                                    name: "spinHover_Duration"
+                                                    label: " - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&spinOnHover.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                            // TODO 3D旋转
+                                            //悬停闪烁
+                                                P.SwitchPreference {
+                                                    id: glimmerOnHover
+                                                    name: "glimmerOnHover"
+                                                    label: qsTr("Glimmer On Hover")
+                                                    visible: enableAction.value
+                                                }
+                                                //时间
+                                                P.SpinPreference {
+                                                    name: "glimmerHover_Duration"
+                                                    label: " - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&glimmerOnHover.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         } 
                     }
-
                     Heading {
                         Layout.fillWidth: true
 

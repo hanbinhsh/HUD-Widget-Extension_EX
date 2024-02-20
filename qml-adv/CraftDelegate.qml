@@ -11,6 +11,17 @@ MouseArea {
     property QtObject settings
     property int index
     //增加
+    //悬停移动动画
+    property real animationX : 0
+    property real animationY : 0
+    //悬停缩放动画
+    property real animationZoomX : 0
+    property real animationZoomY : 0
+    //悬停旋转动画
+    property real animationSpin : 0
+    //悬停闪烁动画
+    property real animationGlimmerTarget : 1
+
     readonly property real rotationStep: (settings.rotationSpeed ?? 5) * 6 / (settings.rotationFPS ?? 20)
     readonly property bool rotationEnabled: Boolean(delegate.settings.rotationDisplay)
     readonly property bool rotationAnimationEnabled: Boolean(delegate.settings.enableAdvancedRotationAnimation)
@@ -51,7 +62,7 @@ MouseArea {
     //挂件高度
     z: settings.z ?? 0
     //挂件旋转
-    rotation: settings.rotation ?? 0
+    rotation: settings.rotation ?? 0+(animationSpin??0)
     transform:[
         Rotation {
             origin.x: settings.enableAdvancedRotation ? settings.advancedRotationOriginX ?? 0 : 0
@@ -63,15 +74,15 @@ MouseArea {
             }
             angle: settings.enableAdvancedRotation ? settings.advancedRotationAngle ?? 0 : 0
         },
-        Scale {
-            origin.x: settings.scaleSetting ? settings.scaleOriginX ?? 0 : 0
-            origin.y: settings.scaleSetting ? settings.scaleOriginY ?? 0 : 0
-            xScale: settings.scaleSetting ? (settings.scaleX ?? 1000)/1000 : 1
-            yScale: settings.scaleSetting ? (settings.scaleY ?? 1000)/1000 : 1
+        Scale {//变换中设置了缩放中心按变换设置的
+            origin.x: settings.scaleSetting ? settings.scaleOriginX ?? 0 : 0+(settings.zoomHover_OriginX??0)
+            origin.y: settings.scaleSetting ? settings.scaleOriginY ?? 0 : 0+(settings.zoomHover_OriginY??0)
+            xScale: settings.scaleSetting ? (settings.scaleX ?? 1000)/1000+(animationZoomX??0)/1000 : 1+(animationZoomX??0)/1000
+            yScale: settings.scaleSetting ? (settings.scaleY ?? 1000)/1000+(animationZoomY??0)/1000 : 1+(animationZoomY??0)/1000
         },
         Translate {
-            x: settings.translateSetting ? settings.translateX ?? 0 : 0
-            y: settings.translateSetting ? settings.translateY ?? 0 : 0
+            x: settings.translateSetting ? (settings.translateX??0)+(animationX??0) ?? 0+(animationX??0) : 0+(animationX??0)
+            y: settings.translateSetting ? (settings.translateY??0)+(animationY??0) ?? 0+(animationY??0) : 0+(animationY??0)
         }
     ]
     //旋转动画
@@ -124,7 +135,6 @@ MouseArea {
     onEntered: if (view) view.currentHighlight = delegate
     onExited: if (view) view.currentHighlight = null
     onClicked: if (view) view.currentTarget = delegate
-
     //旋转重置
     onRotationEnabledChanged: settings.rotation=0
     //旋转

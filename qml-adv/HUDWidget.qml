@@ -209,7 +209,7 @@ T.Widget {
                     PropertyChanges{ target: thiz; targetVisible: false }
                 }
             ]
-//显示时的动画效果
+// TODO 显示时的动画效果
             transitions: [
                 Transition {
                     from: "SHOW"

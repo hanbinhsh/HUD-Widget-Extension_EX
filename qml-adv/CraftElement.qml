@@ -162,4 +162,134 @@ CraftDelegate {
             }
         }
     }
+    //鼠标动作，悬停动作
+    // TODO 点击动作
+
+    //移动动画
+    NumberAnimation on animationX {
+        id: moveAnimationX
+        running: false
+        duration: settings.moveHover_Duration ?? 300// 动画持续时间，单位为毫秒
+        easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+    }
+    NumberAnimation on animationY {
+        id: moveAnimationY
+        running: false
+        duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+    }
+    //缩放动画
+    NumberAnimation on animationZoomX {
+        id: animationZoomX
+        running: false
+        duration: settings.zoomHover_Duration ?? 300// 动画持续时间，单位为毫秒
+        easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+    }
+    NumberAnimation on animationZoomY {
+        id: animationZoomY
+        running: false
+        duration: settings.zoomHover_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+    }
+    //旋转动画
+    NumberAnimation on animationSpin {
+        id: animationSpin
+        running: false
+        duration: settings.spinHover_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+    }
+    //闪烁动画
+    SequentialAnimation {
+        id: animationGlimmer
+        running: false
+        loops:Animation.Infinite
+        NumberAnimation{
+            target: craftElement
+            property: "opacity"
+            from: 1
+            to: 0
+            duration: settings.glimmerHover_Duration ?? 300
+            easing.type: Easing.InOutQuad
+        }
+
+        NumberAnimation{
+            target: craftElement
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: settings.glimmerHover_Duration ?? 300
+            easing.type: Easing.InOutQuad
+        }
+    }
+    NumberAnimation{
+        id: recoverOpacity
+        running: false
+        target: craftElement
+        property: "opacity"
+        from: craftElement.opacity
+        to: 1
+        duration: 100 // 动画持续时间，单位为毫秒
+        easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+    }
+    //鼠标区域
+    MouseArea{
+        hoverEnabled: Boolean(settings.moveOnHover)
+        anchors.fill: settings.enableAction ? parent : undefined
+        onEntered: {
+            if(settings.moveOnHover){
+                moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                moveAnimationX.running = true
+                moveAnimationY.running = true
+            }
+            if(settings.zoomOnHover){
+                animationZoomX.to = Number(settings.zoomHover_XSize??100)
+                animationZoomY.to = Number(settings.zoomHover_YSize??100)
+                animationZoomX.running = true
+                animationZoomY.running = true
+            }
+            if(settings.spinOnHover){
+                animationSpin.to = Number(settings.spinHover_Direction??360)
+                animationSpin.running = true
+            }
+            if(settings.glimmerOnHover){
+                animationGlimmerTarget = 1
+                animationGlimmer.running = true
+            }
+        }
+        onExited: {
+            if(settings.moveOnHover){
+                moveAnimationX.to = 0
+                moveAnimationY.to = 0
+                moveAnimationX.running = true
+                moveAnimationY.running = true
+            }
+            if(settings.zoomOnHover){
+                animationZoomX.to = 0
+                animationZoomY.to = 0
+                animationZoomX.running = true
+                animationZoomY.running = true
+            }
+            if(settings.spinOnHover){
+                animationSpin.to = 0
+                animationSpin.running = true
+            }
+            if(settings.glimmerOnHover){
+                animationGlimmer.running = false
+                recoverOpacity.start()
+            }
+        }
+        onClicked: {
+            //选择了动作
+            if (settings.action&&settings.enableAction) {
+                actionSource.trigger(this);
+                return;
+            }
+        }
+        
+        NVG.ActionSource {
+            id: actionSource
+            configuration: settings.action
+        }
+    }
 }
