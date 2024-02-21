@@ -903,18 +903,17 @@ NVG.Window {
                                                     //message: value ? "" : qsTr("Defaults to toggle slideshow")
                                                     visible: enableAction.value
                                                 }
-                                                // TODO 悬停动作 （移动，缩放）
                                             //悬停移动
                                                 P.SwitchPreference {
                                                     id: moveOnHover
                                                     name: "moveOnHover"
-                                                    label: qsTr("Move On Hover")
+                                                    label: " - " + qsTr("Move On Hover")
                                                     visible: enableAction.value
                                                 }
                                                 //距离
                                                 P.SpinPreference {
                                                     name: "moveHover_Distance"
-                                                    label: " - " + qsTr("Distance")
+                                                    label: " - - " + qsTr("Distance")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&moveOnHover.value
@@ -926,7 +925,7 @@ NVG.Window {
                                                 //方向
                                                 P.SpinPreference {
                                                     name: "moveHover_Direction"
-                                                    label: " - " + qsTr("Direction")
+                                                    label: " - - " + qsTr("Direction")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&moveOnHover.value
@@ -938,7 +937,7 @@ NVG.Window {
                                                 //持续时间
                                                 P.SpinPreference {
                                                     name: "moveHover_Duration"
-                                                    label: " - " + qsTr("Duration")
+                                                    label: " - - " + qsTr("Duration")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&moveOnHover.value
@@ -951,13 +950,13 @@ NVG.Window {
                                                 P.SwitchPreference {
                                                     id: zoomOnHover
                                                     name: "zoomOnHover"
-                                                    label: qsTr("Zoom On Hover")
+                                                    label: " - " + qsTr("Zoom On Hover")
                                                     visible: enableAction.value
                                                 }
                                                 //大小
                                                 P.SpinPreference {
                                                     name: "zoomHover_XSize"
-                                                    label: " - " + qsTr("X Scale")
+                                                    label: " - - " + qsTr("X Scale")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&zoomOnHover.value
@@ -968,7 +967,7 @@ NVG.Window {
                                                 }
                                                 P.SpinPreference {
                                                     name: "zoomHover_YSize"
-                                                    label: " - " + qsTr("Y Scale")
+                                                    label: " - - " + qsTr("Y Scale")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&zoomOnHover.value
@@ -980,7 +979,7 @@ NVG.Window {
                                                 //中心
                                                 P.SpinPreference {
                                                     name: "zoomHover_OriginX"
-                                                    label: " - " + qsTr("Origin X")
+                                                    label: " - - " + qsTr("Origin X")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&zoomOnHover.value
@@ -991,7 +990,7 @@ NVG.Window {
                                                 }
                                                 P.SpinPreference {
                                                     name: "zoomHover_OriginY"
-                                                    label: " - " + qsTr("Origin Y")
+                                                    label: " - - " + qsTr("Origin Y")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&zoomOnHover.value
@@ -1003,7 +1002,7 @@ NVG.Window {
                                                 //持续时间
                                                 P.SpinPreference {
                                                     name: "zoomHover_Duration"
-                                                    label: " - " + qsTr("Duration")
+                                                    label: " - - " + qsTr("Duration")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&zoomOnHover.value
@@ -1016,13 +1015,13 @@ NVG.Window {
                                                 P.SwitchPreference {
                                                     id: spinOnHover
                                                     name: "spinOnHover"
-                                                    label: qsTr("Spin On Hover")
+                                                    label: " - " + qsTr("Spin On Hover")
                                                     visible: enableAction.value
                                                 }
                                                 //角度
                                                 P.SpinPreference {
                                                     name: "spinHover_Direction"
-                                                    label: " - " + qsTr("Direction")
+                                                    label: " - - " + qsTr("Direction")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&spinOnHover.value
@@ -1034,7 +1033,7 @@ NVG.Window {
                                                 //时间
                                                 P.SpinPreference {
                                                     name: "spinHover_Duration"
-                                                    label: " - " + qsTr("Duration")
+                                                    label: " - - " + qsTr("Duration")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&spinOnHover.value
@@ -1048,13 +1047,13 @@ NVG.Window {
                                                 P.SwitchPreference {
                                                     id: glimmerOnHover
                                                     name: "glimmerOnHover"
-                                                    label: qsTr("Glimmer On Hover")
+                                                    label: " - " + qsTr("Glimmer On Hover")
                                                     visible: enableAction.value
                                                 }
                                                 //时间
                                                 P.SpinPreference {
                                                     name: "glimmerHover_Duration"
-                                                    label: " - " + qsTr("Duration")
+                                                    label: " - - " + qsTr("Duration")
                                                     editable: true
                                                     display: P.TextFieldPreference.ExpandLabel
                                                     visible: enableAction.value&&glimmerOnHover.value

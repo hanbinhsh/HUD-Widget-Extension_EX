@@ -233,7 +233,7 @@ CraftDelegate {
     }
     //鼠标区域
     MouseArea{
-        hoverEnabled: Boolean(settings.moveOnHover)
+        hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
         anchors.fill: settings.enableAction ? parent : undefined
         onEntered: {
             if(settings.moveOnHover){
@@ -259,18 +259,23 @@ CraftDelegate {
         }
         onExited: {
             if(settings.moveOnHover){
+                moveAnimationX.stop()
+                moveAnimationY.stop()
                 moveAnimationX.to = 0
                 moveAnimationY.to = 0
                 moveAnimationX.running = true
                 moveAnimationY.running = true
             }
             if(settings.zoomOnHover){
+                animationZoomX.stop()
+                animationZoomY.stop()
                 animationZoomX.to = 0
                 animationZoomY.to = 0
                 animationZoomX.running = true
                 animationZoomY.running = true
             }
             if(settings.spinOnHover){
+                animationSpin.running.stop()
                 animationSpin.to = 0
                 animationSpin.running = true
             }

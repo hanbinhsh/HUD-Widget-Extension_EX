@@ -188,6 +188,8 @@ T.Widget {
 
             property bool targetVisible: true
 
+            hoverEnabled: true//Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
+
             view: itemView
             settings: modelData
             index: model.index
@@ -226,11 +228,128 @@ T.Widget {
                     NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
                 }
             ]
+            // TODO 外层挂件的悬浮动作
+            //移动动画
+            NumberAnimation on animationX {
+                id: moveAnimationX
+                running: false
+                duration: settings.moveHover_Duration ?? 300// 动画持续时间，单位为毫秒
+                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+            }
+            NumberAnimation on animationY {
+                id: moveAnimationY
+                running: false
+                duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+            }
+            //缩放动画
+            NumberAnimation on animationZoomX {
+                id: animationZoomX
+                running: false
+                duration: settings.zoomHover_Duration ?? 300// 动画持续时间，单位为毫秒
+                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+            }
+            NumberAnimation on animationZoomY {
+                id: animationZoomY
+                running: false
+                duration: settings.zoomHover_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+            }
+            //旋转动画
+            NumberAnimation on animationSpin {
+                id: animationSpin
+                running: false
+                duration: settings.spinHover_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+            }
+            //闪烁动画
+            SequentialAnimation {
+                id: animationGlimmer
+                running: false
+                loops:Animation.Infinite
+                NumberAnimation{
+                    target: thiz
+                    property: "opacity"
+                    from: 1
+                    to: 0
+                    duration: settings.glimmerHover_Duration ?? 300
+                    easing.type: Easing.InOutQuad
+                }
 
-            onEntered: if (!widget.editing) itemView.currentTarget = thiz
-            onPressed: if (actionSource.status) NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
+                NumberAnimation{
+                    target: thiz
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: settings.glimmerHover_Duration ?? 300
+                    easing.type: Easing.InOutQuad
+                }
+            }
+            NumberAnimation{
+                id: recoverOpacity
+                running: false
+                target: thiz
+                property: "opacity"
+                from: thiz.opacity
+                to: 1
+                duration: 100 // 动画持续时间，单位为毫秒
+                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+            }
+            onEntered: {
+                if (!widget.editing) itemView.currentTarget = thiz
+                if(settings.moveOnHover){
+                    moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                    moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                    moveAnimationX.running = true
+                    moveAnimationY.running = true
+                }
+                if(settings.zoomOnHover){
+                    animationZoomX.to = Number(settings.zoomHover_XSize??100)
+                    animationZoomY.to = Number(settings.zoomHover_YSize??100)
+                    animationZoomX.running = true
+                    animationZoomY.running = true
+                }
+                if(settings.spinOnHover){
+                    animationSpin.to = Number(settings.spinHover_Direction??360)
+                    animationSpin.running = true
+                }
+                if(settings.glimmerOnHover){
+                    animationGlimmerTarget = 1
+                    animationGlimmer.running = true
+                }
+            }
+            onExited: {
+                if(settings.moveOnHover){
+                    moveAnimationX.stop()
+                    moveAnimationY.stop()
+                    moveAnimationX.to = 0
+                    moveAnimationY.to = 0
+                    moveAnimationX.running = true
+                    moveAnimationY.running = true
+                }
+                if(settings.zoomOnHover){
+                    animationZoomX.stop()
+                    animationZoomY.stop()
+                    animationZoomX.to = 0
+                    animationZoomY.to = 0
+                    animationZoomX.running = true
+                    animationZoomY.running = true
+                }
+                if(settings.spinOnHover){
+                    animationSpin.running.stop()
+                    animationSpin.to = 0
+                    animationSpin.running = true
+                }
+                if(settings.glimmerOnHover){
+                    animationGlimmer.running = false
+                    recoverOpacity.start()
+                }
+            }
+            onPressed: {
+                if (actionSource.status) NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
+            }
             onClicked: {
-                if (!widget.editing) {
+                if (!widget.editing) {// TODO 2级界面加入此行
                     if (actionSource.configuration)
                         actionSource.trigger(thiz);
                 }

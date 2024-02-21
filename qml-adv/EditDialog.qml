@@ -515,64 +515,7 @@ NVG.Window {
                         from: -10000
                         to: 10000
                         stepSize: 10
-                    }                      
-                    // //部件编辑界面的透明度设置
-                    // P.SliderPreference {
-                    //     id:opacitySetting
-                    //     name: "opacity"
-                    //     label: qsTr("Opacity")
-                    //     displayValue: Math.round(value * 100) + " %"
-                    //     defaultValue: 1
-                    //     from: 0
-                    //     to: 1
-                    //     stepSize: 0.01
-                    //     live: true
-                    //     visible: expandButton.highlighted
-                    // }
-                    // //部件编辑界面的旋转设置
-                    // P.SliderPreference {
-                    //     id:rotation
-                    //     width:150
-                    //     name: "rotation"
-                    //     label: qsTr("Rotation")
-                    //     defaultValue: 0
-                    //     from: -360
-                    //     to: 360
-                    //     stepSize: 1
-                    //     displayValue: value + " °"
-                    //     live: true
-                    //     visible: expandButton.highlighted&&!rotationDisplay.value
-                    // }
-                    // P.SwitchPreference {
-                    //     id: rotationDisplay
-                    //     name: "rotationDisplay"
-                    //     label: qsTr("Auto Rotation")
-                    //     visible: expandButton.highlighted
-                    // }
-                    // P.SliderPreference {
-                    //     id:rotationSpeed
-                    //     name: "rotationSpeed"
-                    //     label: qsTr("Spin Speed")
-                    //     defaultValue: 20
-                    //     from: -500
-                    //     to: 500
-                    //     stepSize: 1
-                    //     displayValue: value + " RPM"
-                    //     live: true
-                    //     visible: expandButton.highlighted&&rotationDisplay.value
-                    // }
-                    // P.SliderPreference {
-                    //     id:rotationFPS
-                    //     name: "rotationFPS"
-                    //     label: qsTr("FPS")
-                    //     defaultValue: 5
-                    //     from: 1
-                    //     to: 240
-                    //     stepSize: 1
-                    //     displayValue: value + " FPS"
-                    //     live: true
-                    //     visible: expandButton.highlighted&&rotationDisplay.value
-                    // }
+                    }
                     //部件编辑界面的可见性设置
                     P.SelectPreference {
                         name: "visibility"
@@ -607,25 +550,7 @@ NVG.Window {
                             }
                             // undefined
                         }
-                        //新增的可见性选择旁边的下拉菜单
-                        // ToolButton {
-                        //     id: expandButton_visibility
-                        //     anchors.top: parent.top
-                            
-                        //     anchors.right: parent.right
-                        //     icon.name: highlighted ? "regular:\uf102" : "regular:\uf103"
-                        //     highlighted: false
-                        //     onClicked: highlighted = !highlighted
-                        // }
                     }
-                    // ToolButton {
-                    //         id: a
-                    //         icon.name: highlighted ? "regular:\uf14a" : "regular:\uf0c8"
-                    //         anchors.right: parent.right
-                    //         highlighted: false
-                    //         onClicked: highlighted = !highlighted
-                    //         visible: expandButton_visibility.highlighted&&expandButton.highlighted
-                    // }
                     //部件编辑界面的背景设置
                     P.BackgroundPreference {
                         name: "background"
@@ -652,10 +577,182 @@ NVG.Window {
                         name: "data"
                         label: qsTr("Data")
                     }
-                    //部件编辑界面的动作设置
+                    // //部件编辑界面的动作设置
+                    // P.ActionPreference {
+                    //     name: "action"
+                    //     label: qsTr("Action")
+                    // }
+                    //动作
+                    P.SwitchPreference {
+                        id: enableAction
+                        name: "enableAction"
+                        label: qsTr("Enable Action")
+                    }
                     P.ActionPreference {
                         name: "action"
-                        label: qsTr("Action")
+                        label: " - " + qsTr("Action")
+                        //message: value ? "" : qsTr("Defaults to toggle slideshow")
+                        visible: enableAction.value
+                    }
+                    // TODO 悬停动作 （移动，缩放）
+                //悬停移动
+                    P.SwitchPreference {
+                        id: moveOnHover
+                        name: "moveOnHover"
+                        label: " - " + qsTr("Move On Hover")
+                        visible: enableAction.value
+                    }
+                    //距离
+                    P.SpinPreference {
+                        name: "moveHover_Distance"
+                        label: " - - " + qsTr("Distance")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&moveOnHover.value
+                        defaultValue: 10
+                        from: -1000
+                        to: 1000
+                        stepSize: 10
+                    }
+                    //方向
+                    P.SpinPreference {
+                        name: "moveHover_Direction"
+                        label: " - - " + qsTr("Direction")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&moveOnHover.value
+                        defaultValue: 0
+                        from: -180
+                        to: 180
+                        stepSize: 5
+                    }
+                    //持续时间
+                    P.SpinPreference {
+                        name: "moveHover_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&moveOnHover.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                //悬停缩放
+                    P.SwitchPreference {
+                        id: zoomOnHover
+                        name: "zoomOnHover"
+                        label: " - " + qsTr("Zoom On Hover")
+                        visible: enableAction.value
+                    }
+                    //大小
+                    P.SpinPreference {
+                        name: "zoomHover_XSize"
+                        label: " - - " + qsTr("X Scale")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&zoomOnHover.value
+                        defaultValue: 100
+                        from: -100000
+                        to: 100000
+                        stepSize: 10
+                    }
+                    P.SpinPreference {
+                        name: "zoomHover_YSize"
+                        label: " - - " + qsTr("Y Scale")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&zoomOnHover.value
+                        defaultValue: 100
+                        from: -100000
+                        to: 100000
+                        stepSize: 10
+                    }
+                    //中心
+                    P.SpinPreference {
+                        name: "zoomHover_OriginX"
+                        label: " - - " + qsTr("Origin X")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&zoomOnHover.value
+                        defaultValue: 0
+                        from: -10000
+                        to: 10000
+                        stepSize: 10
+                    }
+                    P.SpinPreference {
+                        name: "zoomHover_OriginY"
+                        label: " - - " + qsTr("Origin Y")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&zoomOnHover.value
+                        defaultValue: 0
+                        from: -10000
+                        to: 10000
+                        stepSize: 10
+                    }
+                    //持续时间
+                    P.SpinPreference {
+                        name: "zoomHover_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&zoomOnHover.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                //悬停旋转
+                    P.SwitchPreference {
+                        id: spinOnHover
+                        name: "spinOnHover"
+                        label: " - " + qsTr("Spin On Hover")
+                        visible: enableAction.value
+                    }
+                    //角度
+                    P.SpinPreference {
+                        name: "spinHover_Direction"
+                        label: " - - " + qsTr("Direction")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&spinOnHover.value
+                        defaultValue: 360
+                        from: -3600
+                        to: 3600
+                        stepSize: 180
+                    }
+                    //时间
+                    P.SpinPreference {
+                        name: "spinHover_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&spinOnHover.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                // TODO 3D旋转
+                //悬停闪烁
+                    P.SwitchPreference {
+                        id: glimmerOnHover
+                        name: "glimmerOnHover"
+                        label: " - " + qsTr("Glimmer On Hover")
+                        visible: enableAction.value
+                    }
+                    //时间
+                    P.SpinPreference {
+                        name: "glimmerHover_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&glimmerOnHover.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
                     }
                 }
             }
