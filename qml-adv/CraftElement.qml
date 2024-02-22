@@ -237,18 +237,23 @@ CraftDelegate {
         anchors.fill: settings.enableAction ? parent : undefined
         onEntered: {
             if(settings.moveOnHover){
+                moveAnimationX.stop()
+                moveAnimationY.stop()
                 moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
                 moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
                 moveAnimationX.running = true
                 moveAnimationY.running = true
             }
             if(settings.zoomOnHover){
+                animationZoomX.stop()
+                animationZoomY.stop()
                 animationZoomX.to = Number(settings.zoomHover_XSize??100)
                 animationZoomY.to = Number(settings.zoomHover_YSize??100)
                 animationZoomX.running = true
                 animationZoomY.running = true
             }
             if(settings.spinOnHover){
+                animationSpin.running.stop()
                 animationSpin.to = Number(settings.spinHover_Direction??360)
                 animationSpin.running = true
             }
