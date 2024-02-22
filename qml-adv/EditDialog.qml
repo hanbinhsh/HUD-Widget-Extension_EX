@@ -65,6 +65,19 @@ NVG.Window {
         Label { text: qsTr("Are you sure to remove this item?") }
     }
 
+    property var easingModel : [qsTr("Linear"),//0
+                                qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),//1-4
+                                qsTr("InCubic"),qsTr("OutCubic"),qsTr("InOutCubic"),qsTr("OutInCubic"),//5-8
+                                qsTr("InQuart"),qsTr("OutQuart"),qsTr("InOutQuart"),qsTr("OutInQuart"),//9-12
+                                qsTr("InQuint"),qsTr("OutQuint"),qsTr("InOutQuint"),qsTr("OutInQuint"),//13-16
+                                qsTr("InSine"),qsTr("OutSine"),qsTr("InOutSine"),qsTr("OutInSine"),//17-20
+                                qsTr("InExpo"),qsTr("OutExpo"),qsTr("InOutExpo"),qsTr("OutInExpo"),//21-24
+                                qsTr("InCirc"),qsTr("OutCirc"),qsTr("InOutCirc"),qsTr("OutInCirc"),//25-28
+                                qsTr("InElastic"),qsTr("OutElastic"),qsTr("InOutElastic"),qsTr("OutInElastic"),//28-32
+                                qsTr("InBack"),qsTr("OutBack"),qsTr("InOutBack"),qsTr("OutInBack"),//33-36
+                                qsTr("InBounce"),qsTr("OutBounce"),qsTr("InOutBounce"),qsTr("OutInBounce"),//36-40
+                                qsTr("BezierSpline")];
+
     Page {
         anchors.fill: parent
         //部件编辑界面上蓝色的条
@@ -638,6 +651,14 @@ NVG.Window {
                         to: 10000
                         stepSize: 10
                     }
+                    //曲线
+                    P.SelectPreference {
+                        name: "moveOnHover_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: enableAction.value&&moveOnHover.value
+                    }
                 //悬停缩放
                     P.SwitchPreference {
                         id: zoomOnHover
@@ -703,6 +724,14 @@ NVG.Window {
                         to: 10000
                         stepSize: 10
                     }
+                    //曲线
+                    P.SelectPreference {
+                        name: "zoomHover_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: enableAction.value&&zoomOnHover.value
+                    }
                 //悬停旋转
                     P.SwitchPreference {
                         id: spinOnHover
@@ -734,6 +763,14 @@ NVG.Window {
                         to: 10000
                         stepSize: 10
                     }
+                    //曲线
+                    P.SelectPreference {
+                        name: "spinHover_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: enableAction.value&&spinOnHover.value
+                    }
                 // TODO 3D旋转
                 //悬停闪烁
                     P.SwitchPreference {
@@ -753,6 +790,26 @@ NVG.Window {
                         from: 0
                         to: 10000
                         stepSize: 10
+                    }
+                    //最小透明度
+                    P.SpinPreference {
+                        name: "glimmerHover_MinOpacity"
+                        label: " - - " + qsTr("Min Opacity")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&glimmerOnHover.value
+                        defaultValue: 0
+                        from: 0
+                        to: 100
+                        stepSize: 10
+                    }
+                    //曲线
+                    P.SelectPreference {
+                        name: "glimmerHover_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: enableAction.value&&glimmerOnHover.value
                     }
                 }
             }

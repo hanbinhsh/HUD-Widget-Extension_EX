@@ -95,6 +95,19 @@ NVG.Window {
         Label { text: qsTr("Are you sure to discard the changes?") }
     }
 
+    property var easingModel : [qsTr("Linear"),
+                                qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),
+                                qsTr("InCubic"),qsTr("OutCubic"),qsTr("InOutCubic"),qsTr("OutInCubic"),
+                                qsTr("InQuart"),qsTr("OutQuart"),qsTr("InOutQuart"),qsTr("OutInQuart"),
+                                qsTr("InQuint"),qsTr("OutQuint"),qsTr("InOutQuint"),qsTr("OutInQuint"),
+                                qsTr("InSine"),qsTr("OutSine"),qsTr("InOutSine"),qsTr("OutInSine"),
+                                qsTr("InExpo"),qsTr("OutExpo"),qsTr("InOutExpo"),qsTr("OutInExpo"),
+                                qsTr("InCirc"),qsTr("OutCirc"),qsTr("InOutCirc"),qsTr("OutInCirc"),
+                                qsTr("InElastic"),qsTr("OutElastic"),qsTr("InOutElastic"),qsTr("OutInElastic"),
+                                qsTr("InBack"),qsTr("OutBack"),qsTr("InOutBack"),qsTr("OutInBack"),
+                                qsTr("InBounce"),qsTr("OutBounce"),qsTr("InOutBounce"),qsTr("OutInBounce"),
+                                qsTr("BezierSpline")];
+
     Page {
         anchors.fill: parent
 //编辑界面上面的横条
@@ -946,6 +959,14 @@ NVG.Window {
                                                     to: 10000
                                                     stepSize: 10
                                                 }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "moveOnHover_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: enableAction.value&&moveOnHover.value
+                                                }
                                             //悬停缩放
                                                 P.SwitchPreference {
                                                     id: zoomOnHover
@@ -1011,6 +1032,14 @@ NVG.Window {
                                                     to: 10000
                                                     stepSize: 10
                                                 }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "zoomHover_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: enableAction.value&&zoomOnHover.value
+                                                }
                                             //悬停旋转
                                                 P.SwitchPreference {
                                                     id: spinOnHover
@@ -1042,6 +1071,14 @@ NVG.Window {
                                                     to: 10000
                                                     stepSize: 10
                                                 }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "spinHover_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: enableAction.value&&spinOnHover.value
+                                                }
                                             // TODO 3D旋转
                                             //悬停闪烁
                                                 P.SwitchPreference {
@@ -1061,6 +1098,26 @@ NVG.Window {
                                                     from: 0
                                                     to: 10000
                                                     stepSize: 10
+                                                }
+                                                //最小透明度
+                                                P.SpinPreference {
+                                                    name: "glimmerHover_MinOpacity"
+                                                    label: " - - " + qsTr("Min Opacity")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&glimmerOnHover.value
+                                                    defaultValue: 0
+                                                    from: 0
+                                                    to: 100
+                                                    stepSize: 10
+                                                }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "glimmerHover_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: enableAction.value&&glimmerOnHover.value
                                                 }
                                             }
                                         }

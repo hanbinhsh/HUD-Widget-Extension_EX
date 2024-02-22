@@ -234,33 +234,33 @@ T.Widget {
                 id: moveAnimationX
                 running: false
                 duration: settings.moveHover_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+                easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             NumberAnimation on animationY {
                 id: moveAnimationY
                 running: false
                 duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+                easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //缩放动画
             NumberAnimation on animationZoomX {
                 id: animationZoomX
                 running: false
                 duration: settings.zoomHover_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+                easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             NumberAnimation on animationZoomY {
                 id: animationZoomY
                 running: false
                 duration: settings.zoomHover_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+                easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //旋转动画
             NumberAnimation on animationSpin {
                 id: animationSpin
                 running: false
                 duration: settings.spinHover_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+                easing.type: settings.spinHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //闪烁动画
             SequentialAnimation {
@@ -271,18 +271,18 @@ T.Widget {
                     target: thiz
                     property: "opacity"
                     from: 1
-                    to: 0
+                    to: settings.glimmerHover_MinOpacity/100 ?? 0
                     duration: settings.glimmerHover_Duration ?? 300
-                    easing.type: Easing.InOutQuad
+                    easing.type: settings.glimmerHover_Easing ?? 3
                 }
 
                 NumberAnimation{
                     target: thiz
                     property: "opacity"
-                    from: 0
+                    from: settings.glimmerHover_MinOpacity/100 ?? 0
                     to: 1
                     duration: settings.glimmerHover_Duration ?? 300
-                    easing.type: Easing.InOutQuad
+                    easing.type: settings.glimmerHover_Easing ?? 3
                 }
             }
             NumberAnimation{
@@ -293,7 +293,7 @@ T.Widget {
                 from: thiz.opacity
                 to: 1
                 duration: 100 // 动画持续时间，单位为毫秒
-                easing.type: Easing.InOutQuad // 使用缓动函数使动画更平滑
+                easing.type: settings.glimmerHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             onEntered: {
                 if (!widget.editing) itemView.currentTarget = thiz
@@ -319,7 +319,6 @@ T.Widget {
                     animationSpin.running = true
                 }
                 if(settings.glimmerOnHover){
-                    animationGlimmerTarget = 1
                     animationGlimmer.running = true
                 }
             }

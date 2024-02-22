@@ -227,9 +227,9 @@ DataSourceElement {
                                 label: " - - " + qsTr("Change Image Every")
                                 model: [
                                     "10 " + qsTr("Millisecond"),
-                                    "15 " + qsTr("Millisecond"),
-                                    "24 " + qsTr("Millisecond"),
-                                    "60 " + qsTr("Millisecond"),
+                                    "50 " + qsTr("Millisecond"),
+                                    "100 " + qsTr("Millisecond"),
+                                    "500 " + qsTr("Millisecond"),
                                     "1 " + qsTr("Second"),
                                     "5 " + qsTr("Seconds"),
                                     "15 " + qsTr("Seconds"),
@@ -249,11 +249,11 @@ DataSourceElement {
                                     // remap times
                                     if (newValue <= 10)
                                         value = 0;
-                                    else if (newValue <= 15)
+                                    else if (newValue <= 50)
                                         value = 1;
-                                    else if (newValue <= 24)
+                                    else if (newValue <= 100)
                                         value = 2;
-                                    else if (newValue <= 60)
+                                    else if (newValue <= 500)
                                         value = 3;
                                     else if (newValue <= 1000)
                                         value = 4;
@@ -277,9 +277,9 @@ DataSourceElement {
                                 save: function () {
                                     switch (value) {
                                     case 0: return 10;
-                                    case 1: return 15;
-                                    case 2: return 24;
-                                    case 3: return 60;
+                                    case 1: return 50;
+                                    case 2: return 100;
+                                    case 3: return 500;
                                     case 4: return 1000;
                                     case 5: return 1000 * 5;
                                     case 6: return 1000 * 15;
