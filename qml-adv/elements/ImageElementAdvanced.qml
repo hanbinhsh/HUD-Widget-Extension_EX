@@ -9,7 +9,6 @@ import ".."
 import "shared.js" as Shared
 import NERvGear.Controls 1.0
 import NERvExtras 1.0
-import "action"
 
 
 DataSourceElement {
@@ -129,14 +128,14 @@ DataSourceElement {
                                 label: " - " + qsTr("Image Folder")
                                 visible: enableGalleryMode.value
                             }
-                            // // TODO 填充模式
-                            // P.SelectPreference {
-                            //     name: "galleryImageFillMode"
-                            //     label: qsTr("Gallery Image Fill Mode")
-                            //     model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
-                            //     defaultValue: 1
-                            //     visible: enableGalleryMode.value
-                            // }
+                            // TODO 填充模式
+                            P.SelectPreference {
+                                name: "galleryImageFillMode"
+                                label: qsTr("Gallery Image Fill Mode")
+                                model: [ qsTr("Crop"), qsTr("Fit") ]
+                                defaultValue: 0
+                                visible: enableGalleryMode.value
+                            }
                             //背景颜色
                             P.ColorPreference {
                                 name: "fillColor"
@@ -2218,7 +2217,7 @@ DataSourceElement {
 
         const path = settings.imageFolder;
         if(!settings.enableGalleryMode)
-            return [];//["../../Images/transparent.png"]
+            return [];
         if (!path)
             return [ "../../Images/gallery-widget.png",
                      "../../Images/image-widget.png",
@@ -2426,13 +2425,13 @@ DataSourceElement {
                 id: shaderEffect
                 anchors.fill: settings.enableGalleryMode ? parent : undefined
                 property Image _fromS: fromImage
-                readonly property real _fromR: _fromS.Width / _fromS.implicitHeight
+                readonly property real _fromR: _fromS.implicitWidth / _fromS.implicitHeight
                 property Image _toS: toImage
-                readonly property real _toR: _toS.Width / _toS.implicitHeight
+                readonly property real _toR: _toS.implicitWidth / _toS.implicitHeight
                 property int _transition: 0
                 property real progress: 0
                 property real ratio: width / height
-                fragmentShader: Shared.generateShader(transitionType, Number(settings.galleryImageFillMode) === 1)
+                fragmentShader: Shared.generateShader(transitionType, settings.galleryImageFillMode === 1)
             }
         }
         NVG.BackgroundSource {
