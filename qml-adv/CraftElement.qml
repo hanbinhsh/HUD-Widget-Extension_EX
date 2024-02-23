@@ -206,7 +206,7 @@ CraftDelegate {
             target: craftElement
             property: "opacity"
             from: 1
-            to: settings.glimmerHover_MinOpacity/100 ?? 0
+            to: (settings.glimmerHover_MinOpacity ?? 0)/100
             duration: settings.glimmerHover_Duration ?? 300
             easing.type: settings.glimmerHover_Easing ?? 3
         }
@@ -214,7 +214,7 @@ CraftDelegate {
         NumberAnimation{
             target: craftElement
             property: "opacity"
-            from: settings.glimmerHover_MinOpacity/100 ?? 0
+            from: (settings.glimmerHover_MinOpacity ?? 0)/100
             to: 1
             duration: settings.glimmerHover_Duration ?? 300
             easing.type: settings.glimmerHover_Easing ?? 3
