@@ -916,6 +916,29 @@ NVG.Window {
                                                     //message: value ? "" : qsTr("Defaults to toggle slideshow")
                                                     visible: enableAction.value
                                                 }
+                                            //缩放中心(悬停/点击)
+                                                P.SpinPreference {
+                                                    name: "zoomMouse_OriginX"
+                                                    label: " - " + qsTr("Origin X")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value
+                                                    defaultValue: 0
+                                                    from: -10000
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                P.SpinPreference {
+                                                    name: "zoomMouse_OriginY"
+                                                    label: " - " + qsTr("Origin Y")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value
+                                                    defaultValue: 0
+                                                    from: -10000
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
                                             //悬停移动
                                                 P.SwitchPreference {
                                                     id: moveOnHover
@@ -995,29 +1018,6 @@ NVG.Window {
                                                     defaultValue: 100
                                                     from: -100000
                                                     to: 100000
-                                                    stepSize: 10
-                                                }
-                                                //中心
-                                                P.SpinPreference {
-                                                    name: "zoomHover_OriginX"
-                                                    label: " - - " + qsTr("Origin X")
-                                                    editable: true
-                                                    display: P.TextFieldPreference.ExpandLabel
-                                                    visible: enableAction.value&&zoomOnHover.value
-                                                    defaultValue: 0
-                                                    from: -10000
-                                                    to: 10000
-                                                    stepSize: 10
-                                                }
-                                                P.SpinPreference {
-                                                    name: "zoomHover_OriginY"
-                                                    label: " - - " + qsTr("Origin Y")
-                                                    editable: true
-                                                    display: P.TextFieldPreference.ExpandLabel
-                                                    visible: enableAction.value&&zoomOnHover.value
-                                                    defaultValue: 0
-                                                    from: -10000
-                                                    to: 10000
                                                     stepSize: 10
                                                 }
                                                 //持续时间
@@ -1118,6 +1118,57 @@ NVG.Window {
                                                     model: easingModel
                                                     defaultValue: 3
                                                     visible: enableAction.value&&glimmerOnHover.value
+                                                }
+                                        //// 点击
+                                            //点击缩放
+                                                P.SwitchPreference {
+                                                    id: zoomOnClick
+                                                    name: "zoomOnClick"
+                                                    label: " - " + qsTr("Zoom On Click")
+                                                    visible: enableAction.value
+                                                }
+                                                //大小
+                                                P.SpinPreference {
+                                                    name: "zoomClick_XSize"
+                                                    label: " - - " + qsTr("X Scale")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnClick.value
+                                                    defaultValue: 100
+                                                    from: -100000
+                                                    to: 100000
+                                                    stepSize: 10
+                                                }
+                                                P.SpinPreference {
+                                                    name: "zoomClick_YSize"
+                                                    label: " - - " + qsTr("Y Scale")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnClick.value
+                                                    defaultValue: 100
+                                                    from: -100000
+                                                    to: 100000
+                                                    stepSize: 10
+                                                }
+                                                //持续时间
+                                                P.SpinPreference {
+                                                    name: "zoomClick_Duration"
+                                                    label: " - - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&zoomOnClick.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "zoomClick_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: enableAction.value&&zoomOnClick.value
                                                 }
                                             }
                                         }

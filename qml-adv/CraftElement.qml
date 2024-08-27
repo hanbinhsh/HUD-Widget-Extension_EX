@@ -190,6 +190,18 @@ CraftDelegate {
         duration: settings.zoomHover_Duration ?? 300 // 动画持续时间，单位为毫秒
         easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
     }
+    NumberAnimation on animationZoomX {
+        id: animationZoomX_Click
+        running: false
+        duration: settings.zoomClick_Duration ?? 300// 动画持续时间，单位为毫秒
+        easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
+    }
+    NumberAnimation on animationZoomY {
+        id: animationZoomY_Click
+        running: false
+        duration: settings.zoomClick_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
+    }
     //旋转动画
     NumberAnimation on animationSpin {
         id: animationSpin
@@ -294,7 +306,26 @@ CraftDelegate {
                 return;
             }
         }
-        
+        onPressed: {
+            if(settings.zoomOnClick){
+                animationZoomX_Click.stop()
+                animationZoomY_Click.stop()
+                animationZoomX_Click.to = Number(settings.zoomClick_XSize ?? 100)
+                animationZoomY_Click.to = Number(settings.zoomClick_YSize ?? 100)
+                animationZoomX_Click.running = true
+                animationZoomY_Click.running = true
+            }
+        }
+        onReleased:{
+            if(settings.zoomOnClick){
+                animationZoomX_Click.stop()
+                animationZoomY_Click.stop()
+                animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 100
+                animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 100
+                animationZoomX_Click.running = true
+                animationZoomY_Click.running = true
+            }
+        }
         NVG.ActionSource {
             id: actionSource
             configuration: settings.action

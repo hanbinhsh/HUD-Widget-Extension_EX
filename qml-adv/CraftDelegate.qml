@@ -68,21 +68,21 @@ MouseArea {
             origin.x: settings.enableAdvancedRotation ? settings.advancedRotationOriginX ?? 0 : 0
             origin.y: settings.enableAdvancedRotation ? settings.advancedRotationOriginY ?? 0 : 0
             axis {
-            x: settings.enableAdvancedRotation ? settings.advancedRotationAxisX ?? 0 : 0
-            y: settings.enableAdvancedRotation ? settings.advancedRotationAxisY ?? 0 : 0
-            z: settings.enableAdvancedRotation ? settings.advancedRotationAxisZ ?? 0 : 0
+                x: settings.enableAdvancedRotation ? settings.advancedRotationAxisX ?? 0 : 0
+                y: settings.enableAdvancedRotation ? settings.advancedRotationAxisY ?? 0 : 0
+                z: settings.enableAdvancedRotation ? settings.advancedRotationAxisZ ?? 0 : 0
             }
             angle: settings.enableAdvancedRotation ? settings.advancedRotationAngle ?? 0 : 0
         },
         Scale {//变换中设置了缩放中心按变换设置的
-            origin.x: settings.scaleSetting ? settings.scaleOriginX ?? 0 : 0+(settings.zoomHover_OriginX??0)
-            origin.y: settings.scaleSetting ? settings.scaleOriginY ?? 0 : 0+(settings.zoomHover_OriginY??0)
-            xScale: settings.scaleSetting ? (settings.scaleX ?? 1000)/1000+(animationZoomX??0)/1000 : 1+(animationZoomX??0)/1000
-            yScale: settings.scaleSetting ? (settings.scaleY ?? 1000)/1000+(animationZoomY??0)/1000 : 1+(animationZoomY??0)/1000
+            origin.x: settings.scaleSetting ? settings.scaleOriginX ?? 0 : 0 + (settings.zoomMouse_OriginX ?? 0)
+            origin.y: settings.scaleSetting ? settings.scaleOriginY ?? 0 : 0 + (settings.zoomMouse_OriginY ?? 0)
+            xScale: settings.scaleSetting ? (settings.scaleX ?? 1000) / 1000 + (animationZoomX ?? 0) / 1000 : 1 + (animationZoomX ?? 0) / 1000
+            yScale: settings.scaleSetting ? (settings.scaleY ?? 1000) / 1000 + (animationZoomY ?? 0) / 1000 : 1 + (animationZoomY ?? 0) / 1000
         },
         Translate {
-            x: settings.translateSetting ? (settings.translateX??0)+(animationX??0) ?? 0+(animationX??0) : 0+(animationX??0)
-            y: settings.translateSetting ? (settings.translateY??0)+(animationY??0) ?? 0+(animationY??0) : 0+(animationY??0)
+            x: settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0+(animationX ?? 0) : 0 + (animationX ?? 0)
+            y: settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0+(animationY ?? 0) : 0 + (animationY ?? 0)
         }
     ]
     //旋转动画
