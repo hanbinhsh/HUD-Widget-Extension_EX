@@ -6,7 +6,7 @@ import NERvGear 1.0 as NVG
 import NERvGear.Private 1.0 as NVG
 import NERvGear.Preferences 1.0 as P
 import NERvGear.Controls 1.0
-
+// 二级菜单
 NVG.Window {
     id: dialog
 

@@ -71,6 +71,17 @@ MouseArea {
     //动画变量
     readonly property real rotationAnimationStep: (settings.advancedRotationSpeed ?? 5) * 6 / (settings.advancedRotationFPS ?? 20)
     readonly property bool opacityAnimationEnabled: Boolean(settings.enableOpacityAnimation)
+    //循环动画变量
+        //移动
+        property real cycleMoveX : 0
+        property real cycleMoveY : 0
+        readonly property bool moveCycleEnabled: Boolean(delegate.settings.cycleMove)
+        property int moveCycle_Delay: settings.moveCycle_Delay ?? 300              // 启动前的延迟（毫秒）
+        property int moveCycle_Duration: settings.moveCycle_Duration ?? 300        // 每次移动的持续时间（毫秒）
+        property int moveCycle_Direction: settings.moveCycle_Direction ?? 0      // 移动的方向（度数）
+        property int moveCycle_Distance: settings.moveCycle_Distance ?? 10        // 每次移动的距离（像素）
+        property int moveCycle_Waiting: settings.moveCycle_Waiting ?? 300          // 每次移动后的等待时间（毫秒）
+        property var moveCycle_Easing: settings.moveCycle_Easing ?? 3              // 使用的动画曲线
     //增加
 
     anchors.top: settings.alignment & Qt.AlignTop ? parent.top : undefined
@@ -148,8 +159,8 @@ MouseArea {
             yScale: settings.scaleSetting ? (settings.scaleY ?? 1000) / 1000 + (animationZoomY ?? 0) / 1000 : 1 + (animationZoomY ?? 0) / 1000
         },
         Translate {
-            x: settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0+(animationX ?? 0) : 0 + (animationX ?? 0)
-            y: settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0+(animationY ?? 0) : 0 + (animationY ?? 0)
+            x:( settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0+(animationX ?? 0) : 0 + (animationX ?? 0) ) + cycleMoveX
+            y:( settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0+(animationY ?? 0) : 0 + (animationY ?? 0) ) + cycleMoveY
         }
     ]
     //旋转动画
@@ -157,7 +168,7 @@ MouseArea {
     Timer {
         repeat: true
         interval: 1000 / (settings.advancedRotationFPS ?? 20)
-            running: rotationAnimationEnabled&&widget.NVG.View.exposed
+        running: rotationAnimationEnabled&&widget.NVG.View.exposed
         onTriggered: settings.advancedRotationAngle = (settings.advancedRotationAngle + rotationAnimationStep) % 360
     }
     //透明度动画
@@ -188,5 +199,79 @@ MouseArea {
         interval: 1000 / (settings.rotationFPS ?? 20)//定时时间
         running: rotationEnabled&&widget.NVG.View.exposed//开始条件
         onTriggered: settings.rotation = (settings.rotation + rotationStep) % 360//触发语句
+    }
+//循环动画
+    // 移动动画定义
+    SequentialAnimation {
+        id: moveAnimation
+        running: false              // 初始不运行
+        ParallelAnimation {  // 使用 ParallelAnimation 同时动画化 x 和 y
+            NumberAnimation {
+                target: delegate
+                property: "cycleMoveX"
+                duration: moveCycle_Duration / 2   // 单程时间是总时间的一半
+                easing.type: moveCycle_Easing
+            }
+            NumberAnimation {
+                target: delegate
+                property: "cycleMoveY"
+                duration: moveCycle_Duration / 2
+                easing.type: moveCycle_Easing
+            }
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: delegate
+                property: "cycleMoveX"
+                duration: moveCycle_Duration / 2
+                easing.type: moveCycle_Easing
+            }
+            NumberAnimation {
+                target: delegate
+                property: "cycleMoveY"
+                duration: moveCycle_Duration / 2
+                easing.type: moveCycle_Easing
+            }
+        }
+        onStopped: moveTimer.start()  // 动画完成后重新启动定时器
+    }
+    // 延迟启动定时器
+    Timer {
+        id: delayTimer
+        interval: moveCycle_Delay
+        repeat: false
+        running: moveCycleEnabled&&widget.NVG.View.exposed//开始条件
+        onTriggered: {
+            // 设置后续循环的定时器
+            moveTimer.start()
+        }
+    }
+    // 循环定时器
+    Timer {
+        id: moveTimer
+        interval: moveCycle_Duration + moveCycle_Waiting
+        running: false
+        repeat: false
+        onTriggered: {
+            startAnimation()  // 启动延迟定时器
+        }
+    }
+    // 启动动画函数
+    function startAnimation() {
+        // 计算移动的目标位置
+        var radians = Math.PI * moveCycle_Direction / 180.0;
+        var deltaX = Math.cos(radians) * moveCycle_Distance;
+        var deltaY = Math.sin(radians) * moveCycle_Distance;
+        // 更新动画目标位置
+        moveAnimation.animations[0].animations[0].from = 0;
+        moveAnimation.animations[0].animations[0].to = deltaX;
+        moveAnimation.animations[0].animations[1].from = 0;
+        moveAnimation.animations[0].animations[1].to = deltaY;
+        moveAnimation.animations[1].animations[0].from = deltaX;
+        moveAnimation.animations[1].animations[0].to = 0;
+        moveAnimation.animations[1].animations[1].from = deltaY;
+        moveAnimation.animations[1].animations[1].to = 0;
+        // 启动动画
+        moveAnimation.start();
     }
 }

@@ -7,7 +7,7 @@ import NERvGear.Controls 1.0
 import NERvGear.Preferences 1.0 as P
 
 import "utils.js" as Utils
-
+// 一级菜单
 NVG.Window {
     id: dialog
     Style.theme: Style.Dark
@@ -965,6 +965,87 @@ NVG.Window {
                         model: easingModel
                         defaultValue: 3
                         visible: enableAction.value&&spinOnClick.value
+                    }
+            //周期动画
+                    P.SwitchPreference {
+                        id: cycleAnimation
+                        name: "cycleAnimation"
+                        label: qsTr("Cycle Animation")
+                    }
+                //周期平移
+                    P.SwitchPreference {
+                        id: cycleMove
+                        name: "cycleMove"
+                        label: " - " + qsTr("Cycle Moving")
+                        visible:cycleAnimation.value
+                    }
+                    //距离
+                    P.SpinPreference {
+                        name: "moveCycle_Distance"
+                        label: " - - " + qsTr("Distance")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: cycleAnimation.value&&cycleMove.value
+                        defaultValue: 10
+                        from: -1000
+                        to: 1000
+                        stepSize: 10
+                    }
+                    //方向
+                    P.SpinPreference {
+                        name: "moveCycle_Direction"
+                        label: " - - " + qsTr("Direction")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: cycleAnimation.value&&cycleMove.value
+                        defaultValue: 0
+                        from: -180
+                        to: 180
+                        stepSize: 5
+                    }
+                    //持续时间
+                    P.SpinPreference {
+                        name: "moveCycle_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: cycleAnimation.value&&cycleMove.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                    //延时
+                    P.SpinPreference {
+                        name: "moveCycle_Delay"
+                        label: " - - " + qsTr("Delay")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: cycleAnimation.value&&cycleMove.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                    //等待时间
+                    P.SpinPreference {
+                        name: "moveCycle_Waiting"
+                        label: " - - " + qsTr("Waiting")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: cycleAnimation.value&&cycleMove.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                    //曲线
+                    P.SelectPreference {
+                        name: "moveCycle_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: cycleAnimation.value&&cycleMove.value
                     }
                 }
             }
