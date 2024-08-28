@@ -154,11 +154,11 @@ MouseArea {
     ]
     //旋转动画
     onRotationAnimationEnabledChanged: settings.advancedRotationAngle=0
-        Timer {
-            repeat: true
-            interval: 1000 / (settings.advancedRotationFPS ?? 20)
+    Timer {
+        repeat: true
+        interval: 1000 / (settings.advancedRotationFPS ?? 20)
             running: rotationAnimationEnabled&&widget.NVG.View.exposed
-            onTriggered: settings.advancedRotationAngle = (settings.advancedRotationAngle + rotationAnimationStep) % 360
+        onTriggered: settings.advancedRotationAngle = (settings.advancedRotationAngle + rotationAnimationStep) % 360
     }
     //透明度动画
     onOpacityAnimationEnabledChanged: settings.opacity=1

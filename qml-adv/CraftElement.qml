@@ -210,6 +210,12 @@ CraftDelegate {
         duration: settings.spinHover_Duration ?? 300 // 动画持续时间，单位为毫秒
         easing.type: settings.spinHover_Easing ?? 3 // 使用缓动函数使动画更平滑
     }
+    NumberAnimation on animationSpin {
+        id: animationSpin_Click
+        running: false
+        duration: settings.spinClick_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: settings.spinClick_Easing ?? 3 // 使用缓动函数使动画更平滑
+    }
     //闪烁动画
     SequentialAnimation {
         id: animationGlimmer
@@ -316,6 +322,11 @@ CraftDelegate {
                 animationZoomX_Click.running = true
                 animationZoomY_Click.running = true
             }
+            if(settings.spinOnClick){
+                animationSpin_Click.stop()
+                animationSpin_Click.to += Number(settings.spinClick_Direction??360)
+                animationSpin_Click.running = true
+            }
         }
         onReleased:{
             if(settings.zoomOnClick){
@@ -325,6 +336,11 @@ CraftDelegate {
                 animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 100
                 animationZoomX_Click.running = true
                 animationZoomY_Click.running = true
+            }
+            if(settings.spinOnClick&&!settings.spinOnClickInstantRecuvery){
+                animationSpin_Click.stop()
+                animationSpin_Click.to = 0
+                animationSpin_Click.running = true
             }
         }
         NVG.ActionSource {

@@ -830,6 +830,7 @@ NVG.Window {
                         visible: enableAction.value&&spinOnHover.value
                     }
                 // TODO 3D旋转
+                // TODO 持续旋转
                 //悬停闪烁
                     P.SwitchPreference {
                         id: glimmerOnHover
@@ -919,6 +920,51 @@ NVG.Window {
                         model: easingModel
                         defaultValue: 3
                         visible: enableAction.value&&zoomOnClick.value
+                    }
+                //点击旋转
+                    P.SwitchPreference {
+                        id: spinOnClick
+                        name: "spinOnClick"
+                        label: " - " + qsTr("Spin On Click")
+                        visible: enableAction.value
+                    }
+                    //单次旋转
+                    P.SwitchPreference {
+                        name: "spinOnClickInstantRecuvery"
+                        label: " - - " + qsTr("Instant Recuvery")
+                        visible: enableAction.value&&spinOnClick.value
+                    }
+                    //角度
+                    P.SpinPreference {
+                        name: "spinClick_Direction"
+                        label: " - - " + qsTr("Direction")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&spinOnClick.value
+                        defaultValue: 360
+                        from: -3600
+                        to: 3600
+                        stepSize: 180
+                    }
+                    //时间
+                    P.SpinPreference {
+                        name: "spinClick_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&spinOnClick.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                    //曲线
+                    P.SelectPreference {
+                        name: "spinClick_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: enableAction.value&&spinOnClick.value
                     }
                 }
             }
