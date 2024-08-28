@@ -39,6 +39,18 @@ DataSourceElement {
     readonly property bool enableColorGradient: settings.colorGradient ?? false
     readonly property bool enableColorGradientAnimation: Boolean(settings.enableColorAnimation && (settings.colorGradient ?? false))
     property int idxx: 1
+    // 公用变量
+    property real cycleStart: settings.cycleColor == 1 ? (settings.cycleColorCustomStart ?? 0) / 16 : 0
+    property real cycleEnd: settings.cycleColor == 1 ? (settings.cycleColorCustomEnd ?? 160) / 10 : 16
+    property real cycleSaturation: (settings.cycleSaturation ?? 100) / 100
+    property real cycleValue: (settings.cycleValue ?? 100) / 100
+    property real cycleOpacity: (settings.cycleOpacity ?? 100) / 100
+    // 计算颜色的函数
+    function getColor(index) {
+        var hueIndex = (15 - (((idxx + index) > 15) ? idxx - 15 + index : idxx + index));
+        var hue = (hueIndex * cycleEnd / 255) + (cycleStart / 255);
+        return Qt.hsva(hue, cycleSaturation, cycleValue, cycleOpacity);
+    }
 //发光
     readonly property bool allowGlowTransparentBorder: settings.glowTransparentBorder ?? false
 //遮罩
@@ -344,29 +356,17 @@ DataSourceElement {
                                 name: "antialias"
                                 label: qsTr("Smooth Edges")
                             }
-                            //数据
-                            P.DataPreference {
-                                name: "data"
-                                label: qsTr("Data")
-                                //visible: pMode.value
-                            }
                             //启用数据
                             P.SwitchPreference {
                                 id: pMode
                                 name: "mode"
                                 label: qsTr("Enable Data Source")
                             }
-                            //动作
-                            P.SwitchPreference {
-                                id: enableAction
-                                name: "enableAction"
-                                label: qsTr("Enable Action")
-                            }
-                            P.ActionPreference {
-                                name: "action"
-                                label: " - " + qsTr("Action")
-                                //message: value ? "" : qsTr("Defaults to toggle slideshow")
-                                visible: enableAction.value
+                            //数据
+                            P.DataPreference {
+                                name: "data"
+                                label: qsTr("Data")
+                                //visible: pMode.value
                             }
                         }
                     }
@@ -878,6 +878,7 @@ DataSourceElement {
                                     visible: colorGradient.value
                                 }
                                 //循环时间
+                                // BUG 更改之后无法立刻看到预览
                                 P.SpinPreference {
                                     name: "cycleTime"
                                     label: " - - " + qsTr("Cycle Time")
@@ -1911,17 +1912,22 @@ DataSourceElement {
         //动画颜色
         Gradient {
             id: gradientRainbow
-            GradientStop { position: 0.0; color: Qt.hsva((15 - (((idxx + 10) > 15) ? idxx - 15 + 10:idxx + 10)) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.1; color: Qt.hsva((15 - (((idxx + 9 ) > 15) ? idxx - 15 + 9 :idxx + 9 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.2; color: Qt.hsva((15 - (((idxx + 8 ) > 15) ? idxx - 15 + 8 :idxx + 8 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.3; color: Qt.hsva((15 - (((idxx + 7 ) > 15) ? idxx - 15 + 7 :idxx + 7 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.4; color: Qt.hsva((15 - (((idxx + 6 ) > 15) ? idxx - 15 + 6 :idxx + 6 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.5; color: Qt.hsva((15 - (((idxx + 5 ) > 15) ? idxx - 15 + 5 :idxx + 5 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.6; color: Qt.hsva((15 - (((idxx + 4 ) > 15) ? idxx - 15 + 4 :idxx + 4 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.7; color: Qt.hsva((15 - (((idxx + 3 ) > 15) ? idxx - 15 + 3 :idxx + 3 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.8; color: Qt.hsva((15 - (((idxx + 2 ) > 15) ? idxx - 15 + 2 :idxx + 2 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 0.9; color: Qt.hsva((15 - (((idxx + 1 ) > 15) ? idxx - 15 + 1 :idxx + 1 )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
-            GradientStop { position: 1.0; color: Qt.hsva((15 - (((idxx     ) > 15) ? idxx - 15     :idxx     )) * (settings.cycleColor==1 ? (settings.cycleColorCustomEnd ?? 160)/10 : 16)/255 + (settings.cycleColor==1 ? (settings.cycleColorCustomStart ?? 0)/16 : 0)/255, (settings.cycleSaturation ?? 100)/100, (settings.cycleValue ?? 100)/100, (settings.cycleOpacity ?? 100)/100) }
+            GradientStop { position: 0.000; color: getColor(15) }
+            GradientStop { position: 0.067; color: getColor(14) }
+            GradientStop { position: 0.133; color: getColor(13) }
+            GradientStop { position: 0.200; color: getColor(12) }
+            GradientStop { position: 0.267; color: getColor(11) }
+            GradientStop { position: 0.333; color: getColor(10) }
+            GradientStop { position: 0.400; color: getColor(9) }
+            GradientStop { position: 0.467; color: getColor(8) }
+            GradientStop { position: 0.533; color: getColor(7) }
+            GradientStop { position: 0.600; color: getColor(6) }
+            GradientStop { position: 0.667; color: getColor(5) }
+            GradientStop { position: 0.733; color: getColor(4) }
+            GradientStop { position: 0.800; color: getColor(3) }
+            GradientStop { position: 0.867; color: getColor(2) }
+            GradientStop { position: 0.933; color: getColor(1) }
+            GradientStop { position: 1.000; color: getColor(0) }
         }
         //颜色渐变动画
         //TODO 需要重新开关来启用效果

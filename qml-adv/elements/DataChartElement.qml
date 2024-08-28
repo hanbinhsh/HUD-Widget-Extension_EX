@@ -20,13 +20,19 @@ DataSourceElement {
     implicitHeight: 64
     dataConfiguration: settings.data
 
-    onWidthChanged:  fullRedraw = true
+    onWidthChanged: fullRedraw = true
     onHeightChanged: fullRedraw = true
     onValueStepChanged: fullRedraw = true
 
     onFullRedrawChanged: if (fullRedraw) drawCanvas?.requestPaint()
-
     onDataSourceChanged: resetValues()
+    onMaxValuesChanged:  {
+        const deleteCount = values.length - maxValues;
+        if (deleteCount > 0) {
+            values.lastRemoved = values[deleteCount - 1];
+            values.splice(0, deleteCount);
+        }
+    }
 
     function resetValues() {
         values.lastRemoved = 0;
@@ -38,7 +44,7 @@ DataSourceElement {
     Connections {
         target: thiz.dataSource
 
-        onStatusChanged: resetValues()
+        onConfigurationChanged: resetValues()
 
         onUpdated: {
             if (thiz.dataSource.value.status !== NVG.DataSource.Ready)

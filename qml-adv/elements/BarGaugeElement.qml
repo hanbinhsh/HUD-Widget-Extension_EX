@@ -243,6 +243,7 @@ DataSourceElement {
         }
 
         layer.enabled: barColor.a
+        layer.smooth: true
         layer.effect: ColorOverlayEffect { color: barColor }
     }
 
