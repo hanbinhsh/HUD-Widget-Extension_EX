@@ -277,7 +277,7 @@ T.Widget {
                     animationZoomY.running = true
                 }
                 if(settings.spinOnHover){
-                    animationSpin.running.stop()
+                    animationSpin.stop()
                     animationSpin.to = Number(settings.spinHover_Direction??360)
                     animationSpin.running = true
                 }
@@ -303,7 +303,7 @@ T.Widget {
                     animationZoomY.running = true
                 }
                 if(settings.spinOnHover){
-                    animationSpin.running.stop()
+                    animationSpin.stop()
                     animationSpin.to = 0
                     animationSpin.running = true
                 }
