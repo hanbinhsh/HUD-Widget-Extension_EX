@@ -25,6 +25,7 @@ CraftDelegate {
         id: loader
         anchors.fill: parent
 
+        parent: craftElement.interactionItem?.contentParent ?? craftElement
         opacity: craftElement.settings.opacity ?? 1.0
         sourceComponent: {
             const element = Utils.findElement(craftElement.settings.content);

@@ -22,12 +22,13 @@ NVG.Window {
     property CraftDelegate targetItem
     property QtObject itemSettings
     property var builtinElements: []
+    property var builtinInteractions: []
 
     property bool forceClose
 
     signal accepted
     signal closed
-//编辑界面内顶上的物品编辑文字
+    //编辑界面内顶上的物品编辑文字
     title: qsTr("Item Editor")
     minimumWidth: 760
     minimumHeight: 360
@@ -110,7 +111,7 @@ NVG.Window {
 
     Page {
         anchors.fill: parent
-//编辑界面上面的横条
+        //编辑界面上面的横条
         header: TitleBar {
             text: dialog.title
             standardButtons: Dialog.Save
@@ -186,7 +187,7 @@ NVG.Window {
                 }
             }
         }
-//编辑元素的灯泡图标
+        //编辑元素的灯泡图标
         ToolButton {
             anchors.top: parent.top
             anchors.right: settingsPane.left
@@ -201,13 +202,13 @@ NVG.Window {
             anchors.left: parent.left
             anchors.leftMargin: 12
             height: 46
-//编辑元素的是否显示网格图标
+            //编辑元素的是否显示网格图标
             ToolButton {
                 icon.name: "solid:\uf854"
                 highlighted: elementView.gridGuide
                 onClicked: craftSettings.guide = !elementView.gridGuide
             }
-//编辑元素的网格大小滑动条
+            //编辑元素的网格大小滑动条
             Slider {
                 anchors.verticalCenter: parent.verticalCenter
                 from: 5
@@ -228,13 +229,13 @@ NVG.Window {
                     text: elementView.gridSize + " px"
                 }
             }
-//编辑元素的对齐到网格图标
+            //编辑元素的对齐到网格图标
             ToolButton {
                 icon.name: "regular:\uf076"
                 highlighted: elementView.gridSnap
                 onClicked: craftSettings.snap = !elementView.gridSnap
             }
-//编辑元素的对齐到图片图标
+            //编辑元素的对齐到图片图标
             ToolButton {
                 icon.name: "regular:\uf03e"
                 highlighted: bgSource.visible
@@ -247,21 +248,21 @@ NVG.Window {
             anchors.rightMargin: 16
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 16
-//编辑元素的垃圾桶
+            //编辑元素的垃圾桶
             ToolButton {
                 anchors.bottom: parent.bottom
                 enabled: elementView.currentTarget
                 icon.name: "regular:\uf2ed"
                 onClicked: elementView.model.remove(elementView.currentTarget.index)
             }
-//编辑元素的复制
+            //编辑元素的复制
             ToolButton {
                 anchors.bottom: parent.bottom
                 enabled: elementView.currentTarget
                 icon.name: "regular:\uf24d"
                 onClicked: duplicateElement(currentElement)
             }
-//编辑元素的添加元素
+            //编辑元素的添加元素
             RoundButton {
                 highlighted: true
                 width: 56
@@ -270,7 +271,7 @@ NVG.Window {
                 onClicked: addElementMenu.popup()
             }
         }
-//右下方的添加元素选项菜单
+        //右下方的添加元素选项菜单
         Menu {
             id: addElementMenu
 
@@ -282,7 +283,7 @@ NVG.Window {
                     onClicked: addElement(modelData.source)
                 }
             }
-    //更多元素选项
+            //更多元素选项
             Menu {
                 id: moreElementMenu
 

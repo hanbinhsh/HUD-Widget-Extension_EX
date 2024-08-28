@@ -32,10 +32,14 @@ const elements = [
 ];
 
 const widgetInteractions = [
-    { source: "mouse-track", label: qsTr("Mouse Track"), url: Qt.resolvedUrl("interactions/TrackInteraction.qml") }
+
+{ source: "mouse-track", label: qsTr("Mouse Track"), url: Qt.resolvedUrl("interactions/TrackInteraction.qml") }
+
 ];
 const partInteractions = [
-    { source: "state-transform", label: qsTr("State Transform"), url: Qt.resolvedUrl("interactions/TransformInteraction.qml") }
+
+{ source: "state-transform", label: qsTr("State Transform"), url: Qt.resolvedUrl("interactions/TransformInteraction.qml") }
+
 ];
 
 const interactions = widgetInteractions.concat(partInteractions);

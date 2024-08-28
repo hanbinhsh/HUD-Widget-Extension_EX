@@ -155,17 +155,21 @@ T.Widget {
             settings: modelData
             index: model.index
             visible: widget.editing || targetVisible
+            //挂件默认大小
+            implicitWidth: Math.max(bgSource.implicitWidth, 16)
+            implicitHeight: Math.max(bgSource.implicitHeight, 16)
+
             //编辑可见性界面
-            readonly property bool itemVisible: {
+            hidden: {
                 switch (modelData.visibility) {
-                case "normal": return !widget.NVG.View.hovered;
-                case "hovered": return widget.NVG.View.hovered;
-                case "data": return Boolean(dataOutput.result);
-                case "data&hovered": return Boolean(dataOutput.result)&&widget.NVG.View.hovered;//新增
-                case "data&normal": return Boolean(dataOutput.result)&&!widget.NVG.View.hovered;//新增
+                case "normal": return widget.NVG.View.hovered;
+                case "hovered": return !widget.NVG.View.hovered;
+                case "data": return !Boolean(dataOutput.result);
+                case "data&hovered": return !Boolean(dataOutput.result)&&widget.NVG.View.hovered;//新增
+                case "data&normal": return !Boolean(dataOutput.result)&&!widget.NVG.View.hovered;//新增
                 default: break;
                 }
-                return true;
+                return false;
             }
 
             interactionSource: modelData.interaction ?? defaultItemInteraction
@@ -173,40 +177,8 @@ T.Widget {
 
             hoverEnabled: true//Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
 
-            //挂件默认大小
-            implicitWidth: Math.max(bgSource.implicitWidth, 54)
-            implicitHeight: Math.max(bgSource.implicitHeight, 54)
             //控制挂件是否显示
-            state: itemVisible ? "SHOW" : "HIDE"
-            states: [
-                State{
-                    name: "SHOW"
-                    PropertyChanges{ target: itemContent; opacity: 1.0 }
-                    PropertyChanges{ target: thiz; targetVisible: true }
-                },
-                State{
-                    name: "HIDE"
-                    PropertyChanges{ target: itemContent; opacity: 0.0 }
-                    PropertyChanges{ target: thiz; targetVisible: false }
-                }
-            ]
             // TODO 显示时的动画效果
-            transitions: [
-                Transition {
-                    from: "SHOW"
-                    to: "HIDE"
-                    SequentialAnimation{
-                        NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
-                        PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
-                    }
-                },
-                Transition {
-                    from: "HIDE"
-                    to: "SHOW"
-                    PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
-                    NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
-                }
-            ]
             // TODO 外层挂件的悬浮动作
             //移动动画
             NumberAnimation on animationX {
@@ -367,12 +339,13 @@ T.Widget {
                     animationZoomY_Click.running = true
                 }
             }
+
             NVG.DataSource {
                 id: dataSource
                 configuration: modelData.data
             }
-//加了||"data&hovered"
-            NVG.DataSourceRawOutput {
+            
+            NVG.DataSourceRawOutput {//加了||"data&hovered"
                 id: dataOutput
                 source: modelData.visibility === "data"||"data&hovered"||"data&normal" ? dataSource : null
             }
@@ -424,7 +397,7 @@ T.Widget {
 
                    parent: (modelData.separate ?? widget.defaultSettings.separate) ? thiz : itemContent
                    opacity: parent === itemContent ? 1 : itemContent.opacity
-                    z: -99.5
+                    z: -99.5 // NOTE: element.z < 99 will be placed behind background
                    //挂件的背景颜色
                    color: modelData.color ?? ctx_widget.defaultBackgroundColor
                    configuration: modelData.background ?? ctx_widget.defaultBackground

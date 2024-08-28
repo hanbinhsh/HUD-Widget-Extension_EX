@@ -18,8 +18,8 @@ NVG.Window {
 
     title: widget.title
     visible: true
-    minimumWidth: 340
-    maximumWidth: 340
+    minimumWidth: 360
+    maximumWidth: 360
     minimumHeight: 590
     transientParent: widget.NVG.View.window
 
@@ -159,8 +159,9 @@ NVG.Window {
                     icon.name: "regular:\uf3f2"
 
                     P.ObjectPreferenceGroup {
-                        defaultValue: widget.settings
+                        defaultValue: widget.defaultSettings
                         syncProperties: true
+                        // implicitWidth: 300
                         //部件设置界面的背景设置
                         P.BackgroundPreference {
                             id: pDefaultBackground
@@ -183,6 +184,13 @@ NVG.Window {
                             label: qsTr("Default Background Color")
                             defaultValue: "transparent"
                         }
+                        //部件设置界面的层级设置
+                        P.SelectPreference {
+                            name: "separate"
+                            label: qsTr("Default Background Hierarchy")
+                            model: [ qsTr("Element"), qsTr("Item") ]
+                            defaultValue: 0
+                        }
                         //部件设置界面的字体设置
                         P.FontPreference {
                             name: "font"
@@ -195,34 +203,34 @@ NVG.Window {
                             label: qsTr("Default Text Color")
                             defaultValue: "#BBFFFFFF"
                         }
-                        //鼠标交互
-                        InteractionSelectPreference {
-                            name: "interaction"
-                            label: qsTr("Default Item Interaction")
-                            settingsBase: widget.defaultSettings
-                            builtinInteractions: Utils.partInteractions
-                            catalogPattern: /com.gpbeta.hud-interaction\/item(?:$|\/.+)/
-                        }
+                        //鼠标交互// BUG 用不了
+                        // InteractionSelectPreference {
+                        //     name: "interaction"
+                        //     label: qsTr("Default Item Interaction")
+                        //     settingsBase: widget.defaultSettings
+                        //     builtinInteractions: Utils.partInteractions
+                        //     catalogPattern: /com.gpbeta.hud-interaction\/item(?:$|\/.+)/
+                        // }
                         Loader {
                             visible: sourceComponent
                             sourceComponent: defaultInteractionItem?.preference ?? null
                             PreferenceGroupIndicator {}
                         }
                     }
-                    //鼠标交互
+
                     P.ObjectPreferenceGroup {
                         defaultValue: widget.settings
                         syncProperties: true
-
+                        //矩形区域
                         P.SwitchPreference {
                             name: "solid"
                             label: qsTr("Rectangular Interactive Area")
                             message: qsTr("Mouse interactive with transparent pixels, lower resource usage")
                             defaultValue: false
                         }
-
+                        //旋转
                         TransformRotatePreference { name: "rotate" }
-
+                        //交互
                         InteractionSelectPreference {
                             name: "interaction"
                             settingsBase: widget.settings
@@ -916,11 +924,13 @@ NVG.Window {
             }
         }
     }
+    
     Loader {
         id: editor
         active: false
         sourceComponent: CraftDialog {
             builtinElements: Utils.elements
+            builtinInteractions: Utils.partInteractions
 
             onAccepted: {
                 const oldSettings = dialog.currentItem;

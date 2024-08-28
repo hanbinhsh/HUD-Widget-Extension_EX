@@ -8,7 +8,7 @@ Wireframe {
     property CraftDelegate target
     property var opMouse: Controller.MouseMove
     property int opKey: 0
-//挂件外框的颜色
+    //挂件外框的颜色
     anchors.fill: target
     color: "#FF0000"//2196F3
     anchorsVisible: activeFocus
@@ -84,8 +84,11 @@ Wireframe {
         }
 
         onPositionChanged: {
-            if (drag.active)
-                opMouse.execute(dragHelper, target);
+            if (drag.active) {
+                // note that the drag target may be not aligned to a pixel
+                const pos = { x: Math.round(dragHelper.x), y: Math.round(dragHelper.y) };
+                opMouse.execute(pos, target);
+            }
 
             if (!mouse.buttons) {
                 const type = opMouseFor(this, mouse);
@@ -98,8 +101,8 @@ Wireframe {
             if (target) {
                 controller.forceActiveFocus();
 
-                dragHelper.x = target.x;
-                dragHelper.y = target.y;
+                dragHelper.x = Math.round(target.x);
+                dragHelper.y = Math.round(target.y);
                 opMouse.prepare(craftView, dragHelper, target);
             }
         }

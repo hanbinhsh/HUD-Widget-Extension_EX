@@ -8,5 +8,6 @@ NVG.BackgroundSource {
    property color color
 
    layer.enabled: color.a
+   layer.smooth: true
    layer.effect: ColorOverlayEffect { color: thiz.color }
 }
