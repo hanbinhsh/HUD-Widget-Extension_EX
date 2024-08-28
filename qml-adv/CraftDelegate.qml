@@ -233,7 +233,13 @@ MouseArea {
                 easing.type: moveCycle_Easing
             }
         }
-        onStopped: moveTimer.start()  // 动画完成后重新启动定时器
+        onStopped:{
+            if(!(moveCycleEnabled&&widget.NVG.View.exposed)){
+                moveTimer.stop()
+                return
+            }
+            moveTimer.start()  // 动画完成后重新启动定时器
+        } 
     }
     // 延迟启动定时器
     Timer {
