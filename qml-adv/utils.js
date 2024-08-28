@@ -31,8 +31,23 @@ const elements = [
 
 ];
 
+const widgetInteractions = [
+    { source: "mouse-track", label: qsTr("Mouse Track"), url: Qt.resolvedUrl("interactions/TrackInteraction.qml") }
+];
+const partInteractions = [
+    { source: "state-transform", label: qsTr("State Transform"), url: Qt.resolvedUrl("interactions/TransformInteraction.qml") }
+];
+
+const interactions = widgetInteractions.concat(partInteractions);
+
 function findElement(source) {
     return elements.find(element => element.source === source);
+}
+
+function resolveInteraction(source) {
+    if (!source || source === "none")
+        return null;
+    return interactions.find(o => o.source === source)?.url ?? Qt.resolvedUrl(source);
 }
 
 function randomName() {
@@ -57,4 +72,13 @@ function makeObject(parent, enabled, comp, init, key) {
     }
 
     return null;
+}
+
+function toAxisAngle(pitch, yaw, roll) {
+    const angle = Math.sqrt(pitch * pitch + yaw * yaw + roll * roll);
+    return { x: pitch / angle, y: yaw / angle, z: roll / angle, w: angle };
+}
+
+function toPitchYawRoll(x, y, z, w) {
+    return { pitch: x * w, yaw: y * w, roll: z * w }
 }

@@ -13,6 +13,9 @@ NVG.Window {
     Style.theme: Style.Dark
     readonly property var currentItem: itemView.currentTarget?.settings ?? null
 
+    readonly property Item defaultInteractionItem:
+        widget.makeInteractionItem(defaultIteractionParent, widget.defaultSettings, "interactionItem_NB")
+
     title: widget.title
     visible: true
     minimumWidth: 340
@@ -49,6 +52,13 @@ NVG.Window {
     function requestDeleteItem() {
         if (itemView.count > 1)
             removeDialog.open();
+    }
+
+    Item {
+        id: defaultIteractionParent
+        width: 1
+        height: 1
+        visible: false
     }
 
     Dialog {
@@ -184,6 +194,46 @@ NVG.Window {
                             name: "foreground"
                             label: qsTr("Default Text Color")
                             defaultValue: "#BBFFFFFF"
+                        }
+                        //鼠标交互
+                        InteractionSelectPreference {
+                            name: "interaction"
+                            label: qsTr("Default Item Interaction")
+                            settingsBase: widget.defaultSettings
+                            builtinInteractions: Utils.partInteractions
+                            catalogPattern: /com.gpbeta.hud-interaction\/item(?:$|\/.+)/
+                        }
+                        Loader {
+                            visible: sourceComponent
+                            sourceComponent: defaultInteractionItem?.preference ?? null
+                            PreferenceGroupIndicator {}
+                        }
+                    }
+                    //鼠标交互
+                    P.ObjectPreferenceGroup {
+                        defaultValue: widget.settings
+                        syncProperties: true
+
+                        P.SwitchPreference {
+                            name: "solid"
+                            label: qsTr("Rectangular Interactive Area")
+                            message: qsTr("Mouse interactive with transparent pixels, lower resource usage")
+                            defaultValue: false
+                        }
+
+                        TransformRotatePreference { name: "rotate" }
+
+                        InteractionSelectPreference {
+                            name: "interaction"
+                            settingsBase: widget.settings
+                            builtinInteractions: Utils.widgetInteractions
+                            catalogPattern: /com.gpbeta.hud-interaction\/widget(?:$|\/.+)/
+                        }
+
+                        Loader {
+                            visible: sourceComponent
+                            sourceComponent: widget.interactionItem?.preference ?? null
+                            PreferenceGroupIndicator {}
                         }
                     }
 

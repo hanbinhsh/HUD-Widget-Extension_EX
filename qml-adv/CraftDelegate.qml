@@ -8,8 +8,17 @@ MouseArea {
     id: delegate
 
     property Item view // Note: CraftView type recusive
-    property QtObject settings
+    property NVG.SettingsMap settings
     property int index
+
+    property bool hidden
+
+    property string interactionState: hidden ? "HIDDEN" :
+                                      pressed ? "PRESSED" :
+                                      containsMouse ? "HOVERED" : "NORMAL"
+    property string interactionSource
+    property NVG.SettingsMap interactionSettingsBase
+
     //增加
     //悬停移动动画
     property real animationX : 0

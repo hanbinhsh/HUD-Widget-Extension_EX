@@ -10,25 +10,74 @@ T.Widget {
     id: widget
 
     readonly property QtObject craftSettings: NVG.Settings.makeMap(settings, "craft")
+    readonly property NVG.SettingsMap defaultSettings: NVG.Settings.makeMap(settings, "defaults")
 
     readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
+    readonly property string defaultItemInteraction: defaultSettings.interaction ?? ""
 
-//挂件框上的名称&&编辑界面蓝条上的字
+    readonly property Item interactionItem: makeInteractionItem(widget, settings, "interactionItem_NB")
+
+    //挂件框上的名称&&编辑界面蓝条上的字
     title: qsTr("HUD Edit")
-    solid: false
+    solid: settings.solid ?? false
     resizable: true
     editing: dialog.item?.visible ?? false
 
     implicitWidth: 64
     implicitHeight: 64
 
-//菜单中的编辑模式
+    //菜单中的编辑模式
     menu: Menu {
         Action {
             text: qsTr("Editing Mode...")
 
             onTriggered: dialog.active = true
         }
+    }
+
+    // Component.onCompleted: { // upgrade settings
+    //     if (settings.font !== undefined) {
+    //         defaultSettings.font = settings.font;
+    //         settings.font = undefined;
+    //     }
+    //     if (settings.background !== undefined) {
+    //         defaultSettings.background = settings.background;
+    //         settings.background = undefined;
+    //     }
+    //     if (settings.foreground !== undefined) {
+    //         defaultSettings.foreground = settings.foreground;
+    //         settings.foreground = undefined;
+    //     }
+    //     if (settings.base !== undefined) {
+    //         defaultSettings.base = settings.base;
+    //         settings.base = undefined;
+    //     }
+    // }
+
+    function makeInteractionItem(parent, settings, key) {
+        let c = null;
+        let o = null;
+        const url = Utils.resolveInteraction(settings.interaction);
+        if (url) {
+            c = Qt.createComponent(url);
+            if (c.status !== Component.Ready) {
+                if (c.status === Component.Error)
+                    console.warn(c.errorString());
+                c = null;
+            }
+        }
+        if (parent[key]) {
+            parent[key].destroy();
+            delete parent[key];
+        }
+        if (c) {
+            o = c.createObject(parent, {
+                settings: NVG.Settings.makeMap(settings, "reaction")
+            });
+            Object.defineProperty(parent, key, { value: o, configurable: true });
+            c.destroy();
+        }
+        return o;
     }
 
     QtObject { // Public API
@@ -58,99 +107,14 @@ T.Widget {
         }
     }
 
-    Component {
+    Component { // any items with settings property
         id: cScaleTransform
-        Scale {
-            property CraftDelegate item
-
-            readonly property var config: item.settings.scale ?? {}
-
-            origin {
-                x: {
-                    switch (config.origin) {
-                    case Item.Left:
-                    case Item.TopLeft:
-                    case Item.BottomLeft:
-                        return config.originX ?? 0;
-                    case Item.Right:
-                    case Item.TopRight:
-                    case Item.BottomRight:
-                        return item.width + (config.originX ?? 0);
-                    case Item.Center:
-                    default: break;
-                    }
-                    return item.width / 2 + (config.originX ?? 0);
-                }
-                y: {
-                    switch (config.origin) {
-                    case Item.Top:
-                    case Item.TopLeft:
-                    case Item.TopRight:
-                        return config.originY ?? 0;
-                    case Item.Bottom:
-                    case Item.BottomLeft:
-                    case Item.BottomRight:
-                        return item.height + (config.originY ?? 0);
-                    case Item.Center:
-                    default: break;
-                    }
-                    return item.height / 2 + (config.originY ?? 0);
-                }
-            }
-
-            xScale: config.xScale ?? 1
-            yScale: config.yScale ?? 1
-        }
+        ConfigurableScale { config: item.settings.scale ?? {} }
     }
 
-    Component {
+    Component { // any items with settings property
         id: cRotateTransform
-        Rotation {
-            property CraftDelegate item
-
-            readonly property var config: item.settings.rotate ?? {}
-
-            angle: config.angle ?? 0
-
-            axis {
-                x: config.axisX ?? 0
-                y: config.axisY ?? 0
-                z: config.axisZ ?? 1
-            }
-
-            origin {
-                x: {
-                    switch (config.origin) {
-                    case Item.Left:
-                    case Item.TopLeft:
-                    case Item.BottomLeft:
-                        return config.originX ?? 0;
-                    case Item.Right:
-                    case Item.TopRight:
-                    case Item.BottomRight:
-                        return item.width + (config.originX ?? 0);
-                    case Item.Center:
-                    default: break;
-                    }
-                    return item.width / 2 + (config.originX ?? 0);
-                }
-                y: {
-                    switch (config.origin) {
-                    case Item.Top:
-                    case Item.TopLeft:
-                    case Item.TopRight:
-                        return config.originY ?? 0;
-                    case Item.Bottom:
-                    case Item.BottomLeft:
-                    case Item.BottomRight:
-                        return item.height + (config.originY ?? 0);
-                    case Item.Center:
-                    default: break;
-                    }
-                    return item.height / 2 + (config.originY ?? 0);
-                }
-            }
-        }
+        ConfigurableRotation { config: item.settings.rotate ?? {} }
     }
 
     MouseArea {
@@ -165,6 +129,17 @@ T.Widget {
         id: itemView
         anchors.fill: parent
 
+        // for transform components
+        readonly property NVG.SettingsMap settings: widget.settings
+        readonly property bool rotateEnabled: Boolean(widget.settings.rotate)
+
+        transform: {
+            const initProp = { item: itemView };
+            const rotate = Utils.makeObject(this, rotateEnabled, cRotateTransform, initProp, "rotateTransform_NB");
+            return [rotate].concat(widget.interactionItem?.extraTransform);
+        }
+
+        parent: widget.interactionItem?.contentParent ?? widget
         interactive: widget.editing
         gridSize: widget.craftSettings.grid ?? 10
         gridSnap: widget.craftSettings.snap ?? true
@@ -173,6 +148,13 @@ T.Widget {
             id: thiz
 
             readonly property NVG.DataSource dataSource: dataSource
+
+            property bool targetVisible: true
+
+            view: itemView
+            settings: modelData
+            index: model.index
+            visible: widget.editing || targetVisible
             //编辑可见性界面
             readonly property bool itemVisible: {
                 switch (modelData.visibility) {
@@ -186,18 +168,15 @@ T.Widget {
                 return true;
             }
 
-            property bool targetVisible: true
+            interactionSource: modelData.interaction ?? defaultItemInteraction
+            interactionSettingsBase: modelData.interaction ? modelData : widget.defaultSettings
 
             hoverEnabled: true//Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
 
-            view: itemView
-            settings: modelData
-            index: model.index
-            visible: widget.editing || targetVisible
-//挂件默认大小
+            //挂件默认大小
             implicitWidth: Math.max(bgSource.implicitWidth, 54)
             implicitHeight: Math.max(bgSource.implicitHeight, 54)
-//控制挂件是否显示
+            //控制挂件是否显示
             state: itemVisible ? "SHOW" : "HIDE"
             states: [
                 State{
@@ -211,7 +190,7 @@ T.Widget {
                     PropertyChanges{ target: thiz; targetVisible: false }
                 }
             ]
-// TODO 显示时的动画效果
+            // TODO 显示时的动画效果
             transitions: [
                 Transition {
                     from: "SHOW"
@@ -407,11 +386,44 @@ T.Widget {
             Item {
                 id: itemContent
                 anchors.fill: parent
+                parent: thiz.interactionItem?.contentParent ?? thiz
+
+                state: thiz.hidden ? "HIDE" : "SHOW"
+                states: [
+                    State {
+                        name: "SHOW"
+                        PropertyChanges{ target: itemContent; opacity: 1.0 }
+                        PropertyChanges{ target: thiz; targetVisible: true }
+                    },
+                    State {
+                        name: "HIDE"
+                        PropertyChanges{ target: itemContent; opacity: 0.0 }
+                        PropertyChanges{ target: thiz; targetVisible: false }
+                    }
+                ]
+                transitions: [
+                    Transition {
+                        from: "SHOW"
+                        to: "HIDE"
+                        SequentialAnimation{
+                            NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
+                            PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
+                        }
+                    },
+                    Transition {
+                        from: "HIDE"
+                        to: "SHOW"
+                        PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
+                        NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
+                    }
+                ]
 
                 ColorBackgroundSource {
                    id: bgSource
                    anchors.fill: parent
 
+                   parent: (modelData.separate ?? widget.defaultSettings.separate) ? thiz : itemContent
+                   opacity: parent === itemContent ? 1 : itemContent.opacity
                     z: -99.5
                    //挂件的背景颜色
                    color: modelData.color ?? ctx_widget.defaultBackgroundColor
@@ -432,6 +444,9 @@ T.Widget {
                         itemSettings: thiz.settings
                         itemData: dataSource
                         itemBackground: bgSource
+                        interactionState: thiz.interactionState // override
+                        interactionSource: modelData.interaction ?? ""
+                        interactionSettingsBase: modelData
                         settings: modelData
                         index: model.index
                     }
