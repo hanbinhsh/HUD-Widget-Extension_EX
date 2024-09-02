@@ -332,8 +332,8 @@ CraftDelegate {
             if(settings.zoomOnClick){
                 animationZoomX_Click.stop()
                 animationZoomY_Click.stop()
-                animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 100
-                animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 100
+                animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 0
+                animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 0
                 animationZoomX_Click.running = true
                 animationZoomY_Click.running = true
             }

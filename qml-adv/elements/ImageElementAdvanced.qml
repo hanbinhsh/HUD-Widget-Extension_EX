@@ -2336,7 +2336,6 @@ DataSourceElement {
         galleryfreshHelper = !galleryfreshHelper;
     }
 
-
     onImageUrlsChanged: {
         if (aniTransition.running) {
             shaderEffect.progress = 1.0;
