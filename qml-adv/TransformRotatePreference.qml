@@ -69,7 +69,7 @@ PreferenceGroup {
         defaultValue: 0
         from: -180
         to: 180
-        stepSize: 5
+        stepSize: 1
         live: true
         visible: pEnabled.value && useSliders
     }
@@ -81,7 +81,7 @@ PreferenceGroup {
         defaultValue: 0
         from: -180
         to: 180
-        stepSize: 5
+        stepSize: 1
         live: true
         visible: pEnabled.value && useSliders
     }
@@ -93,7 +93,7 @@ PreferenceGroup {
         defaultValue: 0
         from: -180
         to: 180
-        stepSize: 5
+        stepSize: 1
         live: true
         visible: pEnabled.value && useSliders
     }
