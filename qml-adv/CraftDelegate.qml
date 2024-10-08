@@ -121,7 +121,7 @@ MouseArea {
     //挂件高度
     z: interactionItem?.extraZ ?? settings.z ?? 0
     //挂件旋转
-    rotation: settings.rotation ?? 0+(animationSpin??0)
+    rotation: (settings.rotation ?? 0)+(animationSpin??0)
     //透明度
     opacity: settings.opacity ?? 1
     //大小
