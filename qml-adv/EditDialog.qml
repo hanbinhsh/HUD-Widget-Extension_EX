@@ -966,6 +966,63 @@ NVG.Window {
                         defaultValue: 3
                         visible: enableAction.value&&spinOnClick.value
                     }
+                //点击移动
+                    P.SwitchPreference {
+                        id: moveOnClick
+                        name: "moveOnClick"
+                        label: " - " + qsTr("Move On Click")
+                        visible: enableAction.value
+                    }
+                    //点击第二次后移回
+                    P.SwitchPreference {
+                        name: "moveBackAfterClick"
+                        label: " - - " + qsTr("Move Back After Click")
+                        visible: enableAction.value&&moveOnClick.value
+                    }
+                    //角度
+                    P.SpinPreference {
+                        name: "moveClick_Direction"
+                        label: " - - " + qsTr("Direction")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&moveOnClick.value
+                        defaultValue: 0
+                        from: -360
+                        to: 360
+                        stepSize: 10
+                    }
+                    //距离
+                    P.SpinPreference {
+                        name: "moveClick_Distance"
+                        label: " - - " + qsTr("Distance")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&moveOnClick.value
+                        defaultValue: 10
+                        from: -1000
+                        to: 1000
+                        stepSize: 10
+                    }
+                    //时间
+                    P.SpinPreference {
+                        name: "moveClick_Duration"
+                        label: " - - " + qsTr("Duration")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        visible: enableAction.value&&moveOnClick.value
+                        defaultValue: 300
+                        from: 0
+                        to: 10000
+                        stepSize: 10
+                    }
+                    //曲线
+                    P.SelectPreference {
+                        name: "moveClick_Easing"
+                        label: " - - " + qsTr("Easing")
+                        model: easingModel
+                        defaultValue: 3
+                        visible: enableAction.value&&moveOnClick.value
+                    }
             //周期动画
                     P.SwitchPreference {
                         id: cycleAnimation

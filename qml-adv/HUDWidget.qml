@@ -193,6 +193,35 @@ T.Widget {
                 duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
                 easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
+            //点击移动
+            property bool isAnimationRunning: false // 标志变量，控制动画状态
+            NumberAnimation on clickAnimationX {
+                id: moveClickAnimationX
+                running: false
+                duration: settings.moveClick_Duration ?? 300// 动画持续时间，单位为毫秒
+                easing.type: settings.moveClick_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            NumberAnimation on clickAnimationY {
+                id: moveClickAnimationY
+                running: false
+                duration: settings.moveClick_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: settings.moveClick_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            Connections {
+                target: moveClickAnimationX
+                onStopped: {
+                    if(!settings.moveBackAfterClick && isAnimationRunning) {
+                        isAnimationRunning = false // 动画结束，重置标志
+                        moveClickAnimationX.stop()
+                        moveClickAnimationY.stop()
+                        moveClickAnimationX.to = 0
+                        moveClickAnimationY.to = 0
+                        moveClickAnimationX.running = true
+                        moveClickAnimationY.running = true
+                    }
+                    isAnimationRunning = false // 动画结束，重置标志
+                }
+            }
             //缩放动画
             NumberAnimation on animationZoomX {
                 id: animationZoomX
@@ -322,6 +351,28 @@ T.Widget {
                 if (!widget.editing) {// TODO 2级界面加入此行
                     if (actionSource.configuration)
                         actionSource.trigger(thiz);
+                }
+                if(settings.moveOnClick && !isAnimationRunning){
+                    isAnimationRunning = true // 标记动画已经开始
+                    if(settings.moveBackAfterClick){
+                        clickMoveStatus = !clickMoveStatus
+                    }
+                    moveClickAnimationX.stop()
+                    moveClickAnimationY.stop()
+                    moveClickAnimationX.to =  Number(settings.moveClick_Distance??10) * Math.cos(Number(settings.moveClick_Direction??0) * Math.PI / 180)
+                    moveClickAnimationY.to = -Number(settings.moveClick_Distance??10) * Math.sin(Number(settings.moveClick_Direction??0) * Math.PI / 180)
+                    moveClickAnimationX.running = true
+                    moveClickAnimationY.running = true
+                    if(settings.moveBackAfterClick){
+                        if(!clickMoveStatus){
+                            moveClickAnimationX.stop()
+                            moveClickAnimationY.stop()
+                            moveClickAnimationX.to = 0
+                            moveClickAnimationY.to = 0
+                            moveClickAnimationX.running = true
+                            moveClickAnimationY.running = true
+                        }
+                    }
                 }
             }
             onPressed: {

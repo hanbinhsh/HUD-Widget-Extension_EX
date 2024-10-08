@@ -1216,6 +1216,144 @@ NVG.Window {
                                                     defaultValue: 3
                                                     visible: enableAction.value&&spinOnClick.value
                                                 }
+                                            //点击移动
+                                                P.SwitchPreference {
+                                                    id: moveOnClick
+                                                    name: "moveOnClick"
+                                                    label: " - " + qsTr("Move On Click")
+                                                    visible: enableAction.value
+                                                }
+                                                //点击第二次后移回
+                                                P.SwitchPreference {
+                                                    name: "moveBackAfterClick"
+                                                    label: " - - " + qsTr("Move Back After Click")
+                                                    visible: enableAction.value&&moveOnClick.value
+                                                }
+                                                //角度
+                                                P.SpinPreference {
+                                                    name: "moveClick_Direction"
+                                                    label: " - - " + qsTr("Direction")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&moveOnClick.value
+                                                    defaultValue: 0
+                                                    from: -360
+                                                    to: 360
+                                                    stepSize: 10
+                                                }
+                                                //距离
+                                                P.SpinPreference {
+                                                    name: "moveClick_Distance"
+                                                    label: " - - " + qsTr("Distance")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&moveOnClick.value
+                                                    defaultValue: 10
+                                                    from: -1000
+                                                    to: 1000
+                                                    stepSize: 10
+                                                }
+                                                //时间
+                                                P.SpinPreference {
+                                                    name: "moveClick_Duration"
+                                                    label: " - - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: enableAction.value&&moveOnClick.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "moveClick_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: enableAction.value&&moveOnClick.value
+                                                }
+                                        //周期动画
+                                                P.SwitchPreference {
+                                                    id: cycleAnimation
+                                                    name: "cycleAnimation"
+                                                    label: qsTr("Cycle Animation")
+                                                }
+                                            //周期平移
+                                                P.SwitchPreference {
+                                                    id: cycleMove
+                                                    name: "cycleMove"
+                                                    label: " - " + qsTr("Cycle Moving")
+                                                    visible:cycleAnimation.value
+                                                }
+                                                //距离
+                                                P.SpinPreference {
+                                                    name: "moveCycle_Distance"
+                                                    label: " - - " + qsTr("Distance")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: cycleAnimation.value&&cycleMove.value
+                                                    defaultValue: 10
+                                                    from: -1000
+                                                    to: 1000
+                                                    stepSize: 10
+                                                }
+                                                //方向
+                                                P.SpinPreference {
+                                                    name: "moveCycle_Direction"
+                                                    label: " - - " + qsTr("Direction")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: cycleAnimation.value&&cycleMove.value
+                                                    defaultValue: 0
+                                                    from: -180
+                                                    to: 180
+                                                    stepSize: 5
+                                                }
+                                                //持续时间
+                                                P.SpinPreference {
+                                                    name: "moveCycle_Duration"
+                                                    label: " - - " + qsTr("Duration")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: cycleAnimation.value&&cycleMove.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                //延时
+                                                P.SpinPreference {
+                                                    name: "moveCycle_Delay"
+                                                    label: " - - " + qsTr("Delay")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: cycleAnimation.value&&cycleMove.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                //等待时间
+                                                P.SpinPreference {
+                                                    name: "moveCycle_Waiting"
+                                                    label: " - - " + qsTr("Waiting")
+                                                    editable: true
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                    visible: cycleAnimation.value&&cycleMove.value
+                                                    defaultValue: 300
+                                                    from: 0
+                                                    to: 10000
+                                                    stepSize: 10
+                                                }
+                                                //曲线
+                                                P.SelectPreference {
+                                                    name: "moveCycle_Easing"
+                                                    label: " - - " + qsTr("Easing")
+                                                    model: easingModel
+                                                    defaultValue: 3
+                                                    visible: cycleAnimation.value&&cycleMove.value
+                                                }
                                             }
                                         }
                                     }

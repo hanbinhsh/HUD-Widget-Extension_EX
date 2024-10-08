@@ -68,6 +68,10 @@ MouseArea {
     readonly property real rotationStep: (settings.rotationSpeed ?? 5) * 6 / (settings.rotationFPS ?? 20)
     readonly property bool rotationEnabled: Boolean(delegate.settings.rotationDisplay)
     readonly property bool rotationAnimationEnabled: Boolean(delegate.settings.enableAdvancedRotationAnimation)
+    //点击移动动画
+    property real clickAnimationX : 0
+    property real clickAnimationY : 0
+    property bool clickMoveStatus : false
     //动画变量
     readonly property real rotationAnimationStep: (settings.advancedRotationSpeed ?? 5) * 6 / (settings.advancedRotationFPS ?? 20)
     readonly property bool opacityAnimationEnabled: Boolean(settings.enableOpacityAnimation)
@@ -159,8 +163,8 @@ MouseArea {
             yScale: settings.scaleSetting ? (settings.scaleY ?? 1000) / 1000 + (animationZoomY ?? 0) / 1000 : 1 + (animationZoomY ?? 0) / 1000
         },
         Translate {
-            x:( settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0+(animationX ?? 0) : 0 + (animationX ?? 0) ) + cycleMoveX
-            y:( settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0+(animationY ?? 0) : 0 + (animationY ?? 0) ) + cycleMoveY
+            x:( settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0 + (animationX ?? 0) : 0 + (animationX ?? 0) ) + cycleMoveX + clickAnimationX
+            y:( settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0 + (animationY ?? 0) : 0 + (animationY ?? 0) ) + cycleMoveY + clickAnimationY
         }
     ]
     //旋转动画
