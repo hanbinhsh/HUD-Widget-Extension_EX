@@ -483,7 +483,7 @@ T.Widget {
                         itemSettings: thiz.settings
                         itemData: dataSource
                         itemBackground: bgSource
-                        interactionState: thiz.interactionState // override
+                        interactionState: thiz.interactionState
                         interactionSource: modelData.interaction ?? ""
                         interactionSettingsBase: modelData
                         settings: modelData
