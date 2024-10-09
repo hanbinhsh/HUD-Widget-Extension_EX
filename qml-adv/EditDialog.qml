@@ -20,7 +20,7 @@ NVG.Window {
     visible: true
     minimumWidth: 360
     maximumWidth: 360
-    minimumHeight: 590
+    minimumHeight: 700
     transientParent: widget.NVG.View.window
 
     onClosing: titleBar.forceActiveFocus()
@@ -289,820 +289,902 @@ NVG.Window {
                         name: "label"
                         label: qsTr("Name")
                         display: P.TextFieldPreference.ExpandControl
-                        rightPadding: 84
-                        //名称旁边的下拉菜单
-                        ToolButton {
-                            id: expandButton
-                            anchors.top: parent.top
-                            anchors.topMargin: 4
-                            anchors.right: parent.right
-                            icon.name: highlighted ? "regular:\uf102" : "regular:\uf103"
-                            highlighted: false
-                            onClicked: highlighted = !highlighted
+                        rightPadding: 15
+                    }
+                }
+                P.ObjectPreferenceGroup {
+                    Layout.fillWidth: true
+                    width: parent.width
+                    //特效设置
+                    label: qsTr("Effect Settings")
+                    enabled: currentItem
+                    syncProperties: true
+                    Page {
+                        id: elemPage
+                        width: parent.width
+                        implicitHeight: switch(elemBar.currentIndex)
+                        {
+                                case 0: return normal.height + 56;
+                                case 1: return layoutTransform.height + 56;
+                                case 2: return layoutActionSetting.height + 56;
+                                return 0;
                         }
-                    }
-                    //透明度设置
-                    //透明度设置开关
-                    P.SwitchPreference {
-                        id: opacitySettings
-                        name: "opacitySettings"
-                        label: qsTr("Opacity Setting")
-                        visible: expandButton.highlighted
-                    }
-                    //透明度
-                    P.SliderPreference {
-                        name: "opacity"
-                        label: " - " + qsTr("Opacity")
-                        displayValue: Math.round(value * 100) + " %"
-                        defaultValue: 1
-                        from: 0
-                        to: 1
-                        stepSize: 0.01
-                        live: true
-                        visible: expandButton.highlighted&&opacitySettings.value&&!enableOpacityAnimation.value
-                    }
-                    //透明度动画
-                    P.SwitchPreference {
-                        id: enableOpacityAnimation
-                        name: "enableOpacityAnimation"
-                        label: " - " + qsTr("Opacity Animation")
-                        visible: expandButton.highlighted&&opacitySettings.value
-                    }
-                    //速度
-                    P.SpinPreference {
-                        name: "opacityAnimationSpeed"
-                        label: " - - " + qsTr("Speed")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableOpacityAnimation.value&&opacitySettings.value&&expandButton.highlighted
-                        defaultValue: 500
-                        from: 0
-                        to: 10000
-                        stepSize: 100
-                    }
-                    //旋转设置
-                    //旋转设置开关
-                    P.SwitchPreference {
-                        id: rotationSettings
-                        name: "rotationSettings"
-                        label: qsTr("Rotation Setting")
-                        visible: expandButton.highlighted
-                    }
-                    //旋转
-                    P.SliderPreference {
-                        name: "rotation"
-                        label: " - " + qsTr("Rotation")
-                        displayValue: value + " °"
-                        defaultValue: 0
-                        from: -360
-                        to: 360
-                        stepSize: 1
-                        live: true
-                        visible: expandButton.highlighted&&!rotationDisplay.value&&rotationSettings.value
-                    }
-                    //旋转动画开关
-                    P.SwitchPreference {
-                        id: rotationDisplay
-                        name: "rotationDisplay"
-                        label: " - " + qsTr("Auto Rotation")
-                        visible: expandButton.highlighted&&rotationSettings.value
-                    }
-                    //转速
-                    P.SliderPreference {
-                        id:rotationSpeed
-                        name: "rotationSpeed"
-                        label: " - " + qsTr("Spin Speed")
-                        defaultValue: 5
-                        from: -500
-                        to: 500
-                        stepSize: 1
-                        displayValue: value + " RPM"
-                        live: true
-                        visible: expandButton.highlighted&&rotationDisplay.value&&rotationSettings.value
-                    }
-                    //旋转FPS
-                    P.SliderPreference {
-                        id:rotationFPS
-                        name: "rotationFPS"
-                        label: " - " + qsTr("FPS")
-                        defaultValue: 20
-                        from: 1
-                        to: 240
-                        stepSize: 1
-                        displayValue: value + " FPS"
-                        live: true
-                        visible: expandButton.highlighted&&rotationDisplay.value&&rotationSettings.value
-                    }
-                    //高级旋转
-                    P.SwitchPreference {
-                        id: enableAdvancedRotation
-                        name: "enableAdvancedRotation"
-                        label: " - " + qsTr("Advanced Rotation")
-                        visible: rotationSettings.value&&expandButton.highlighted
-                    }
-                    //旋转原点X
-                    P.SpinPreference {
-                        name: "advancedRotationOriginX"
-                        label: " - - " + qsTr("Origin X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //旋转原点Y
-                    P.SpinPreference {
-                        name: "advancedRotationOriginY"
-                        label: " - - " + qsTr("Origin Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //axis x,y,z
-                    P.SpinPreference {
-                        name: "advancedRotationAxisX"
-                        label: " - - " + qsTr("Axis X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    P.SpinPreference {
-                        name: "advancedRotationAxisY"
-                        label: " - - " + qsTr("Axis Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    P.SpinPreference {
-                        name: "advancedRotationAxisZ"
-                        label: " - - " + qsTr("Axis Z")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //角度
-                    P.SpinPreference {
-                        name: "advancedRotationAngle"
-                        label: " - - " + qsTr("Angle")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotation.value&&!enableAdvancedRotationAnimation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -360
-                        to: 360
-                        stepSize: 10
-                    }
-                    //角度变化动画
-                    P.SwitchPreference {
-                        id: enableAdvancedRotationAnimation
-                        name: "enableAdvancedRotationAnimation"
-                        label: " - - " + qsTr("Rotation Animation")
-                        visible: enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                    }
-                    //速度
-                    P.SpinPreference {
-                        name: "advancedRotationSpeed"
-                        label: " - - - " + qsTr("Speed")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 20
-                        from: -100
-                        to: 100
-                        stepSize: 5
-                    }
-                    //FPS
-                    P.SpinPreference {
-                        name: "advancedRotationFPS"
-                        label: " - - - " + qsTr("FPS")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value&&expandButton.highlighted
-                        defaultValue: 20
-                        from: 1
-                        to: 240
-                        stepSize: 10
-                    }
-                    //缩放
-                    P.SwitchPreference {
-                        id: scaleSetting
-                        name: "scaleSetting"
-                        label: qsTr("Scale")
-                        visible:expandButton.highlighted
-                    }
-                    //缩放原点X
-                    P.SpinPreference {
-                        name: "scaleOriginX"
-                        label: " - " + qsTr("Origin X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: scaleSetting.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //缩放原点Y
-                    P.SpinPreference {
-                        name: "scaleOriginY"
-                        label: " - " + qsTr("Origin Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: scaleSetting.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //x比例 /1000
-                    P.SpinPreference {
-                        name: "scaleX"
-                        label: " - " + qsTr("X Scale")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: scaleSetting.value&&expandButton.highlighted
-                        defaultValue: 1000
-                        from: -100000
-                        to: 100000
-                        stepSize: 50
-                    }
-                    //y比例 /1000
-                    P.SpinPreference {
-                        name: "scaleY"
-                        label: " - " + qsTr("Y Scale")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: scaleSetting.value&&expandButton.highlighted
-                        defaultValue: 1000
-                        from: -100000
-                        to: 100000
-                        stepSize: 50
-                    }
-                    //平移
-                    P.SwitchPreference {
-                        id: translateSetting
-                        name: "translateSetting"
-                        label: qsTr("Translate")
-                        visible:expandButton.highlighted
-                    }
-                    //X偏移量
-                    P.SpinPreference {
-                        name: "translateX"
-                        label: " - " + qsTr("X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: translateSetting.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //Y偏移量
-                    P.SpinPreference {
-                        name: "translateY"
-                        label: " - " + qsTr("Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: translateSetting.value&&expandButton.highlighted
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //部件编辑界面的可见性设置
-                    P.SelectPreference {
-                        name: "visibility"
-                        label: qsTr("Visibility")
-                        model:[ qsTr("Always"), qsTr("Normal"), qsTr("Hovered"), qsTr("Data"), qsTr("Data&Hovered"), qsTr("Data&Normal")]
-                        defaultValue: 0
-                        //当编辑名称右边菜单下拉时显示
-                        visible: expandButton.highlighted
-                        load: function (newValue) {
-                            if (newValue === undefined) {
-                                value = defaultValue;
-                                return;
-                            }
-                            switch (newValue) {
-                            case "normal": value = 1; break;
-                            case "hovered": value = 2; break;
-                            case "data": value = 3; break;
-                            case "data&hovered": value = 4; break;
-                            case "data&normal": value = 5; break;
-                            default: value = -1; break;
+                        header:TabBar {
+                            id: elemBar
+                            width: parent.width
+                            clip:true//超出父项直接裁剪
+                            Repeater {
+                                model: [qsTr("Normal"),qsTr("Transform"),qsTr("Action")]
+                                TabButton {
+                                    text: modelData
+                                    width: Math.max(108, elemBar.width / 3)
+                                }
                             }
                         }
-                        save: function () {
-                            switch (value) {
-                            case 5: return "data&normal";
-                            case 4: return "data&hovered";
-                            case 3: return "data";
-                            case 2: return "hovered";
-                            case 1: return "normal";
-                            case 0:
-                            default: break;
-                            }
-                            // undefined
-                        }
-                    }
-                    //部件编辑界面的背景设置
-                    P.BackgroundPreference {
-                        name: "background"
-                        label: qsTr("Background")
+                        StackLayout {
+                            //anchors.centerIn: parent
+                            width: parent.width
+                            currentIndex: elemBar.currentIndex
+                            //效果设置
+                            Item{
+                                //必须资源
+                                Flickable {
+                                    anchors.fill: parent
+                                    contentWidth: width
+                                    contentHeight: normal.height
+                                    topMargin: 16
+                                    bottomMargin: 16
+                                    Column {
+                                        id: normal
+                                        width: parent.width
+                                        P.ObjectPreferenceGroup {
+                                            syncProperties: true
+                                            enabled: currentItem
+                                            width: parent.width
+                                            defaultValue: currentItem?.effect ?? null
+                                            //必须资源
+                                            //部件编辑界面的可见性设置
+                                            P.SelectPreference {
+                                                name: "visibility"
+                                                label: qsTr("Visibility")
+                                                model:[ qsTr("Always"), qsTr("Normal"), qsTr("Hovered"), qsTr("Data"), qsTr("Data&Hovered"), qsTr("Data&Normal")]
+                                                defaultValue: 0
+                                                //当编辑名称右边菜单下拉时显示
+                                                // visible: expandButton.highlighted
+                                                load: function (newValue) {
+                                                    if (newValue === undefined) {
+                                                        value = defaultValue;
+                                                        return;
+                                                    }
+                                                    switch (newValue) {
+                                                    case "normal": value = 1; break;
+                                                    case "hovered": value = 2; break;
+                                                    case "data": value = 3; break;
+                                                    case "data&hovered": value = 4; break;
+                                                    case "data&normal": value = 5; break;
+                                                    default: value = -1; break;
+                                                    }
+                                                }
+                                                save: function () {
+                                                    switch (value) {
+                                                    case 5: return "data&normal";
+                                                    case 4: return "data&hovered";
+                                                    case 3: return "data";
+                                                    case 2: return "hovered";
+                                                    case 1: return "normal";
+                                                    case 0:
+                                                    default: break;
+                                                    }
+                                                    // undefined
+                                                }
+                                            }
+                                            //部件编辑界面的背景设置
+                                            P.BackgroundPreference {
+                                                name: "background"
+                                                label: qsTr("Background")
 
-                        defaultBackground {
-                            normal:  pDefaultBackground.value?.normal ??
-                                     pDefaultBackground.defaultBackground.normal
-                            hovered: pDefaultBackground.value?.hovered ??
-                                     pDefaultBackground.defaultBackground.hovered
-                            pressed: pDefaultBackground.value?.pressed ??
-                                     pDefaultBackground.defaultBackground.pressed
+                                                defaultBackground {
+                                                    normal:  pDefaultBackground.value?.normal ??
+                                                            pDefaultBackground.defaultBackground.normal
+                                                    hovered: pDefaultBackground.value?.hovered ??
+                                                            pDefaultBackground.defaultBackground.hovered
+                                                    pressed: pDefaultBackground.value?.pressed ??
+                                                            pDefaultBackground.defaultBackground.pressed
+                                                }
+                                                preferableFilter: pDefaultBackground.preferableFilter
+                                            }
+                                            //部件编辑界面的颜色设置
+                                            NoDefaultColorPreference {
+                                                name: "color"
+                                                label: qsTr("Color")
+                                                defaultValue: ctx_widget.defaultBackgroundColor
+                                            }
+                                            //部件编辑界面的数据设置
+                                            P.DataPreference {
+                                                name: "data"
+                                                label: qsTr("Data")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Item{
+                                //必须资源
+                                Flickable {
+                                    anchors.fill: parent
+                                    contentWidth: width
+                                    contentHeight: layoutTransform.height
+                                    topMargin: 16
+                                    bottomMargin: 16
+                                    Column {
+                                        id: layoutTransform
+                                        width: parent.width
+                                        P.ObjectPreferenceGroup {
+                                            syncProperties: true
+                                            enabled: currentItem
+                                            defaultValue: currentItem
+                                            width: parent.width
+                                            //必须资源
+                                            //透明度设置
+                                            //透明度设置开关
+                                            P.SwitchPreference {
+                                                id: opacitySettings
+                                                name: "opacitySettings"
+                                                label: qsTr("Opacity Setting")
+                                            }
+                                            //透明度
+                                            P.SliderPreference {
+                                                name: "opacity"
+                                                label: " - " + qsTr("Opacity")
+                                                displayValue: Math.round(value * 100) + " %"
+                                                defaultValue: 1
+                                                from: 0
+                                                to: 1
+                                                stepSize: 0.01
+                                                live: true
+                                                visible: opacitySettings.value&&!enableOpacityAnimation.value
+                                            }
+                                            //透明度动画
+                                            P.SwitchPreference {
+                                                id: enableOpacityAnimation
+                                                name: "enableOpacityAnimation"
+                                                label: " - " + qsTr("Opacity Animation")
+                                                visible: opacitySettings.value
+                                            }
+                                            //速度
+                                            P.SpinPreference {
+                                                name: "opacityAnimationSpeed"
+                                                label: " - - " + qsTr("Speed")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableOpacityAnimation.value&&opacitySettings.value
+                                                defaultValue: 500
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 100
+                                            }
+                                            //旋转设置
+                                            //旋转设置开关
+                                            P.SwitchPreference {
+                                                id: rotationSettings
+                                                name: "rotationSettings"
+                                                label: qsTr("Rotation Setting")
+                                            }
+                                            //旋转
+                                            P.SliderPreference {
+                                                name: "rotation"
+                                                label: " - " + qsTr("Rotation")
+                                                displayValue: value + " °"
+                                                defaultValue: 0
+                                                from: -360
+                                                to: 360
+                                                stepSize: 1
+                                                live: true
+                                                visible: !rotationDisplay.value&&rotationSettings.value
+                                            }
+                                            //旋转动画开关
+                                            P.SwitchPreference {
+                                                id: rotationDisplay
+                                                name: "rotationDisplay"
+                                                label: " - " + qsTr("Auto Rotation")
+                                                visible: rotationSettings.value
+                                            }
+                                            //转速
+                                            P.SliderPreference {
+                                                id:rotationSpeed
+                                                name: "rotationSpeed"
+                                                label: " - " + qsTr("Spin Speed")
+                                                defaultValue: 5
+                                                from: -500
+                                                to: 500
+                                                stepSize: 1
+                                                displayValue: value + " RPM"
+                                                live: true
+                                                visible: rotationDisplay.value&&rotationSettings.value
+                                            }
+                                            //旋转FPS
+                                            P.SliderPreference {
+                                                id:rotationFPS
+                                                name: "rotationFPS"
+                                                label: " - " + qsTr("FPS")
+                                                defaultValue: 20
+                                                from: 1
+                                                to: 240
+                                                stepSize: 1
+                                                displayValue: value + " FPS"
+                                                live: true
+                                                visible: rotationDisplay.value&&rotationSettings.value
+                                            }
+                                            //高级旋转
+                                            P.SwitchPreference {
+                                                id: enableAdvancedRotation
+                                                name: "enableAdvancedRotation"
+                                                label: " - " + qsTr("Advanced Rotation")
+                                                visible: rotationSettings.value
+                                            }
+                                            //旋转原点X
+                                            P.SpinPreference {
+                                                name: "advancedRotationOriginX"
+                                                label: " - - " + qsTr("Origin X")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //旋转原点Y
+                                            P.SpinPreference {
+                                                name: "advancedRotationOriginY"
+                                                label: " - - " + qsTr("Origin Y")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //axis x,y,z
+                                            P.SpinPreference {
+                                                name: "advancedRotationAxisX"
+                                                label: " - - " + qsTr("Axis X")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            P.SpinPreference {
+                                                name: "advancedRotationAxisY"
+                                                label: " - - " + qsTr("Axis Y")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            P.SpinPreference {
+                                                name: "advancedRotationAxisZ"
+                                                label: " - - " + qsTr("Axis Z")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //角度
+                                            P.SpinPreference {
+                                                name: "advancedRotationAngle"
+                                                label: " - - " + qsTr("Angle")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotation.value&&!enableAdvancedRotationAnimation.value&&rotationSettings.value
+                                                defaultValue: 0
+                                                from: -360
+                                                to: 360
+                                                stepSize: 10
+                                            }
+                                            //角度变化动画
+                                            P.SwitchPreference {
+                                                id: enableAdvancedRotationAnimation
+                                                name: "enableAdvancedRotationAnimation"
+                                                label: " - - " + qsTr("Rotation Animation")
+                                                visible: enableAdvancedRotation.value&&rotationSettings.value
+                                            }
+                                            //速度
+                                            P.SpinPreference {
+                                                name: "advancedRotationSpeed"
+                                                label: " - - - " + qsTr("Speed")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 20
+                                                from: -100
+                                                to: 100
+                                                stepSize: 5
+                                            }
+                                            //FPS
+                                            P.SpinPreference {
+                                                name: "advancedRotationFPS"
+                                                label: " - - - " + qsTr("FPS")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value
+                                                defaultValue: 20
+                                                from: 1
+                                                to: 240
+                                                stepSize: 10
+                                            }
+                                            //缩放
+                                            P.SwitchPreference {
+                                                id: scaleSetting
+                                                name: "scaleSetting"
+                                                label: qsTr("Scale")
+                                            }
+                                            //缩放原点X
+                                            P.SpinPreference {
+                                                name: "scaleOriginX"
+                                                label: " - " + qsTr("Origin X")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: scaleSetting.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //缩放原点Y
+                                            P.SpinPreference {
+                                                name: "scaleOriginY"
+                                                label: " - " + qsTr("Origin Y")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: scaleSetting.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //x比例 /1000
+                                            P.SpinPreference {
+                                                name: "scaleX"
+                                                label: " - " + qsTr("X Scale")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: scaleSetting.value
+                                                defaultValue: 1000
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 50
+                                            }
+                                            //y比例 /1000
+                                            P.SpinPreference {
+                                                name: "scaleY"
+                                                label: " - " + qsTr("Y Scale")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: scaleSetting.value
+                                                defaultValue: 1000
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 50
+                                            }
+                                            //平移
+                                            P.SwitchPreference {
+                                                id: translateSetting
+                                                name: "translateSetting"
+                                                label: qsTr("Translate")
+                                            }
+                                            //X偏移量
+                                            P.SpinPreference {
+                                                name: "translateX"
+                                                label: " - " + qsTr("X")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: translateSetting.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //Y偏移量
+                                            P.SpinPreference {
+                                                name: "translateY"
+                                                label: " - " + qsTr("Y")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: translateSetting.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Item{
+                                //必须资源
+                                Flickable {
+                                    anchors.fill: parent
+                                    contentWidth: width
+                                    contentHeight: layoutActionSetting.height
+                                    topMargin: 16
+                                    bottomMargin: 16
+                                    Column {
+                                        id: layoutActionSetting
+                                        width: parent.width
+                                        P.ObjectPreferenceGroup {
+                                            syncProperties: true
+                                            enabled: currentItem
+                                            defaultValue: currentItem
+                                            width: parent.width
+                                            //必须资源
+                                            //动作
+                                            P.SwitchPreference {
+                                                id: enableAction
+                                                name: "enableAction"
+                                                label: qsTr("Enable Action")
+                                            }
+                                            // //部件编辑界面的动作设置
+                                            P.ActionPreference {
+                                                name: "action"
+                                                label: " - " + qsTr("Action")
+                                                //message: value ? "" : qsTr("Defaults to toggle slideshow")
+                                                visible: enableAction.value
+                                            }
+                                            // TODO 悬停动作 （移动，缩放）
+                                        //中心
+                                            P.SpinPreference {
+                                                name: "zoomMouse_OriginX"
+                                                label: " - - " + qsTr("Origin X")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            P.SpinPreference {
+                                                name: "zoomMouse_OriginY"
+                                                label: " - - " + qsTr("Origin Y")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                        //悬停移动
+                                            P.SwitchPreference {
+                                                id: moveOnHover
+                                                name: "moveOnHover"
+                                                label: " - " + qsTr("Move On Hover")
+                                                visible: enableAction.value
+                                            }
+                                            //距离
+                                            P.SpinPreference {
+                                                name: "moveHover_Distance"
+                                                label: " - - " + qsTr("Distance")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&moveOnHover.value
+                                                defaultValue: 10
+                                                from: -1000
+                                                to: 1000
+                                                stepSize: 10
+                                            }
+                                            //方向
+                                            P.SpinPreference {
+                                                name: "moveHover_Direction"
+                                                label: " - - " + qsTr("Direction")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&moveOnHover.value
+                                                defaultValue: 0
+                                                from: -180
+                                                to: 180
+                                                stepSize: 5
+                                            }
+                                            //持续时间
+                                            P.SpinPreference {
+                                                name: "moveHover_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&moveOnHover.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "moveOnHover_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&moveOnHover.value
+                                            }
+                                        //悬停缩放
+                                            P.SwitchPreference {
+                                                id: zoomOnHover
+                                                name: "zoomOnHover"
+                                                label: " - " + qsTr("Zoom On Hover")
+                                                visible: enableAction.value
+                                            }
+                                            //大小
+                                            P.SpinPreference {
+                                                name: "zoomHover_XSize"
+                                                label: " - - " + qsTr("X Scale")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&zoomOnHover.value
+                                                defaultValue: 100
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 10
+                                            }
+                                            P.SpinPreference {
+                                                name: "zoomHover_YSize"
+                                                label: " - - " + qsTr("Y Scale")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&zoomOnHover.value
+                                                defaultValue: 100
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 10
+                                            }
+                                            //持续时间
+                                            P.SpinPreference {
+                                                name: "zoomHover_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&zoomOnHover.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "zoomHover_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&zoomOnHover.value
+                                            }
+                                        //悬停旋转
+                                            P.SwitchPreference {
+                                                id: spinOnHover
+                                                name: "spinOnHover"
+                                                label: " - " + qsTr("Spin On Hover")
+                                                visible: enableAction.value
+                                            }
+                                            //角度
+                                            P.SpinPreference {
+                                                name: "spinHover_Direction"
+                                                label: " - - " + qsTr("Direction")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&spinOnHover.value
+                                                defaultValue: 360
+                                                from: -3600
+                                                to: 3600
+                                                stepSize: 180
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "spinHover_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&spinOnHover.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "spinHover_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&spinOnHover.value
+                                            }
+                                        // TODO 3D旋转
+                                        // TODO 持续旋转
+                                        //悬停闪烁
+                                            P.SwitchPreference {
+                                                id: glimmerOnHover
+                                                name: "glimmerOnHover"
+                                                label: " - " + qsTr("Glimmer On Hover")
+                                                visible: enableAction.value
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "glimmerHover_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&glimmerOnHover.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //最小透明度
+                                            P.SpinPreference {
+                                                name: "glimmerHover_MinOpacity"
+                                                label: " - - " + qsTr("Min Opacity")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&glimmerOnHover.value
+                                                defaultValue: 0
+                                                from: 0
+                                                to: 100
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "glimmerHover_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&glimmerOnHover.value
+                                            }
+                                    //// 点击
+                                        //点击缩放
+                                            P.SwitchPreference {
+                                                id: zoomOnClick
+                                                name: "zoomOnClick"
+                                                label: " - " + qsTr("Zoom On Click")
+                                                visible: enableAction.value
+                                            }
+                                            //大小
+                                            P.SpinPreference {
+                                                name: "zoomClick_XSize"
+                                                label: " - - " + qsTr("X Scale")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&zoomOnClick.value
+                                                defaultValue: 100
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 10
+                                            }
+                                            P.SpinPreference {
+                                                name: "zoomClick_YSize"
+                                                label: " - - " + qsTr("Y Scale")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&zoomOnClick.value
+                                                defaultValue: 100
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 10
+                                            }
+                                            //持续时间
+                                            P.SpinPreference {
+                                                name: "zoomClick_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&zoomOnClick.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "zoomClick_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&zoomOnClick.value
+                                            }
+                                        //点击旋转
+                                            P.SwitchPreference {
+                                                id: spinOnClick
+                                                name: "spinOnClick"
+                                                label: " - " + qsTr("Spin On Click")
+                                                visible: enableAction.value
+                                            }
+                                            //单次旋转
+                                            P.SwitchPreference {
+                                                name: "spinOnClickInstantRecuvery"
+                                                label: " - - " + qsTr("Instant Recuvery")
+                                                visible: enableAction.value&&spinOnClick.value
+                                            }
+                                            //角度
+                                            P.SpinPreference {
+                                                name: "spinClick_Direction"
+                                                label: " - - " + qsTr("Direction")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&spinOnClick.value
+                                                defaultValue: 360
+                                                from: -3600
+                                                to: 3600
+                                                stepSize: 180
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "spinClick_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&spinOnClick.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "spinClick_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&spinOnClick.value
+                                            }
+                                        //点击移动
+                                            P.SwitchPreference {
+                                                id: moveOnClick
+                                                name: "moveOnClick"
+                                                label: " - " + qsTr("Move On Click")
+                                                visible: enableAction.value
+                                            }
+                                            //点击第二次后移回
+                                            P.SwitchPreference {
+                                                name: "moveBackAfterClick"
+                                                label: " - - " + qsTr("Move Back After Click")
+                                                visible: enableAction.value&&moveOnClick.value
+                                            }
+                                            //角度
+                                            P.SpinPreference {
+                                                name: "moveClick_Direction"
+                                                label: " - - " + qsTr("Direction")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&moveOnClick.value
+                                                defaultValue: 0
+                                                from: -360
+                                                to: 360
+                                                stepSize: 10
+                                            }
+                                            //距离
+                                            P.SpinPreference {
+                                                name: "moveClick_Distance"
+                                                label: " - - " + qsTr("Distance")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&moveOnClick.value
+                                                defaultValue: 10
+                                                from: -1000
+                                                to: 1000
+                                                stepSize: 10
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "moveClick_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableAction.value&&moveOnClick.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "moveClick_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableAction.value&&moveOnClick.value
+                                            }
+                                    //周期动画
+                                            P.SwitchPreference {
+                                                id: cycleAnimation
+                                                name: "cycleAnimation"
+                                                label: qsTr("Cycle Animation")
+                                            }
+                                        //周期平移
+                                            P.SwitchPreference {
+                                                id: cycleMove
+                                                name: "cycleMove"
+                                                label: " - " + qsTr("Cycle Moving")
+                                                visible:cycleAnimation.value
+                                            }
+                                            //距离
+                                            P.SpinPreference {
+                                                name: "moveCycle_Distance"
+                                                label: " - - " + qsTr("Distance")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: cycleAnimation.value&&cycleMove.value
+                                                defaultValue: 10
+                                                from: -1000
+                                                to: 1000
+                                                stepSize: 10
+                                            }
+                                            //方向
+                                            P.SpinPreference {
+                                                name: "moveCycle_Direction"
+                                                label: " - - " + qsTr("Direction")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: cycleAnimation.value&&cycleMove.value
+                                                defaultValue: 0
+                                                from: -180
+                                                to: 180
+                                                stepSize: 5
+                                            }
+                                            //持续时间
+                                            P.SpinPreference {
+                                                name: "moveCycle_Duration"
+                                                label: " - - " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: cycleAnimation.value&&cycleMove.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //延时
+                                            P.SpinPreference {
+                                                name: "moveCycle_Delay"
+                                                label: " - - " + qsTr("Delay")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: cycleAnimation.value&&cycleMove.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //等待时间
+                                            P.SpinPreference {
+                                                name: "moveCycle_Waiting"
+                                                label: " - - " + qsTr("Waiting")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: cycleAnimation.value&&cycleMove.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "moveCycle_Easing"
+                                                label: " - - " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: cycleAnimation.value&&cycleMove.value
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        preferableFilter: pDefaultBackground.preferableFilter
-                    }
-                    //部件编辑界面的颜色设置
-                    NoDefaultColorPreference {
-                        name: "color"
-                        label: qsTr("Color")
-                        defaultValue: ctx_widget.defaultBackgroundColor
-                    }
-                    //部件编辑界面的数据设置
-                    P.DataPreference {
-                        name: "data"
-                        label: qsTr("Data")
-                    }
-                    // //部件编辑界面的动作设置
-                    // P.ActionPreference {
-                    //     name: "action"
-                    //     label: qsTr("Action")
-                    // }
-                    //动作
-                    P.SwitchPreference {
-                        id: enableAction
-                        name: "enableAction"
-                        label: qsTr("Enable Action")
-                    }
-                    P.ActionPreference {
-                        name: "action"
-                        label: " - " + qsTr("Action")
-                        //message: value ? "" : qsTr("Defaults to toggle slideshow")
-                        visible: enableAction.value
-                    }
-                    // TODO 悬停动作 （移动，缩放）
-                //中心
-                    P.SpinPreference {
-                        name: "zoomMouse_OriginX"
-                        label: " - - " + qsTr("Origin X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                    P.SpinPreference {
-                        name: "zoomMouse_OriginY"
-                        label: " - - " + qsTr("Origin Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value
-                        defaultValue: 0
-                        from: -10000
-                        to: 10000
-                        stepSize: 10
-                    }
-                //悬停移动
-                    P.SwitchPreference {
-                        id: moveOnHover
-                        name: "moveOnHover"
-                        label: " - " + qsTr("Move On Hover")
-                        visible: enableAction.value
-                    }
-                    //距离
-                    P.SpinPreference {
-                        name: "moveHover_Distance"
-                        label: " - - " + qsTr("Distance")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&moveOnHover.value
-                        defaultValue: 10
-                        from: -1000
-                        to: 1000
-                        stepSize: 10
-                    }
-                    //方向
-                    P.SpinPreference {
-                        name: "moveHover_Direction"
-                        label: " - - " + qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&moveOnHover.value
-                        defaultValue: 0
-                        from: -180
-                        to: 180
-                        stepSize: 5
-                    }
-                    //持续时间
-                    P.SpinPreference {
-                        name: "moveHover_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&moveOnHover.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "moveOnHover_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&moveOnHover.value
-                    }
-                //悬停缩放
-                    P.SwitchPreference {
-                        id: zoomOnHover
-                        name: "zoomOnHover"
-                        label: " - " + qsTr("Zoom On Hover")
-                        visible: enableAction.value
-                    }
-                    //大小
-                    P.SpinPreference {
-                        name: "zoomHover_XSize"
-                        label: " - - " + qsTr("X Scale")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&zoomOnHover.value
-                        defaultValue: 100
-                        from: -100000
-                        to: 100000
-                        stepSize: 10
-                    }
-                    P.SpinPreference {
-                        name: "zoomHover_YSize"
-                        label: " - - " + qsTr("Y Scale")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&zoomOnHover.value
-                        defaultValue: 100
-                        from: -100000
-                        to: 100000
-                        stepSize: 10
-                    }
-                    //持续时间
-                    P.SpinPreference {
-                        name: "zoomHover_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&zoomOnHover.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "zoomHover_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&zoomOnHover.value
-                    }
-                //悬停旋转
-                    P.SwitchPreference {
-                        id: spinOnHover
-                        name: "spinOnHover"
-                        label: " - " + qsTr("Spin On Hover")
-                        visible: enableAction.value
-                    }
-                    //角度
-                    P.SpinPreference {
-                        name: "spinHover_Direction"
-                        label: " - - " + qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&spinOnHover.value
-                        defaultValue: 360
-                        from: -3600
-                        to: 3600
-                        stepSize: 180
-                    }
-                    //时间
-                    P.SpinPreference {
-                        name: "spinHover_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&spinOnHover.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "spinHover_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&spinOnHover.value
-                    }
-                // TODO 3D旋转
-                // TODO 持续旋转
-                //悬停闪烁
-                    P.SwitchPreference {
-                        id: glimmerOnHover
-                        name: "glimmerOnHover"
-                        label: " - " + qsTr("Glimmer On Hover")
-                        visible: enableAction.value
-                    }
-                    //时间
-                    P.SpinPreference {
-                        name: "glimmerHover_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&glimmerOnHover.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //最小透明度
-                    P.SpinPreference {
-                        name: "glimmerHover_MinOpacity"
-                        label: " - - " + qsTr("Min Opacity")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&glimmerOnHover.value
-                        defaultValue: 0
-                        from: 0
-                        to: 100
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "glimmerHover_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&glimmerOnHover.value
-                    }
-            //// 点击
-                //点击缩放
-                    P.SwitchPreference {
-                        id: zoomOnClick
-                        name: "zoomOnClick"
-                        label: " - " + qsTr("Zoom On Click")
-                        visible: enableAction.value
-                    }
-                    //大小
-                    P.SpinPreference {
-                        name: "zoomClick_XSize"
-                        label: " - - " + qsTr("X Scale")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&zoomOnClick.value
-                        defaultValue: 100
-                        from: -100000
-                        to: 100000
-                        stepSize: 10
-                    }
-                    P.SpinPreference {
-                        name: "zoomClick_YSize"
-                        label: " - - " + qsTr("Y Scale")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&zoomOnClick.value
-                        defaultValue: 100
-                        from: -100000
-                        to: 100000
-                        stepSize: 10
-                    }
-                    //持续时间
-                    P.SpinPreference {
-                        name: "zoomClick_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&zoomOnClick.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "zoomClick_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&zoomOnClick.value
-                    }
-                //点击旋转
-                    P.SwitchPreference {
-                        id: spinOnClick
-                        name: "spinOnClick"
-                        label: " - " + qsTr("Spin On Click")
-                        visible: enableAction.value
-                    }
-                    //单次旋转
-                    P.SwitchPreference {
-                        name: "spinOnClickInstantRecuvery"
-                        label: " - - " + qsTr("Instant Recuvery")
-                        visible: enableAction.value&&spinOnClick.value
-                    }
-                    //角度
-                    P.SpinPreference {
-                        name: "spinClick_Direction"
-                        label: " - - " + qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&spinOnClick.value
-                        defaultValue: 360
-                        from: -3600
-                        to: 3600
-                        stepSize: 180
-                    }
-                    //时间
-                    P.SpinPreference {
-                        name: "spinClick_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&spinOnClick.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "spinClick_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&spinOnClick.value
-                    }
-                //点击移动
-                    P.SwitchPreference {
-                        id: moveOnClick
-                        name: "moveOnClick"
-                        label: " - " + qsTr("Move On Click")
-                        visible: enableAction.value
-                    }
-                    //点击第二次后移回
-                    P.SwitchPreference {
-                        name: "moveBackAfterClick"
-                        label: " - - " + qsTr("Move Back After Click")
-                        visible: enableAction.value&&moveOnClick.value
-                    }
-                    //角度
-                    P.SpinPreference {
-                        name: "moveClick_Direction"
-                        label: " - - " + qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&moveOnClick.value
-                        defaultValue: 0
-                        from: -360
-                        to: 360
-                        stepSize: 10
-                    }
-                    //距离
-                    P.SpinPreference {
-                        name: "moveClick_Distance"
-                        label: " - - " + qsTr("Distance")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&moveOnClick.value
-                        defaultValue: 10
-                        from: -1000
-                        to: 1000
-                        stepSize: 10
-                    }
-                    //时间
-                    P.SpinPreference {
-                        name: "moveClick_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: enableAction.value&&moveOnClick.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "moveClick_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: enableAction.value&&moveOnClick.value
-                    }
-            //周期动画
-                    P.SwitchPreference {
-                        id: cycleAnimation
-                        name: "cycleAnimation"
-                        label: qsTr("Cycle Animation")
-                    }
-                //周期平移
-                    P.SwitchPreference {
-                        id: cycleMove
-                        name: "cycleMove"
-                        label: " - " + qsTr("Cycle Moving")
-                        visible:cycleAnimation.value
-                    }
-                    //距离
-                    P.SpinPreference {
-                        name: "moveCycle_Distance"
-                        label: " - - " + qsTr("Distance")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: cycleAnimation.value&&cycleMove.value
-                        defaultValue: 10
-                        from: -1000
-                        to: 1000
-                        stepSize: 10
-                    }
-                    //方向
-                    P.SpinPreference {
-                        name: "moveCycle_Direction"
-                        label: " - - " + qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: cycleAnimation.value&&cycleMove.value
-                        defaultValue: 0
-                        from: -180
-                        to: 180
-                        stepSize: 5
-                    }
-                    //持续时间
-                    P.SpinPreference {
-                        name: "moveCycle_Duration"
-                        label: " - - " + qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: cycleAnimation.value&&cycleMove.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //延时
-                    P.SpinPreference {
-                        name: "moveCycle_Delay"
-                        label: " - - " + qsTr("Delay")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: cycleAnimation.value&&cycleMove.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //等待时间
-                    P.SpinPreference {
-                        name: "moveCycle_Waiting"
-                        label: " - - " + qsTr("Waiting")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
-                        visible: cycleAnimation.value&&cycleMove.value
-                        defaultValue: 300
-                        from: 0
-                        to: 10000
-                        stepSize: 10
-                    }
-                    //曲线
-                    P.SelectPreference {
-                        name: "moveCycle_Easing"
-                        label: " - - " + qsTr("Easing")
-                        model: easingModel
-                        defaultValue: 3
-                        visible: cycleAnimation.value&&cycleMove.value
                     }
                 }
             }
