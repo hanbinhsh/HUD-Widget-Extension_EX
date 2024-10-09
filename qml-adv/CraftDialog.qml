@@ -423,7 +423,7 @@ NVG.Window {
                             name: "label"
                             label: qsTr("Name")
                             display: P.TextFieldPreference.ExpandControl
-                            rightPadding: 30
+                            rightPadding: 15
                         }
                     }
 

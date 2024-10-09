@@ -234,7 +234,7 @@ CraftDelegate {
     }
     //旋转动画
     NumberAnimation on animationSpin {
-        id: animationSpin
+        id: animationSpin_Normal
         running: false
         duration: settings.spinHover_Duration ?? 300 // 动画持续时间，单位为毫秒
         easing.type: settings.spinHover_Easing ?? 3 // 使用缓动函数使动画更平滑
@@ -300,9 +300,9 @@ CraftDelegate {
                 animationZoomY.running = true
             }
             if(settings.spinOnHover){
-                animationSpin.stop()
-                animationSpin.to = Number(settings.spinHover_Direction??360)
-                animationSpin.running = true
+                animationSpin_Normal.stop()
+                animationSpin_Normal.to = Number(settings.spinHover_Direction??360)
+                animationSpin_Normal.running = true
             }
             if(settings.glimmerOnHover){
                 animationGlimmer.running = true
@@ -326,9 +326,9 @@ CraftDelegate {
                 animationZoomY.running = true
             }
             if(settings.spinOnHover){
-                animationSpin.stop()
-                animationSpin.to = 0
-                animationSpin.running = true
+                animationSpin_Normal.stop()
+                animationSpin_Normal.to = 0
+                animationSpin_Normal.running = true
             }
             if(settings.glimmerOnHover){
                 animationGlimmer.running = false
