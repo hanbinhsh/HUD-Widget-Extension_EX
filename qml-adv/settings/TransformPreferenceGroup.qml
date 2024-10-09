@@ -8,7 +8,6 @@ import com.gpbeta.common 1.0
 import ".."
 
 //变换
-    
     //必须资源
     Flickable {
         property var item: null

@@ -427,16 +427,34 @@ T.Widget {
                 anchors.fill: parent
                 parent: thiz.interactionItem?.contentParent ?? thiz
 
+                Item {
+                    id: fadeMask
+                    visible: settings.usedisplayMask ?? true
+                    opacity: (settings.maskOpacity ?? 100)/100
+                    Image { 
+                        rotation: settings.maskRotation ?? 0
+                        id: fadeImage; 
+                        source: settings.usedisplayMask ? (settings.displayMaskSource ?? "") : ""
+                        height: settings.displayMaskTranslateScaleHeight ?? 54
+                        width: settings.displayMaskTranslateScaleWidth ?? 54
+                        x: settings.displayMaskTranslateX ?? 0
+                        y: settings.displayMaskTranslateY ?? 0
+                        fillMode: settings.displayMaskFill ?? 1
+                    }
+                }
+
                 state: thiz.hidden ? "HIDE" : "SHOW"
                 states: [
                     State {
                         name: "SHOW"
                         PropertyChanges{ target: itemContent; opacity: 1.0 }
+                        PropertyChanges{ target: fadeImage; opacity: (settings.maskOpacity ?? 100)/100; }
                         PropertyChanges{ target: thiz; targetVisible: true }
                     },
                     State {
                         name: "HIDE"
                         PropertyChanges{ target: itemContent; opacity: 0.0 }
+                        PropertyChanges{ target: fadeImage; opacity: 0.0; }
                         PropertyChanges{ target: thiz; targetVisible: false }
                     }
                 ]
@@ -445,15 +463,30 @@ T.Widget {
                         from: "SHOW"
                         to: "HIDE"
                         SequentialAnimation{
-                            NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
+                            NumberAnimation {
+                                target: fadeImage; property: "opacity";
+                                duration: (settings.maskVisibleAfterAnimation??true) ? (settings.hideMaskTime ?? 250) : 0
+                            }
+                            NumberAnimation { target: itemContent; property: "opacity"; duration: settings.hideTime ?? 250 }
                             PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
                         }
                     },
                     Transition {
                         from: "HIDE"
                         to: "SHOW"
-                        PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
-                        NumberAnimation { target: itemContent; property: "opacity"; duration: 250 }
+                        SequentialAnimation{
+                            PropertyAnimation { target: fadeImage; property: "visible"; duration: 0; to: settings.usedisplayMask }
+                            PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
+                            NumberAnimation { target: itemContent; property: "opacity"; duration: settings.displayTime ?? 250 }
+                            NumberAnimation { target: fadeImage; property: "opacity"; duration: settings.displayMaskTime ?? 250 }
+                            NumberAnimation { 
+                                target: fadeImage;
+                                property: "opacity";
+                                duration: (settings.maskVisibleAfterAnimation??true) ? 0 : (settings.displayMaskTime ?? 250);
+                                to: (settings.maskVisibleAfterAnimation??true) ? (settings.maskOpacity ?? 100)/100 : 0;
+                            }
+                            PropertyAnimation { target: fadeImage; property: "visible"; duration: 0; to: (settings.maskVisibleAfterAnimation??true)&&settings.usedisplayMask }
+                        }
                     }
                 ]
 
@@ -483,7 +516,7 @@ T.Widget {
                         itemSettings: thiz.settings
                         itemData: dataSource
                         itemBackground: bgSource
-                        interactionState: thiz.interactionState
+                        interactionState: thiz.interactionState // override
                         interactionSource: modelData.interaction ?? ""
                         interactionSettingsBase: modelData
                         settings: modelData

@@ -572,13 +572,13 @@ NVG.Window {
                                 }
                                 Item{
                                     TransformPreferenceGroup{
-                                        item: currentItem
+                                        item: currentElement
                                         id: layoutTransformSetting
                                     }
                                 }
                                 Item{
                                     ActionPreferenceGroup{
-                                        item: currentItem
+                                        item: currentElement
                                         id: layoutActionSetting
                                     }
                                 }

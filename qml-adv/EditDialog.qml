@@ -307,6 +307,7 @@ NVG.Window {
                             case 0: return normal.height + 56;
                             case 1: return layoutTransformSetting.contentHeight + 56;
                             case 2: return layoutActionSetting.contentHeight + 56;
+                            case 3: return displayMaskSetting.height + 56;
                             return 0;
                         }
                         header:TabBar {
@@ -314,10 +315,10 @@ NVG.Window {
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Normal"),qsTr("Transform"),qsTr("Action")]
+                                model: [qsTr("Normal"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask")]
                                 TabButton {
                                     text: modelData
-                                    width: Math.max(108, elemBar.width / 3)
+                                    width: Math.max(128, elemBar.width / 3)
                                 }
                             }
                         }
@@ -416,6 +417,147 @@ NVG.Window {
                                 ActionPreferenceGroup{
                                     item: currentItem
                                     id: layoutActionSetting
+                                }
+                            }
+                            Item{
+                                //必须资源
+                                Flickable {
+                                    anchors.fill: parent
+                                    contentWidth: width
+                                    contentHeight: displayMaskSetting.height
+                                    topMargin: 16
+                                    bottomMargin: 16
+                                    Column {
+                                        id: displayMaskSetting
+                                        width: parent.width
+                                        P.ObjectPreferenceGroup {
+                                            syncProperties: true
+                                            enabled: currentItem
+                                            width: parent.width
+                                            defaultValue: currentItem
+                                            //必须资源
+                                            //显示时的遮罩
+                                            P.SwitchPreference {
+                                                name: "usedisplayMask"
+                                                label: qsTr("Show Mask")
+                                            }
+                                            P.SwitchPreference {
+                                                name: "maskVisibleAfterAnimation"
+                                                label: qsTr("Display Mask After Animation")
+                                                defaultValue: true
+                                            }
+                                            P.ImagePreference {
+                                                name: "displayMaskSource"
+                                                label: qsTr("Mask Image")
+                                            }
+                                            P.SpinPreference {
+                                                name: "maskOpacity"
+                                                label: qsTr("Mask Opacity")
+                                                editable: true
+                                                defaultValue: 100
+                                                from: 0
+                                                to: 100
+                                                stepSize: 5
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "maskRotation"
+                                                label: qsTr("Mask Rotation")
+                                                editable: true
+                                                defaultValue: 0
+                                                from: -360
+                                                to: 360
+                                                stepSize: 1
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SelectPreference {
+                                                name: "displayMaskFill"
+                                                label: qsTr("Fill Mode")
+                                                model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
+                                                defaultValue: 1
+                                            }
+                                            P.SpinPreference {
+                                                name: "displayMaskTranslateX"
+                                                label: qsTr("X")
+                                                editable: true
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 1
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "displayMaskTranslateY"
+                                                label: qsTr("Y")
+                                                editable: true
+                                                defaultValue: 0
+                                                from: -10000
+                                                to: 10000
+                                                stepSize: 1
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "displayMaskTranslateScaleHeight"
+                                                label: qsTr("Height")
+                                                editable: true
+                                                defaultValue: 54
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 1
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "displayMaskTranslateScaleWidth"
+                                                label: qsTr("Width")
+                                                editable: true
+                                                defaultValue: 54
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 1
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "displayMaskTime"
+                                                label: qsTr("Display Mask Time")
+                                                editable: true
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "displayTime"
+                                                label: qsTr("Display Time")
+                                                editable: true
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "hideMaskTime"
+                                                label: qsTr("Hide Mask Time")
+                                                editable: true
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "hideTime"
+                                                label: qsTr("Hide Time")
+                                                editable: true
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
