@@ -423,17 +423,7 @@ NVG.Window {
                             name: "label"
                             label: qsTr("Name")
                             display: P.TextFieldPreference.ExpandControl
-                            rightPadding: 84
-                            //编辑界面内挂件名称右边的下拉菜单图标
-                            ToolButton {
-                                id: expandButton
-                                anchors.top: parent.top
-                                anchors.topMargin: 4
-                                anchors.right: parent.right
-                                icon.name: highlighted ? "regular:\uf102" : "regular:\uf103"
-                                highlighted: false
-                                onClicked: highlighted = !highlighted
-                            }
+                            rightPadding: 30
                         }
                     }
 
@@ -444,16 +434,14 @@ NVG.Window {
                         label: qsTr("Effect Settings")
                         enabled: currentElement
                         syncProperties: true
-                        visible: expandButton.highlighted
                         Page {
                             id: elemPage
                             width: parent.width
-                            implicitHeight: switch(elemBar.currentIndex)
-                            {
-                                    case 0: return layoutEffects.height + 56;
-                                    case 1: return layoutTransform.height + 56;
-                                    case 2: return layoutActionSetting.height + 56;
-                                    return 0;
+                            implicitHeight: switch(elemBar.currentIndex){
+                                case 0: return layoutEffects.height + 56;
+                                case 1: return layoutTransformSetting.contentHeight + 56;
+                                case 2: return layoutActionSetting.contentHeight + 56;
+                                return 0;
                             }
                             header:TabBar {
                                 id: elemBar
@@ -582,13 +570,17 @@ NVG.Window {
                                         }
                                     }
                                 }
-                                TransformPreferenceGroup{
-                                    item: currentElement
-                                    id: layoutTransform
+                                Item{
+                                    TransformPreferenceGroup{
+                                        item: currentItem
+                                        id: layoutTransformSetting
+                                    }
                                 }
-                                ActionPreferenceGroup{
-                                    item: currentElement
-                                    id: layoutActionSetting
+                                Item{
+                                    ActionPreferenceGroup{
+                                        item: currentItem
+                                        id: layoutActionSetting
+                                    }
                                 }
                             }
                         } 

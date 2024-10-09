@@ -8,19 +8,18 @@ import com.gpbeta.common 1.0
 import ".."
 
 //变换
-Item{
-    property var item: null
-    id: transformPreferenceGroup
-    height: layoutTransform.height
+    
     //必须资源
     Flickable {
+        property var item: null
+        id: transformPreferenceGroup
         anchors.fill: parent
         contentWidth: width
-        contentHeight: layoutTransform.height
+        contentHeight: layoutTransformSetting.height
         topMargin: 16
         bottomMargin: 16
         Column {
-            id: layoutTransform
+            id: layoutTransformSetting
             width: parent.width
             P.ObjectPreferenceGroup {
                 syncProperties: true
@@ -34,7 +33,6 @@ Item{
                     id: opacitySettings
                     name: "opacitySettings"
                     label: qsTr("Opacity Setting")
-                    visible: expandButton.highlighted
                 }
                 //透明度
                 P.SliderPreference {
@@ -46,14 +44,14 @@ Item{
                     to: 1
                     stepSize: 0.01
                     live: true
-                    visible: expandButton.highlighted&&opacitySettings.value&&!enableOpacityAnimation.value
+                    visible: opacitySettings.value&&!enableOpacityAnimation.value
                 }
                 //透明度动画
                 P.SwitchPreference {
                     id: enableOpacityAnimation
                     name: "enableOpacityAnimation"
                     label: " - " + qsTr("Opacity Animation")
-                    visible: expandButton.highlighted&&opacitySettings.value
+                    visible: opacitySettings.value
                 }
                 //速度
                 P.SpinPreference {
@@ -73,7 +71,6 @@ Item{
                     id: rotationSettings
                     name: "rotationSettings"
                     label: qsTr("Rotation Setting")
-                    visible: expandButton.highlighted
                 }
                 //旋转
                 P.SliderPreference {
@@ -85,14 +82,14 @@ Item{
                     to: 360
                     stepSize: 1
                     live: true
-                    visible: expandButton.highlighted&&!rotationDisplay.value&&rotationSettings.value
+                    visible: !rotationDisplay.value&&rotationSettings.value
                 }
                 //旋转动画开关
                 P.SwitchPreference {
                     id: rotationDisplay
                     name: "rotationDisplay"
                     label: " - " + qsTr("Auto Rotation")
-                    visible: expandButton.highlighted&&rotationSettings.value
+                    visible: rotationSettings.value
                 }
                 //转速
                 P.SliderPreference {
@@ -105,7 +102,7 @@ Item{
                     stepSize: 1
                     displayValue: value + " RPM"
                     live: true
-                    visible: expandButton.highlighted&&rotationDisplay.value&&rotationSettings.value
+                    visible: rotationDisplay.value&&rotationSettings.value
                 }
                 //旋转FPS
                 P.SliderPreference {
@@ -118,7 +115,7 @@ Item{
                     stepSize: 1
                     displayValue: value + " FPS"
                     live: true
-                    visible: expandButton.highlighted&&rotationDisplay.value&&rotationSettings.value
+                    visible: rotationDisplay.value&&rotationSettings.value
                 }
                 //高级旋转
                 P.SwitchPreference {
@@ -315,4 +312,3 @@ Item{
             }
         }
     }
-}

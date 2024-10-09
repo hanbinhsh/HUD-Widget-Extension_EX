@@ -8,12 +8,10 @@ import com.gpbeta.common 1.0
 import ".."
 
 //动作设置
-Item{
-    property var item: null
-    id: actionPreferenceGroup
-    height: layoutActionSetting.height
     //必须资源
     Flickable {
+        property var item: null
+        id: actionPreferenceGroup
         anchors.fill: parent
         contentWidth: width
         contentHeight: layoutActionSetting.height
@@ -483,4 +481,3 @@ Item{
             }
         }
     }
-}
