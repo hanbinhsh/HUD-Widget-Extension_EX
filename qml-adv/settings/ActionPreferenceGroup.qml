@@ -7,9 +7,11 @@ import com.gpbeta.common 1.0
 
 import ".."
 
+//动作设置
 Item{
     property var item: null
     id: actionPreferenceGroup
+    height: layoutActionSetting.height
     //必须资源
     Flickable {
         anchors.fill: parent
@@ -32,7 +34,7 @@ Item{
                     name: "enableAction"
                     label: qsTr("Enable Action")
                 }
-                // //部件编辑界面的动作设置
+                // 部件编辑界面的动作设置
                 P.ActionPreference {
                     name: "action"
                     label: " - " + qsTr("Action")
@@ -40,7 +42,7 @@ Item{
                     visible: enableAction.value
                 }
                 // TODO 悬停动作 （移动，缩放）
-            //中心
+                //中心
                 P.SpinPreference {
                     name: "zoomMouse_OriginX"
                     label: " - - " + qsTr("Origin X")
@@ -482,4 +484,3 @@ Item{
         }
     }
 }
-
