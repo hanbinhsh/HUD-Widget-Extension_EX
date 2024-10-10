@@ -5,6 +5,7 @@ import QtGraphicalEffects 1.12
 import "utils.js" as Utils
 //二级挂件属性
 MouseArea {
+    // clip:true//超出父项直接裁剪
     id: delegate
 
     property Item view // Note: CraftView type recusive
@@ -55,9 +56,17 @@ MouseArea {
     }
 
     //增加
+    //移动值
+    property real mX : ( settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0 + (animationX ?? 0) : 0 + (animationX ?? 0) )
+             + cycleMoveX + clickAnimationX + showAnimationX;
+    property real mY : ( settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0 + (animationY ?? 0) : 0 + (animationY ?? 0) )
+             + cycleMoveY + clickAnimationY + showAnimationY;
     //悬停移动动画
     property real animationX : 0
     property real animationY : 0
+    //显示移动动画
+    property real showAnimationX : 0
+    property real showAnimationY : 0
     //悬停缩放动画
     property real animationZoomX : 0
     property real animationZoomY : 0
@@ -68,6 +77,10 @@ MouseArea {
     readonly property real rotationStep: (settings.rotationSpeed ?? 5) * 6 / (settings.rotationFPS ?? 20)
     readonly property bool rotationEnabled: Boolean(delegate.settings.rotationDisplay)
     readonly property bool rotationAnimationEnabled: Boolean(delegate.settings.enableAdvancedRotationAnimation)
+    //透明度动态显示
+    property real endOpciMask : 0
+    property real staOpciMask : 0
+    property bool opciMaskAnimationEnd : true
     //点击移动动画
     property real clickAnimationX : 0
     property real clickAnimationY : 0
@@ -162,10 +175,7 @@ MouseArea {
             xScale: settings.scaleSetting ? (settings.scaleX ?? 1000) / 1000 + (animationZoomX ?? 0) / 1000 : 1 + (animationZoomX ?? 0) / 1000
             yScale: settings.scaleSetting ? (settings.scaleY ?? 1000) / 1000 + (animationZoomY ?? 0) / 1000 : 1 + (animationZoomY ?? 0) / 1000
         },
-        Translate {
-            x:( settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0 + (animationX ?? 0) : 0 + (animationX ?? 0) ) + cycleMoveX + clickAnimationX
-            y:( settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0 + (animationY ?? 0) : 0 + (animationY ?? 0) ) + cycleMoveY + clickAnimationY
-        }
+        Translate {x:mX; y:mY}
     ]
     //旋转动画
     onRotationAnimationEnabledChanged: settings.advancedRotationAngle=0
@@ -283,5 +293,20 @@ MouseArea {
         moveAnimation.animations[1].animations[1].to = 0;
         // 启动动画
         moveAnimation.start();
+    }
+    layer {
+        enabled: settings.enableFadeTransition ? opciMaskAnimationEnd : false
+        effect: OpacityMask {
+            maskSource: Rectangle {
+                width: delegate.width
+                height: delegate.height
+                gradient: Gradient {
+                    // TODO 更改颜色和垂直横着
+                    orientation: Gradient.Vertical
+                    GradientStop { position: staOpciMask/1000.0; color: "#FFFFFFFF" }
+                    GradientStop { position: endOpciMask/1000.0; color: "#00000000" }
+                }
+            }
+        }
     }
 }

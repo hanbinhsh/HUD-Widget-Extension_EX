@@ -305,9 +305,10 @@ NVG.Window {
                         width: parent.width
                         implicitHeight: switch(elemBar.currentIndex){
                             case 0: return normal.height + 56;
-                            case 1: return layoutTransformSetting.contentHeight + 56;
-                            case 2: return layoutActionSetting.contentHeight + 56;
-                            case 3: return displayMaskSetting.height + 56;
+                            case 1: return visibleSettings.height + 56;
+                            case 2: return layoutTransformSetting.contentHeight + 56;
+                            case 3: return layoutActionSetting.contentHeight + 56;
+                            case 4: return displayMaskSetting.height + 56;
                             return 0;
                         }
                         header:TabBar {
@@ -315,7 +316,7 @@ NVG.Window {
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Normal"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask")]
+                                model: [qsTr("Normal"),qsTr("Visible"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask")]
                                 TabButton {
                                     text: modelData
                                     width: Math.max(128, elemBar.width / 3)
@@ -337,6 +338,65 @@ NVG.Window {
                                     bottomMargin: 16
                                     Column {
                                         id: normal
+                                        width: parent.width
+                                        P.ObjectPreferenceGroup {
+                                            syncProperties: true
+                                            enabled: currentItem
+                                            width: parent.width
+                                            defaultValue: currentItem
+                                            //必须资源
+                                            //部件编辑界面的背景设置
+                                            P.BackgroundPreference {
+                                                name: "background"
+                                                label: qsTr("Background")
+
+                                                defaultBackground {
+                                                    normal:  pDefaultBackground.value?.normal ??
+                                                            pDefaultBackground.defaultBackground.normal
+                                                    hovered: pDefaultBackground.value?.hovered ??
+                                                            pDefaultBackground.defaultBackground.hovered
+                                                    pressed: pDefaultBackground.value?.pressed ??
+                                                            pDefaultBackground.defaultBackground.pressed
+                                                }
+                                                preferableFilter: pDefaultBackground.preferableFilter
+                                            }
+                                            P.SelectPreference {
+                                                name: "separate"
+                                                label: qsTr("Background Hierarchy")
+                                                textRole: "label"
+                                                valueRole: "value"
+                                                defaultValue: 0
+                                                model: [
+                                                    { label: qsTr("<Default>"), value: undefined },
+                                                    { label: qsTr("Element"), value: 0 },
+                                                    { label: qsTr("Item"), value: 1 }
+                                                ]
+                                            }
+                                            //部件编辑界面的颜色设置
+                                            NoDefaultColorPreference {
+                                                name: "color"
+                                                label: qsTr("Color")
+                                                defaultValue: ctx_widget.defaultBackgroundColor
+                                            }
+                                            //部件编辑界面的数据设置
+                                            P.DataPreference {
+                                                name: "data"
+                                                label: qsTr("Data")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Item{
+                                //必须资源
+                                Flickable {
+                                    anchors.fill: parent
+                                    contentWidth: width
+                                    contentHeight: visibleSettings.height
+                                    topMargin: 16
+                                    bottomMargin: 16
+                                    Column {
+                                        id: visibleSettings
                                         width: parent.width
                                         P.ObjectPreferenceGroup {
                                             syncProperties: true
@@ -377,31 +437,177 @@ NVG.Window {
                                                     // undefined
                                                 }
                                             }
-                                            //部件编辑界面的背景设置
-                                            P.BackgroundPreference {
-                                                name: "background"
-                                                label: qsTr("Background")
-
-                                                defaultBackground {
-                                                    normal:  pDefaultBackground.value?.normal ??
-                                                            pDefaultBackground.defaultBackground.normal
-                                                    hovered: pDefaultBackground.value?.hovered ??
-                                                            pDefaultBackground.defaultBackground.hovered
-                                                    pressed: pDefaultBackground.value?.pressed ??
-                                                            pDefaultBackground.defaultBackground.pressed
-                                                }
-                                                preferableFilter: pDefaultBackground.preferableFilter
+                                            //显示时间
+                                            P.SpinPreference {
+                                                name: "displayTime"
+                                                label: qsTr("Display Time")
+                                                editable: true
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
                                             }
-                                            //部件编辑界面的颜色设置
-                                            NoDefaultColorPreference {
-                                                name: "color"
-                                                label: qsTr("Color")
-                                                defaultValue: ctx_widget.defaultBackgroundColor
+                                            //隐藏时间
+                                            P.SpinPreference {
+                                                name: "hideTime"
+                                                label: qsTr("Hide Time")
+                                                editable: true
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
                                             }
-                                            //部件编辑界面的数据设置
-                                            P.DataPreference {
-                                                name: "data"
-                                                label: qsTr("Data")
+                                            //显示前暂停
+                                            P.SpinPreference {
+                                                name: "showPauseTime"
+                                                label: qsTr("Display Pause Time")
+                                                editable: true
+                                                defaultValue: 0
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            //隐藏前暂停
+                                            P.SpinPreference {
+                                                name: "hidePauseTime"
+                                                label: qsTr("Hide Pause Time")
+                                                editable: true
+                                                defaultValue: 0
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                        //显示动画
+                                            P.SwitchPreference {
+                                                id: enableShowAnimation
+                                                name: "enableShowAnimation"
+                                                label: qsTr("Enable Show Animation")
+                                            }
+                                            //角度
+                                            P.SpinPreference {
+                                                name: "showAnimation_Direction"
+                                                label: " --- " + qsTr("Direction")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableShowAnimation.value
+                                                defaultValue: 0
+                                                from: -360
+                                                to: 360
+                                                stepSize: 10
+                                            }
+                                            //距离
+                                            P.SpinPreference {
+                                                name: "showAnimation_Distance"
+                                                label: " --- " + qsTr("Distance")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableShowAnimation.value
+                                                defaultValue: 10
+                                                from: -1000
+                                                to: 1000
+                                                stepSize: 10
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "showAnimation_Duration"
+                                                label: " --- " + qsTr("Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableShowAnimation.value
+                                                defaultValue: 300
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //曲线
+                                            P.SelectPreference {
+                                                name: "showAnimation_Easing"
+                                                label: " --- " + qsTr("Easing")
+                                                model: easingModel
+                                                defaultValue: 3
+                                                visible: enableShowAnimation.value
+                                            }
+                                        //消逝动画
+                                            P.SwitchPreference {
+                                                id: enableFadeTransition
+                                                name: "enableFadeTransition"
+                                                label: qsTr("Enable Fade Animation")
+                                            }
+                                            //渐变开始 开始值
+                                            P.SpinPreference {
+                                                name: "fadeTransition_sta_start"
+                                                label: " --- " + qsTr("Start Edge Start")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableFadeTransition.value
+                                                defaultValue: 0
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 100
+                                            }
+                                            //渐变开始 结束值
+                                            P.SpinPreference {
+                                                name: "fadeTransition_sta_end"
+                                                label: " --- " + qsTr("Start Edge End")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableFadeTransition.value
+                                                defaultValue: 0
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 100
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "showAnimation_sta_Duration"
+                                                label: " --- " + qsTr("Start Edge Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableFadeTransition.value
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
+                                            }
+                                            //渐变结束 开始值
+                                            P.SpinPreference {
+                                                name: "fadeTransition_end_start"
+                                                label: " --- " + qsTr("End Edge Start")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableFadeTransition.value
+                                                defaultValue: 1000
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 100
+                                            }
+                                            //渐变开始 结束值
+                                            P.SpinPreference {
+                                                name: "fadeTransition_end_end"
+                                                label: " --- " + qsTr("End Edge End")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableFadeTransition.value
+                                                defaultValue: 0
+                                                from: -100000
+                                                to: 100000
+                                                stepSize: 100
+                                            }
+                                            //时间
+                                            P.SpinPreference {
+                                                name: "showAnimation_end_Duration"
+                                                label: " --- " + qsTr("End Edge Duration")
+                                                editable: true
+                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: enableFadeTransition.value
+                                                defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 10
                                             }
                                         }
                                     }
@@ -438,6 +644,7 @@ NVG.Window {
                                             //必须资源
                                             //显示时的遮罩
                                             P.SwitchPreference {
+                                                id: usedisplayMask
                                                 name: "usedisplayMask"
                                                 label: qsTr("Show Mask")
                                             }
@@ -445,16 +652,19 @@ NVG.Window {
                                                 name: "maskVisibleAfterAnimation"
                                                 label: qsTr("Display Mask After Animation")
                                                 defaultValue: true
+                                                visible: usedisplayMask.value
                                             }
                                             P.ImagePreference {
                                                 name: "displayMaskSource"
                                                 label: qsTr("Mask Image")
+                                                visible: usedisplayMask.value
                                             }
                                             P.SelectPreference {
                                                 name: "displayMaskFill"
                                                 label: qsTr("Fill Mode")
                                                 model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
                                                 defaultValue: 1
+                                                visible: usedisplayMask.value
                                             }
                                             P.SpinPreference {
                                                 name: "maskOpacity"
@@ -465,6 +675,7 @@ NVG.Window {
                                                 to: 100
                                                 stepSize: 5
                                                 display: P.TextFieldPreference.ExpandLabel
+                                                visible: usedisplayMask.value
                                             }
                                             P.SpinPreference {
                                                 name: "maskRotation"
@@ -475,9 +686,11 @@ NVG.Window {
                                                 to: 360
                                                 stepSize: 1
                                                 display: P.TextFieldPreference.ExpandLabel
+                                                visible: usedisplayMask.value
                                             }
                                             Row{
                                                 spacing: 8
+                                                visible: usedisplayMask.value
                                                 Column {
                                                     Label {
                                                         text: qsTr("X & Y")
@@ -546,16 +759,7 @@ NVG.Window {
                                                 to: 10000
                                                 stepSize: 50
                                                 display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "displayTime"
-                                                label: qsTr("Display Time")
-                                                editable: true
-                                                defaultValue: 250
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 50
-                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: usedisplayMask.value
                                             }
                                             P.SpinPreference {
                                                 name: "hideMaskTime"
@@ -566,36 +770,7 @@ NVG.Window {
                                                 to: 10000
                                                 stepSize: 50
                                                 display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "hideTime"
-                                                label: qsTr("Hide Time")
-                                                editable: true
-                                                defaultValue: 250
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 50
-                                                display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "showPauseTime"
-                                                label: qsTr("Display Pause Time")
-                                                editable: true
-                                                defaultValue: 0
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 50
-                                                display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "hidePauseTime"
-                                                label: qsTr("Hide Pause Time")
-                                                editable: true
-                                                defaultValue: 0
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 50
-                                                display: P.TextFieldPreference.ExpandLabel
+                                                visible: usedisplayMask.value
                                             }
                                         }
                                     }

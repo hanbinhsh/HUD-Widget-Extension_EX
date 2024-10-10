@@ -421,7 +421,39 @@ T.Widget {
                 text: modelData.label || this.title
                 configuration: modelData.action
             }
-
+            // 外层挂件独有
+            NumberAnimation on showAnimationX {
+                id: showMoveAnimationX
+                running: false
+                duration: settings.showAnimation_Duration ?? 300// 动画持续时间，单位为毫秒
+                easing.type: settings.showAnimation_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            NumberAnimation on showAnimationY {
+                id: showMoveAnimationY
+                running: false
+                duration: settings.showAnimation_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: settings.showAnimation_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            //消逝动画
+            property bool opciMaskForward: true
+            NumberAnimation on staOpciMask {
+                id: opciMask_sta
+                from: opciMaskForward ? settings.fadeTransition_sta_end ?? 0 : settings.fadeTransition_sta_start ?? 0
+                to: opciMaskForward ? settings.fadeTransition_sta_start ?? 0 : settings.fadeTransition_sta_end ?? 0
+                duration: settings.showAnimation_sta_Duration ?? 250
+            }
+            NumberAnimation on endOpciMask {
+                id: opciMask_end
+                from: opciMaskForward ? settings.fadeTransition_end_end ?? 0 : settings.fadeTransition_end_start ?? 1000
+                to: opciMaskForward ? settings.fadeTransition_end_start ?? 1000 : settings.fadeTransition_end_end ?? 0
+                duration: settings.showAnimation_end_Duration ?? 250
+            }
+            NumberAnimation on opciMaskAnimationEnd {
+                id: opciMaskAnimation_End
+                from: opciMaskForward ? 1 : 0
+                to: opciMaskForward ? 0 : 1
+                duration: 0
+            }
             Item {
                 id: itemContent
                 anchors.fill: parent
@@ -469,7 +501,40 @@ T.Widget {
                                 target: fadeImage; property: "opacity";
                                 duration: (settings.maskVisibleAfterAnimation??true) ? (settings.hideMaskTime ?? 250) : 0
                             }
-                            NumberAnimation { target: itemContent; property: "opacity"; duration: settings.hideTime ?? 250 }
+                            ScriptAction {
+                                script: {
+                                    opciMaskAnimation_End.stop()
+                                    opciMaskForward = false;
+                                    opciMaskAnimation_End.start()
+                                }
+                            }
+                            ParallelAnimation{
+                                ScriptAction {
+                                    script: {
+                                        opciMask_sta.stop()
+                                        opciMask_sta.start()
+                                    }
+                                }
+                                ScriptAction {
+                                    script: {
+                                        opciMask_end.stop()
+                                        opciMask_end.start()
+                                    }
+                                }
+                                ScriptAction {
+                                    script: {
+                                        if(settings.enableShowAnimation){
+                                            showMoveAnimationX.stop();
+                                            showMoveAnimationY.stop();
+                                            showMoveAnimationX.to = Number(settings.showAnimation_Distance ?? 10) * Math.cos(Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180);
+                                            showMoveAnimationY.to = -Number(settings.showAnimation_Distance ?? 10) * Math.sin(Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180);
+                                            showMoveAnimationX.running = true;
+                                            showMoveAnimationY.running = true;
+                                        }
+                                    }
+                                }
+                                NumberAnimation { target: itemContent; property: "opacity"; duration: settings.hideTime ?? 250 }
+                            }
                             PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
                         }
                     },
@@ -480,7 +545,41 @@ T.Widget {
                             PauseAnimation { duration: settings.showPauseTime ?? 0 }
                             PropertyAnimation { target: fadeImage; property: "visible"; duration: 0; to: settings.usedisplayMask }
                             PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
-                            NumberAnimation { target: itemContent; property: "opacity"; duration: settings.displayTime ?? 250 }
+                            ParallelAnimation{
+                                ScriptAction {
+                                    script: {
+                                        opciMask_sta.stop()
+                                        opciMaskForward = true;
+                                        opciMask_sta.start()
+                                    }
+                                }
+                                ScriptAction {
+                                    script: {
+                                        opciMask_end.stop()
+                                        opciMaskForward = true;
+                                        opciMask_end.start()
+                                    }
+                                }
+                                ScriptAction {
+                                    script: {
+                                        if(settings.enableShowAnimation){
+                                            showMoveAnimationX.stop();
+                                            showMoveAnimationY.stop();
+                                            showMoveAnimationX.to = 0;
+                                            showMoveAnimationY.to = 0;
+                                            showMoveAnimationX.running = true;
+                                            showMoveAnimationY.running = true;
+                                        }
+                                    }
+                                }
+                                NumberAnimation { target: itemContent; property: "opacity"; duration: settings.displayTime ?? 250 }
+                            }
+                            ScriptAction {
+                                script: {
+                                    opciMaskAnimation_End.stop()
+                                    opciMaskAnimation_End.start()
+                                }
+                            }
                             NumberAnimation { target: fadeImage; property: "opacity"; duration: settings.displayMaskTime ?? 250 }
                             NumberAnimation { 
                                 target: fadeImage;
