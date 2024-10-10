@@ -458,11 +458,13 @@ T.Widget {
                         PropertyChanges{ target: thiz; targetVisible: false }
                     }
                 ]
+                // TODO 调用数值变化动画实现显示时的滑入滑出？
                 transitions: [
                     Transition {
                         from: "SHOW"
                         to: "HIDE"
                         SequentialAnimation{
+                            PauseAnimation { duration: settings.hidePauseTime ?? 0 }
                             NumberAnimation {
                                 target: fadeImage; property: "opacity";
                                 duration: (settings.maskVisibleAfterAnimation??true) ? (settings.hideMaskTime ?? 250) : 0
@@ -475,6 +477,7 @@ T.Widget {
                         from: "HIDE"
                         to: "SHOW"
                         SequentialAnimation{
+                            PauseAnimation { duration: settings.showPauseTime ?? 0 }
                             PropertyAnimation { target: fadeImage; property: "visible"; duration: 0; to: settings.usedisplayMask }
                             PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
                             NumberAnimation { target: itemContent; property: "opacity"; duration: settings.displayTime ?? 250 }

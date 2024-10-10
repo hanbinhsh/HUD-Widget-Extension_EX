@@ -450,6 +450,12 @@ NVG.Window {
                                                 name: "displayMaskSource"
                                                 label: qsTr("Mask Image")
                                             }
+                                            P.SelectPreference {
+                                                name: "displayMaskFill"
+                                                label: qsTr("Fill Mode")
+                                                model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
+                                                defaultValue: 1
+                                            }
                                             P.SpinPreference {
                                                 name: "maskOpacity"
                                                 label: qsTr("Mask Opacity")
@@ -470,51 +476,66 @@ NVG.Window {
                                                 stepSize: 1
                                                 display: P.TextFieldPreference.ExpandLabel
                                             }
-                                            P.SelectPreference {
-                                                name: "displayMaskFill"
-                                                label: qsTr("Fill Mode")
-                                                model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
-                                                defaultValue: 1
-                                            }
-                                            P.SpinPreference {
-                                                name: "displayMaskTranslateX"
-                                                label: qsTr("X")
-                                                editable: true
-                                                defaultValue: 0
-                                                from: -10000
-                                                to: 10000
-                                                stepSize: 1
-                                                display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "displayMaskTranslateY"
-                                                label: qsTr("Y")
-                                                editable: true
-                                                defaultValue: 0
-                                                from: -10000
-                                                to: 10000
-                                                stepSize: 1
-                                                display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "displayMaskTranslateScaleHeight"
-                                                label: qsTr("Height")
-                                                editable: true
-                                                defaultValue: 54
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 1
-                                                display: P.TextFieldPreference.ExpandLabel
-                                            }
-                                            P.SpinPreference {
-                                                name: "displayMaskTranslateScaleWidth"
-                                                label: qsTr("Width")
-                                                editable: true
-                                                defaultValue: 54
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 1
-                                                display: P.TextFieldPreference.ExpandLabel
+                                            Row{
+                                                spacing: 8
+                                                Column {
+                                                    Label {
+                                                        text: qsTr("X & Y")
+                                                        anchors.horizontalCenter: parent.horizontalCenter
+                                                    }
+                                                    P.ObjectPreferenceGroup {
+                                                        syncProperties: true
+                                                        enabled: currentItem
+                                                        defaultValue: currentItem
+                                                        P.SpinPreference {
+                                                            name: "displayMaskTranslateX"
+                                                            editable: true
+                                                            defaultValue: 0
+                                                            from: -10000
+                                                            to: 10000
+                                                            stepSize: 1
+                                                            display: P.TextFieldPreference.ExpandLabel
+                                                        }
+                                                        P.SpinPreference {
+                                                            name: "displayMaskTranslateY"
+                                                            editable: true
+                                                            defaultValue: 0
+                                                            from: -10000
+                                                            to: 10000
+                                                            stepSize: 1
+                                                            display: P.TextFieldPreference.ExpandLabel
+                                                        }
+                                                    }
+                                                }
+                                                Column {
+                                                    Label {
+                                                        text: qsTr("Height & Width")
+                                                        anchors.horizontalCenter: parent.horizontalCenter
+                                                    }
+                                                    P.ObjectPreferenceGroup {
+                                                        syncProperties: true
+                                                        enabled: currentItem
+                                                        defaultValue: currentItem
+                                                        P.SpinPreference {
+                                                            name: "displayMaskTranslateScaleHeight"
+                                                            editable: true
+                                                            defaultValue: 54
+                                                            from: 0
+                                                            to: 10000
+                                                            stepSize: 1
+                                                            display: P.TextFieldPreference.ExpandLabel
+                                                        }
+                                                        P.SpinPreference {
+                                                            name: "displayMaskTranslateScaleWidth"
+                                                            editable: true
+                                                            defaultValue: 54
+                                                            from: 0
+                                                            to: 10000
+                                                            stepSize: 1
+                                                            display: P.TextFieldPreference.ExpandLabel
+                                                        }
+                                                    }
+                                                }
                                             }
                                             P.SpinPreference {
                                                 name: "displayMaskTime"
@@ -551,6 +572,26 @@ NVG.Window {
                                                 label: qsTr("Hide Time")
                                                 editable: true
                                                 defaultValue: 250
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "showPauseTime"
+                                                label: qsTr("Display Pause Time")
+                                                editable: true
+                                                defaultValue: 0
+                                                from: 0
+                                                to: 10000
+                                                stepSize: 50
+                                                display: P.TextFieldPreference.ExpandLabel
+                                            }
+                                            P.SpinPreference {
+                                                name: "hidePauseTime"
+                                                label: qsTr("Hide Pause Time")
+                                                editable: true
+                                                defaultValue: 0
                                                 from: 0
                                                 to: 10000
                                                 stepSize: 50
