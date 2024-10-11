@@ -204,14 +204,14 @@ NVG.Window {
                             label: qsTr("Default Text Color")
                             defaultValue: "#BBFFFFFF"
                         }
-                        //鼠标交互// BUG 用不了
-                        // InteractionSelectPreference {
-                        //     name: "interaction"
-                        //     label: qsTr("Default Item Interaction")
-                        //     settingsBase: widget.defaultSettings
-                        //     builtinInteractions: Utils.partInteractions
-                        //     catalogPattern: /com.gpbeta.hud-interaction\/item(?:$|\/.+)/
-                        // }
+                        //鼠标交互
+                        InteractionSelectPreference {
+                            name: "interaction"
+                            label: qsTr("Default Item Interaction")
+                            settingsBase: widget.defaultSettings
+                            builtinInteractions: Utils.partInteractions
+                            catalogPattern: /com.gpbeta.hud-interaction\/item(?:$|\/.+)/
+                        }
                         Loader {
                             visible: sourceComponent
                             sourceComponent: defaultInteractionItem?.preference ?? null

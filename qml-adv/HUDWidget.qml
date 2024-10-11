@@ -490,7 +490,6 @@ T.Widget {
                         PropertyChanges{ target: thiz; targetVisible: false }
                     }
                 ]
-                // TODO 调用数值变化动画实现显示时的滑入滑出？
                 transitions: [
                     Transition {
                         from: "SHOW"
