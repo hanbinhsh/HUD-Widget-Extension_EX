@@ -13,19 +13,15 @@ NVG.Window {
     id: dialog
     Style.theme: Style.Dark
     readonly property var currentItem: itemView.currentTarget?.settings ?? null
-
     readonly property Item defaultInteractionItem:
         widget.makeInteractionItem(defaultIteractionParent, widget.defaultSettings, "interactionItem_NB")
-
     title: widget.title
     visible: true
     minimumWidth: 360
     maximumWidth: 360
     minimumHeight: 700
     transientParent: widget.NVG.View.window
-
     onClosing: titleBar.forceActiveFocus()
-
     function duplicateSettingsMap(src, parent) {
         const dst = NVG.Settings.createMap(parent);
         src.keys().forEach(function (key) {
@@ -42,40 +38,32 @@ NVG.Window {
         });
         return dst;
     }
-
     function duplicateSettingsList(src, parent) {
         const dst = NVG.Settings.createList(parent);
         for (let i = 0; i < src.count; ++i)
             dst.append(duplicateSettingsMap(src.get(i), dst));
         return dst;
     }
-
     function requestDeleteItem() {
         if (itemView.count > 1)
             removeDialog.open();
     }
-
     Item {
         id: defaultIteractionParent
         width: 1
         height: 1
         visible: false
     }
-
     Dialog {
         id: removeDialog
         anchors.centerIn: parent
-
         title: "Confirm"
         modal: true
         parent: Overlay.overlay
         standardButtons: Dialog.Yes | Dialog.No
-
         onAccepted: itemView.model.remove(itemView.currentTarget.index)
-
         Label { text: qsTr("Are you sure to remove this item?") }
     }
-
     property var easingModel : [qsTr("Linear"),//0
                                 qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),//1-4
                                 qsTr("InCubic"),qsTr("OutCubic"),qsTr("InOutCubic"),qsTr("OutInCubic"),//5-8
@@ -88,7 +76,6 @@ NVG.Window {
                                 qsTr("InBack"),qsTr("OutBack"),qsTr("InOutBack"),qsTr("OutInBack"),//33-36
                                 qsTr("InBounce"),qsTr("OutBounce"),qsTr("InOutBounce"),qsTr("OutInBounce"),//36-40
                                 qsTr("BezierSpline")];
-
     Page {
         anchors.fill: parent
         //部件编辑界面上蓝色的条
@@ -139,7 +126,6 @@ NVG.Window {
                 }
             }
         }
-
         Flickable {
             anchors.fill: parent
             contentWidth: width
@@ -148,7 +134,6 @@ NVG.Window {
             bottomMargin: 16
             leftMargin: 16
             rightMargin: 16
-
             Column {
                 id: preferencesLayout
                 width: parent.width - 32
@@ -158,7 +143,6 @@ NVG.Window {
                     live: true
                     label: qsTr("Widget Settings")
                     icon.name: "regular:\uf3f2"
-
                     P.ObjectPreferenceGroup {
                         defaultValue: widget.defaultSettings
                         syncProperties: true
@@ -168,13 +152,11 @@ NVG.Window {
                             id: pDefaultBackground
                             name: "background"
                             label: qsTr("Default Background")
-
                             defaultBackground {
                                 normal: Utils.NormalBackground
                                 hovered: Utils.HoveredBackground
                                 pressed: Utils.PressedBackground
                             }
-
                             preferableFilter: NVG.ResourceFilter {
                                 packagePattern: /com.gpbeta.widget.hud/
                             }
@@ -218,7 +200,6 @@ NVG.Window {
                             PreferenceGroupIndicator {}
                         }
                     }
-
                     P.ObjectPreferenceGroup {
                         defaultValue: widget.settings
                         syncProperties: true
@@ -238,14 +219,12 @@ NVG.Window {
                             builtinInteractions: Utils.widgetInteractions
                             catalogPattern: /com.gpbeta.hud-interaction\/widget(?:$|\/.+)/
                         }
-
                         Loader {
                             visible: sourceComponent
                             sourceComponent: widget.interactionItem?.preference ?? null
                             PreferenceGroupIndicator {}
                         }
                     }
-
                     P.ObjectPreferenceGroup {
                         defaultValue: widget.craftSettings
                         syncProperties: true
@@ -308,7 +287,7 @@ NVG.Window {
                             case 1: return layoutVisibleSetting.contentHeight + 56;
                             case 2: return layoutTransformSetting.contentHeight + 56;
                             case 3: return layoutActionSetting.contentHeight + 56;
-                            case 4: return displayMaskSetting.height + 56;
+                            case 4: return displayMaskSetting.contentHeight + 56;
                             return 0;
                         }
                         header:TabBar {
@@ -406,154 +385,9 @@ NVG.Window {
                                 }
                             }
                             Item{
-                                //必须资源
-                                Flickable {
-                                    anchors.fill: parent
-                                    contentWidth: width
-                                    contentHeight: displayMaskSetting.height
-                                    topMargin: 16
-                                    bottomMargin: 16
-                                    Column {
-                                        id: displayMaskSetting
-                                        width: parent.width
-                                        P.ObjectPreferenceGroup {
-                                            syncProperties: true
-                                            enabled: currentItem
-                                            width: parent.width
-                                            defaultValue: currentItem
-                                            //必须资源
-                                            //显示时的遮罩
-                                            P.SwitchPreference {
-                                                id: usedisplayMask
-                                                name: "usedisplayMask"
-                                                label: qsTr("Show Mask")
-                                            }
-                                            P.SwitchPreference {
-                                                name: "maskVisibleAfterAnimation"
-                                                label: qsTr("Display Mask After Animation")
-                                                defaultValue: true
-                                                visible: usedisplayMask.value
-                                            }
-                                            P.ImagePreference {
-                                                name: "displayMaskSource"
-                                                label: qsTr("Mask Image")
-                                                visible: usedisplayMask.value
-                                            }
-                                            P.SelectPreference {
-                                                name: "displayMaskFill"
-                                                label: qsTr("Fill Mode")
-                                                model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
-                                                defaultValue: 1
-                                                visible: usedisplayMask.value
-                                            }
-                                            P.SpinPreference {
-                                                name: "maskOpacity"
-                                                label: qsTr("Mask Opacity")
-                                                editable: true
-                                                defaultValue: 100
-                                                from: 0
-                                                to: 100
-                                                stepSize: 5
-                                                display: P.TextFieldPreference.ExpandLabel
-                                                visible: usedisplayMask.value
-                                            }
-                                            P.SpinPreference {
-                                                name: "maskRotation"
-                                                label: qsTr("Mask Rotation")
-                                                editable: true
-                                                defaultValue: 0
-                                                from: -360
-                                                to: 360
-                                                stepSize: 1
-                                                display: P.TextFieldPreference.ExpandLabel
-                                                visible: usedisplayMask.value
-                                            }
-                                            Row{
-                                                spacing: 8
-                                                visible: usedisplayMask.value
-                                                Column {
-                                                    Label {
-                                                        text: qsTr("X & Y")
-                                                        anchors.horizontalCenter: parent.horizontalCenter
-                                                    }
-                                                    P.ObjectPreferenceGroup {
-                                                        syncProperties: true
-                                                        enabled: currentItem
-                                                        defaultValue: currentItem
-                                                        P.SpinPreference {
-                                                            name: "displayMaskTranslateX"
-                                                            editable: true
-                                                            defaultValue: 0
-                                                            from: -10000
-                                                            to: 10000
-                                                            stepSize: 1
-                                                            display: P.TextFieldPreference.ExpandLabel
-                                                        }
-                                                        P.SpinPreference {
-                                                            name: "displayMaskTranslateY"
-                                                            editable: true
-                                                            defaultValue: 0
-                                                            from: -10000
-                                                            to: 10000
-                                                            stepSize: 1
-                                                            display: P.TextFieldPreference.ExpandLabel
-                                                        }
-                                                    }
-                                                }
-                                                Column {
-                                                    Label {
-                                                        text: qsTr("Height & Width")
-                                                        anchors.horizontalCenter: parent.horizontalCenter
-                                                    }
-                                                    P.ObjectPreferenceGroup {
-                                                        syncProperties: true
-                                                        enabled: currentItem
-                                                        defaultValue: currentItem
-                                                        P.SpinPreference {
-                                                            name: "displayMaskTranslateScaleHeight"
-                                                            editable: true
-                                                            defaultValue: 54
-                                                            from: 0
-                                                            to: 10000
-                                                            stepSize: 1
-                                                            display: P.TextFieldPreference.ExpandLabel
-                                                        }
-                                                        P.SpinPreference {
-                                                            name: "displayMaskTranslateScaleWidth"
-                                                            editable: true
-                                                            defaultValue: 54
-                                                            from: 0
-                                                            to: 10000
-                                                            stepSize: 1
-                                                            display: P.TextFieldPreference.ExpandLabel
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            P.SpinPreference {
-                                                name: "displayMaskTime"
-                                                label: qsTr("Display Mask Time")
-                                                editable: true
-                                                defaultValue: 250
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 50
-                                                display: P.TextFieldPreference.ExpandLabel
-                                                visible: usedisplayMask.value
-                                            }
-                                            P.SpinPreference {
-                                                name: "hideMaskTime"
-                                                label: qsTr("Hide Mask Time")
-                                                editable: true
-                                                defaultValue: 250
-                                                from: 0
-                                                to: 10000
-                                                stepSize: 50
-                                                display: P.TextFieldPreference.ExpandLabel
-                                                visible: usedisplayMask.value
-                                            }
-                                        }
-                                    }
+                                ShowMaskPreferenceGroup{
+                                    item: currentItem
+                                    id: displayMaskSetting
                                 }
                             }
                         }
@@ -561,15 +395,13 @@ NVG.Window {
                 }
             }
         }
-    }
-    
+    } 
     Loader {
         id: editor
         active: false
         sourceComponent: CraftDialog {
             builtinElements: Utils.elements
             builtinInteractions: Utils.partInteractions
-
             onAccepted: {
                 const oldSettings = dialog.currentItem;
                 itemView.model.set(itemView.currentTarget.index, itemSettings);
@@ -578,7 +410,6 @@ NVG.Window {
                     oldSettings.destroy();
                 } catch (err) {}
             }
-
             onClosed: {
                 if (itemSettings) {
                     const oldSettings = itemSettings;

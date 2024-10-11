@@ -10,23 +10,18 @@ import "settings"
 // 二级菜单
 NVG.Window {
     id: dialog
-
     readonly property var currentElement: elementView.currentTarget?.settings ?? null
     readonly property QtObject craftSettings: itemSettings ? NVG.Settings.makeMap(itemSettings, "craft") : null
-
     readonly property bool darkMode: craftSettings?.dark ?? true
     readonly property bool resizableWidth: !(itemSettings?.alignment & Qt.AlignLeft) ||
                                            !(itemSettings?.alignment & Qt.AlignRight)
     readonly property bool resizableHeight: !(itemSettings?.alignment & Qt.AlignTop) ||
                                             !(itemSettings?.alignment & Qt.AlignBottom)
-
     property CraftDelegate targetItem
     property QtObject itemSettings
     property var builtinElements: []
     property var builtinInteractions: []
-
     property bool forceClose
-
     signal accepted
     signal closed
     //编辑界面内顶上的物品编辑文字
@@ -36,16 +31,13 @@ NVG.Window {
     width: minimumWidth
     height: minimumHeight+140
     modality: Qt.WindowModal
-
     Style.theme: darkMode ? Style.Dark : Style.System
-
     function addElement(url) {
         const settings = NVG.Settings.createMap(elementView.model);
         settings.content = url;
         elementView.model.append(settings);
         elementView.currentTarget = elementView.targetAt(elementView.count - 1);
     }
-
     function duplicateElement(element) {
         const settings = duplicateSettingsMap(element, elementView.model);
         settings.alignment = undefined;
@@ -54,7 +46,6 @@ NVG.Window {
         elementView.model.append(settings);
         elementView.currentTarget = elementView.targetAt(elementView.count - 1);
     }
-
     onClosing: {
         if (forceClose)
             return;
@@ -64,39 +55,31 @@ NVG.Window {
             discardDialog.open();
         }
     }
-
     onVisibleChanged: {
         if (visible) {
             elementView.width = targetItem.width;
             elementView.height = targetItem.height;
-
             widthInput.placeholderText = targetItem.width;
             heightInput.placeholderText = targetItem.height;
-
             forceClose = false;
             NVG.Settings.setModified(itemSettings, false);
         } else {
             closed();
         }
     }
-
     Dialog {
         id: discardDialog
         anchors.centerIn: parent
-
         title: "Confirm"
         modal: true
         parent: Overlay.overlay
         standardButtons: Dialog.Yes | Dialog.No
-
         onAccepted: {
             forceClose = true;
             dialog.close();
         }
-
         Label { text: qsTr("Are you sure to discard the changes?") }
     }
-
     property var easingModel : [qsTr("Linear"),
                                 qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),
                                 qsTr("InCubic"),qsTr("OutCubic"),qsTr("InOutCubic"),qsTr("OutInCubic"),
@@ -109,43 +92,34 @@ NVG.Window {
                                 qsTr("InBack"),qsTr("OutBack"),qsTr("InOutBack"),qsTr("OutInBack"),
                                 qsTr("InBounce"),qsTr("OutBounce"),qsTr("InOutBounce"),qsTr("OutInBounce"),
                                 qsTr("BezierSpline")];
-
     Page {
         anchors.fill: parent
         //编辑界面上面的横条
         header: TitleBar {
             text: dialog.title
             standardButtons: Dialog.Save
-
             onAccepted: {
                 if (resizableWidth && targetItem.width !== elementView.width)
                     itemSettings.width = elementView.width;
-
                 if (resizableHeight && targetItem.height !== elementView.height)
                     itemSettings.height = elementView.height;
-
                 dialog.accepted();
                 dialog.close();
             }
         }
-
         ScrollView {
             id: scrollView
             anchors.left: parent.left
             anchors.right: settingsPane.left
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-
             contentWidth: bgArea.width
             contentHeight: bgArea.height
-
             MouseArea {
                 id: bgArea
                 width: Math.max(scrollView.width, elementView.width + 32)
                 height: Math.max(scrollView.height, elementView.height + 32)
-
                 onClicked: elementView.currentTarget = null
-
                 ColorBackgroundSource {
                     id: bgSource
                     anchors.fill: elementView
@@ -156,11 +130,9 @@ NVG.Window {
                     configuration: itemSettings?.background ?? ctx_widget.defaultBackground
                     defaultBackground: pDefaultBackground.defaultBackground
                 }
-
                 CraftView {
                     id: elementView
                     anchors.centerIn: parent
-
                     interactive: true
                     gridGuide: craftSettings?.guide ?? true
                     gridSize: craftSettings?.grid ?? 10
@@ -174,11 +146,9 @@ NVG.Window {
                         settings: modelData
                         index: model.index
                     }
-
                     onDeselectRequest: elementView.currentTarget = null
                     onDeleteRequest: elementView.model.remove(elementView.currentTarget.index)
                 }
-
                 Rectangle {
                     anchors.fill: elementView
                     color: "transparent"
@@ -193,11 +163,9 @@ NVG.Window {
             anchors.top: parent.top
             anchors.right: settingsPane.left
             anchors.rightMargin: 12
-
             icon.name: darkMode ? "light:\uf672" : "light:\uf0eb"
             onClicked: craftSettings.dark = !darkMode
         }
-
         Row {
             anchors.top: parent.top
             anchors.left: parent.left
@@ -217,12 +185,9 @@ NVG.Window {
                 stepSize: 1
                 live: true
                 value: elementView.gridSize
-
                 visible: elementView.gridGuide
                 rightPadding: 64
-
                 onValueChanged: if (craftSettings) craftSettings.grid = value
-
                 Label {
                     anchors.right: parent.right
                     anchors.rightMargin: 12
@@ -243,7 +208,6 @@ NVG.Window {
                 onClicked: craftSettings.background = !bgSource.visible
             }
         }
-
         Row {
             anchors.right: settingsPane.left
             anchors.rightMargin: 16
@@ -275,7 +239,6 @@ NVG.Window {
         //右下方的添加元素选项菜单
         Menu {
             id: addElementMenu
-
             Repeater {
                 model: builtinElements
                 delegate: MenuItem {
@@ -287,10 +250,8 @@ NVG.Window {
             //更多元素选项
             Menu {
                 id: moreElementMenu
-
                 title: qsTr("More")
                 enabled: count
-
                 Repeater {
                     model: {
                         const files = [];
@@ -309,23 +270,18 @@ NVG.Window {
                 }
             }
         }
-
         Pane {
             id: settingsPane
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-
             width: 360
             topPadding: 0
-
             Flickable {
                 anchors.fill: parent
-
                 topMargin: 16
                 contentWidth: width
                 contentHeight: preferencesLayout.height
-
                 ColumnLayout {
                     id: preferencesLayout
                     width: parent.width
@@ -339,10 +295,8 @@ NVG.Window {
                         P.ItemPreference {
                             label: qsTr("Size")
                             background.enabled: false
-
                             actionItem: Row {
                                 spacing: 8
-
                                 GeometryEditorInput {
                                     id: widthInput
                                     topPadding: 8
@@ -350,16 +304,13 @@ NVG.Window {
                                     minValue: 16
                                     valueText: elementView.width
                                     enabled: resizableWidth
-
                                     onUpdateValue: elementView.width = value ?? targetItem.width
                                 }
-
                                 Label {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: "x"
                                     enabled: false
                                 }
-
                                 GeometryEditorInput {
                                     id: heightInput
                                     topPadding: 8
@@ -367,7 +318,6 @@ NVG.Window {
                                     minValue: 16
                                     valueText: elementView.height
                                     enabled: resizableHeight
-
                                     onUpdateValue: elementView.height = value ?? targetItem.height
                                 }
                             }
@@ -376,11 +326,9 @@ NVG.Window {
                         P.ObjectPreferenceGroup {
                             defaultValue: itemSettings
                             syncProperties: true
-
                             P.BackgroundPreference {
                                 name: "background"
                                 label: qsTr("Background")
-
                                 defaultBackground {
                                     normal:  pDefaultBackground.value?.normal ??
                                              pDefaultBackground.defaultBackground.normal
@@ -399,7 +347,6 @@ NVG.Window {
                             }
                         }
                     }
-
                     CraftDelegateSelector {
                         Layout.fillWidth: true
                         view: elementView
@@ -408,7 +355,6 @@ NVG.Window {
                             return label || target.title;
                         }
                     }
-
                     P.ObjectPreferenceGroup {
                         Layout.fillWidth: true
                         //编辑界面内的元素设置
@@ -416,7 +362,6 @@ NVG.Window {
                         defaultValue: currentElement
                         enabled: currentElement
                         syncProperties: true
-
                         GeometryEditor { target: elementView.currentTarget }
                         //编辑界面内的挂件名称设置
                         P.TextFieldPreference {
@@ -426,7 +371,6 @@ NVG.Window {
                             rightPadding: 15
                         }
                     }
-
                     P.ObjectPreferenceGroup {
                         Layout.fillWidth: true
                         width: parent.width
@@ -568,12 +512,6 @@ NVG.Window {
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                                Item{
-                                    VisiblePreferenceGroup{
-                                        item: currentItem
-                                        id: layoutVisibleSetting
                                     }
                                 }
                                 Item{
