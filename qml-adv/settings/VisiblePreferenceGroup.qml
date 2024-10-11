@@ -161,6 +161,11 @@ Flickable {
                 name: "enableFadeTransition"
                 label: qsTr("Enable Fade Animation")
             }
+            P.SwitchPreference {
+                name: "fadeTransitionHorizontal"
+                label: " --- " + qsTr("Horizontal Direction")
+                visible: enableFadeTransition.value
+            }
             //渐变开始 开始值
             P.SpinPreference {
                 name: "fadeTransition_sta_start"
@@ -195,7 +200,7 @@ Flickable {
                 defaultValue: 250
                 from: 0
                 to: 10000
-                stepSize: 10
+                stepSize: 50
             }
             //渐变结束 开始值
             P.SpinPreference {
@@ -231,7 +236,19 @@ Flickable {
                 defaultValue: 250
                 from: 0
                 to: 10000
-                stepSize: 10
+                stepSize: 50
+            }
+            //动画结束时间
+            P.SpinPreference {
+                name: "showAnimation_Duration"
+                label: " --- " + qsTr("End Duration")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: enableFadeTransition.value
+                defaultValue: 100
+                from: 0
+                to: 10000
+                stepSize: 50
             }
         }
     }

@@ -81,6 +81,7 @@ MouseArea {
     property real endOpciMask : 0
     property real staOpciMask : 0
     property bool opciMaskAnimationEnd : true
+    property real endOpci: 0
     //点击移动动画
     property real clickAnimationX : 0
     property real clickAnimationY : 0
@@ -301,10 +302,9 @@ MouseArea {
                 width: delegate.width
                 height: delegate.height
                 gradient: Gradient {
-                    // TODO 更改颜色和垂直横着
-                    orientation: Gradient.Vertical
-                    GradientStop { position: staOpciMask/1000.0; color: "#FFFFFFFF" }
-                    GradientStop { position: endOpciMask/1000.0; color: "#00000000" }
+                    orientation: settings.fadeTransitionHorizontal ? Gradient.Horizontal : Gradient.Vertical
+                    GradientStop { position: staOpciMask/1000.0; color: Qt.rgba(255, 255, 255, 1) }// sta
+                    GradientStop { position: endOpciMask/1000.0; color: Qt.rgba(255, 255, 255, endOpci/100.0) }// end
                 }
             }
         }

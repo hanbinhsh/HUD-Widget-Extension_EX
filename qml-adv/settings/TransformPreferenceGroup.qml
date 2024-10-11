@@ -39,7 +39,7 @@ Flickable {
             //透明度
             P.SliderPreference {
                 name: "opacity"
-                label: "--- " + qsTr("Opacity")
+                label: " --- " + qsTr("Opacity")
                 displayValue: Math.round(value * 100) + " %"
                 defaultValue: 1
                 from: 0
@@ -52,13 +52,13 @@ Flickable {
             P.SwitchPreference {
                 id: enableOpacityAnimation
                 name: "enableOpacityAnimation"
-                label: "--- " + qsTr("Opacity Animation")
+                label: " --- " + qsTr("Opacity Animation")
                 visible: opacitySettings.value
             }
             //速度
             P.SpinPreference {
                 name: "opacityAnimationSpeed"
-                label: "--- --- " + qsTr("Speed")
+                label: " --- --- " + qsTr("Speed")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableOpacityAnimation.value&&opacitySettings.value
@@ -77,7 +77,7 @@ Flickable {
             //旋转
             P.SliderPreference {
                 name: "rotation"
-                label: "--- " + qsTr("Rotation")
+                label: " --- " + qsTr("Rotation")
                 displayValue: value + " °"
                 defaultValue: 0
                 from: -360
@@ -90,14 +90,14 @@ Flickable {
             P.SwitchPreference {
                 id: rotationDisplay
                 name: "rotationDisplay"
-                label: "--- " + qsTr("Auto Rotation")
+                label: " --- " + qsTr("Auto Rotation")
                 visible: rotationSettings.value
             }
             //转速
             P.SliderPreference {
                 id:rotationSpeed
                 name: "rotationSpeed"
-                label: "--- --- " + qsTr("Spin Speed")
+                label: " --- --- " + qsTr("Spin Speed")
                 defaultValue: 5
                 from: -500
                 to: 500
@@ -110,7 +110,7 @@ Flickable {
             P.SliderPreference {
                 id:rotationFPS
                 name: "rotationFPS"
-                label: "--- --- " + qsTr("FPS")
+                label: " --- --- " + qsTr("FPS")
                 defaultValue: 20
                 from: 1
                 to: 240
@@ -123,7 +123,7 @@ Flickable {
             P.SwitchPreference {
                 id: enableAdvancedRotation
                 name: "enableAdvancedRotation"
-                label: "--- " + qsTr("Advanced Rotation")
+                label: " --- " + qsTr("Advanced Rotation")
                 visible: rotationSettings.value
             }
             Row{
@@ -220,13 +220,13 @@ Flickable {
             P.SwitchPreference {
                 id: enableAdvancedRotationAnimation
                 name: "enableAdvancedRotationAnimation"
-                label: "--- --- " + qsTr("3D Rotation Animation")
+                label: " --- --- " + qsTr("3D Rotation Animation")
                 visible: enableAdvancedRotation.value&&rotationSettings.value
             }
             //速度
             P.SpinPreference {
                 name: "advancedRotationSpeed"
-                label: "--- --- --- " + qsTr("Speed")
+                label: " --- --- --- " + qsTr("Speed")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value
@@ -238,7 +238,7 @@ Flickable {
             //FPS
             P.SpinPreference {
                 name: "advancedRotationFPS"
-                label: "--- --- --- " + qsTr("FPS")
+                label: " --- --- --- " + qsTr("FPS")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value
@@ -332,7 +332,7 @@ Flickable {
             //X偏移量
             P.SpinPreference {
                 name: "translateX"
-                label: "--- " + qsTr("X")
+                label: " --- " + qsTr("X")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: translateSetting.value
@@ -344,7 +344,7 @@ Flickable {
             //Y偏移量
             P.SpinPreference {
                 name: "translateY"
-                label: "--- " + qsTr("Y")
+                label: " --- " + qsTr("Y")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: translateSetting.value

@@ -448,11 +448,11 @@ T.Widget {
                 to: opciMaskForward ? settings.fadeTransition_end_start ?? 1000 : settings.fadeTransition_end_end ?? 0
                 duration: settings.showAnimation_end_Duration ?? 250
             }
-            NumberAnimation on opciMaskAnimationEnd {
+            NumberAnimation on endOpci {
                 id: opciMaskAnimation_End
-                from: opciMaskForward ? 1 : 0
-                to: opciMaskForward ? 0 : 1
-                duration: 0
+                from: opciMaskForward ? 0 : 100
+                to: opciMaskForward ? 100 : 0
+                duration: settings.showAnimation_Duration ?? 100
             }
             Item {
                 id: itemContent
