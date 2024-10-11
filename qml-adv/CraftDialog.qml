@@ -522,30 +522,30 @@ NVG.Window {
                                                     live: true
                                                     visible: pEffect.value
                                                 }
-                                                // //水平偏移
-                                                // P.SpinPreference {
-                                                //     name: "horizon"
-                                                //     label: " - " + qsTr("Horizontal Offset")
-                                                //     defaultValue: 0
-                                                //     from: -999
-                                                //     to: 999
-                                                //     stepSize: 1
-                                                //     editable: true
-                                                //     visible: pEffect.value
-                                                //     display: P.TextFieldPreference.ExpandLabel
-                                                // }
-                                                // //垂直偏移
-                                                // P.SpinPreference {
-                                                //     name: "vertical"
-                                                //     label: " - " + qsTr("Vertical Offset")
-                                                //     defaultValue: 0
-                                                //     from: -999
-                                                //     to: 999
-                                                //     stepSize: 1
-                                                //     editable: true
-                                                //     visible: pEffect.value
-                                                //     display: P.TextFieldPreference.ExpandLabel
-                                                // }
+                                                //水平偏移
+                                                P.SpinPreference {
+                                                    name: "horizon"
+                                                    label: " - " + qsTr("Horizontal Offset")
+                                                    defaultValue: 0
+                                                    from: -999
+                                                    to: 999
+                                                    stepSize: 1
+                                                    editable: true
+                                                    visible: pEffect.value
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                }
+                                                //垂直偏移
+                                                P.SpinPreference {
+                                                    name: "vertical"
+                                                    label: " - " + qsTr("Vertical Offset")
+                                                    defaultValue: 0
+                                                    from: -999
+                                                    to: 999
+                                                    stepSize: 1
+                                                    editable: true
+                                                    visible: pEffect.value
+                                                    display: P.TextFieldPreference.ExpandLabel
+                                                }
                                                 NoDefaultColorPreference {
                                                     name: "color"
                                                     label: qsTr("Color")
@@ -571,6 +571,12 @@ NVG.Window {
                                     }
                                 }
                                 Item{
+                                    VisiblePreferenceGroup{
+                                        item: currentItem
+                                        id: layoutVisibleSetting
+                                    }
+                                }
+                                Item{
                                     TransformPreferenceGroup{
                                         item: currentElement
                                         id: layoutTransformSetting
@@ -587,20 +593,16 @@ NVG.Window {
                     }
                     Heading {
                         Layout.fillWidth: true
-
                         visible: elementView.currentTarget && prefLoader.sourceComponent
                         text: qsTr("%1 Settings").arg(elementView.currentTarget?.title ?? "")
                     }
-
                     Loader {
                         id: prefLoader
                         Layout.fillWidth: true
-
                         sourceComponent: elementView.currentTarget?.preference ?? null
                     }
                 }
             }
-
             Style.elevation: 1
             //编辑元素界面右边的背景色
             Style.background: dialog.Style.dialogColor
