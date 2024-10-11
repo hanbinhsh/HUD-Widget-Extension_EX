@@ -147,7 +147,7 @@ Flickable {
                             defaultValue: 0
                             from: -10000
                             to: 10000
-                            stepSize: 10
+                            stepSize: 1
                         }
                         //旋转原点Y
                         P.SpinPreference {
@@ -158,7 +158,7 @@ Flickable {
                             defaultValue: 0
                             from: -10000
                             to: 10000
-                            stepSize: 10
+                            stepSize: 1
                         }
                         //角度
                         P.SpinPreference {
@@ -169,7 +169,7 @@ Flickable {
                             defaultValue: 0
                             from: -360
                             to: 360
-                            stepSize: 10
+                            stepSize: 1
                         }
                     }
                 }
@@ -191,7 +191,7 @@ Flickable {
                             defaultValue: 0
                             from: -10000
                             to: 10000
-                            stepSize: 10
+                            stepSize: 1
                         }
                         P.SpinPreference {
                             name: "advancedRotationAxisY"
@@ -201,7 +201,7 @@ Flickable {
                             defaultValue: 0
                             from: -10000
                             to: 10000
-                            stepSize: 10
+                            stepSize: 1
                         }
                         P.SpinPreference {
                             name: "advancedRotationAxisZ"
@@ -211,7 +211,7 @@ Flickable {
                             defaultValue: 0
                             from: -10000
                             to: 10000
-                            stepSize: 10
+                            stepSize: 1
                         }
                     }
                 }

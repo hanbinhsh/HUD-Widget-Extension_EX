@@ -435,7 +435,7 @@ T.Widget {
                 easing.type: settings.showAnimation_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //消逝动画
-            property bool opciMaskForward: true
+            property bool opciMaskForward: false
             NumberAnimation on staOpciMask {
                 id: opciMask_sta
                 from: opciMaskForward ? settings.fadeTransition_sta_end ?? 0 : settings.fadeTransition_sta_start ?? 0
@@ -508,16 +508,19 @@ T.Widget {
                                     opciMaskAnimation_End.start()
                                 }
                             }
+                            PauseAnimation { duration: settings.enableFadeTransition ? settings.showAnimation_Duration ?? 100 : 0 }
                             ParallelAnimation{
                                 ScriptAction {
                                     script: {
                                         opciMask_sta.stop()
+                                        opciMaskForward = false;
                                         opciMask_sta.start()
                                     }
                                 }
                                 ScriptAction {
                                     script: {
                                         opciMask_end.stop()
+                                        opciMaskForward = false;
                                         opciMask_end.start()
                                     }
                                 }
@@ -577,6 +580,7 @@ T.Widget {
                             ScriptAction {
                                 script: {
                                     opciMaskAnimation_End.stop()
+                                    opciMaskForward = true;
                                     opciMaskAnimation_End.start()
                                 }
                             }
