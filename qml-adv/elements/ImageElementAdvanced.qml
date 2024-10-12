@@ -763,309 +763,309 @@ DataSourceElement {
                                 from: -10000
                                 to: 10000
                                 stepSize: 5
-                                }
-                                //垂直
-                                P.SpinPreference {
-                                    name: "animationVertical"
-                                    label: " --- --- " + qsTr("Vertical")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
-                                    defaultValue: 0
-                                    from: -10000
-                                    to: 10000
-                                    stepSize: 5
-                                }
-                                //角度
-                                P.SpinPreference {
-                                    name: "animationAngle"
-                                    label: " --- --- " + qsTr("Angle")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
-                                    defaultValue: 0
-                                    from: -10000
-                                    to: 10000
-                                    stepSize: 5
-                                }
-                                //水平半径 4
-                                P.SpinPreference {
-                                    name: "animationHorizontalRadius"
-                                    label: " --- --- " + qsTr("Horizontal Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: settings.animationDirect==4&&colorGradient.value
-                                    defaultValue: 50
-                                    from: -10000
-                                    to: 10000
-                                    stepSize: 5
-                                }
-                                //垂直半径 4
-                                P.SpinPreference {
-                                    name: "animationVerticalRadius"
-                                    label: " --- --- " + qsTr("Vertical Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: settings.animationDirect==4&&colorGradient.value
-                                    defaultValue: 50
-                                    from: -10000
-                                    to: 10000
-                                    stepSize: 5
-                                }
-                                //渐变开始值
-                                P.SpinPreference {
-                                    name: "cycleColorFrom"
-                                    label: " --- " + qsTr("Color From")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableColorAnimation.value&&colorGradient.value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 10000
-                                    stepSize: 1
-                                }
-                                //渐变结束值
-                                P.SpinPreference {
-                                    name: "cycleColorTo"
-                                    label: " --- " + qsTr("Color To")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableColorAnimation.value&&colorGradient.value
-                                    defaultValue: 15
-                                    from: 0
-                                    to: 10000
-                                    stepSize: 1
-                                }
-                                //渐变颜色
-                                P.SelectPreference {
-                                    id:cycleColor
-                                    name: "cycleColor"
-                                    label: " --- " + qsTr("Cycle Color")
-                                    defaultValue: 0
-                                    //彩虹
-                                    model: [ qsTr("Rainbow") ,qsTr("Custom")+"Ⅰ", qsTr("Custom")+"Ⅱ"]
-                                    visible: colorGradient.value
-                                }
-                                //自定义颜色 1
-                                //开始颜色
-                                P.SpinPreference {
-                                    name: "cycleColorCustomStart"
-                                    label: " --- " + qsTr("Color Start")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: colorGradient.value&&settings.cycleColor==1
-                                    defaultValue: 0
-                                    from: -5000
-                                    to: 5000
-                                    stepSize: 16
-                                }
-                                //结束颜色
-                                P.SpinPreference {
-                                    name: "cycleColorCustomEnd"
-                                    label: " --- " + qsTr("Color End")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: colorGradient.value&&settings.cycleColor==1
-                                    defaultValue: 160
-                                    from: -5000
-                                    to: 5000
-                                    stepSize: 16
-                                }
-                                //自定义颜色 2
-                                Row{
-                                    spacing: 4
-                                    visible: colorGradient.value&&settings.cycleColor==2
-                                    Column {
-                                        Label {
-                                            text: qsTr("00~05")
-                                            anchors.right: parent.right
-                                            anchors.rightMargin: 12
-                                        }
-                                        P.ObjectPreferenceGroup {
-                                            syncProperties: true
-                                            enabled: currentItem
-                                            defaultValue: thiz.settings
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor0"
-                                                defaultValue: colorInit(0)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor1"
-                                                defaultValue: colorInit(1)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor2"
-                                                defaultValue: colorInit(2)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor3"
-                                                defaultValue: colorInit(3)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor4"
-                                                defaultValue: colorInit(4)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor5"
-                                                defaultValue: colorInit(5)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                        }
+                            }
+                            //垂直
+                            P.SpinPreference {
+                                name: "animationVertical"
+                                label: " --- --- " + qsTr("Vertical")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
+                                defaultValue: 0
+                                from: -10000
+                                to: 10000
+                                stepSize: 5
+                            }
+                            //角度
+                            P.SpinPreference {
+                                name: "animationAngle"
+                                label: " --- --- " + qsTr("Angle")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
+                                defaultValue: 0
+                                from: -10000
+                                to: 10000
+                                stepSize: 5
+                            }
+                            //水平半径 4
+                            P.SpinPreference {
+                                name: "animationHorizontalRadius"
+                                label: " --- --- " + qsTr("Horizontal Radius")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: settings.animationDirect==4&&colorGradient.value
+                                defaultValue: 50
+                                from: -10000
+                                to: 10000
+                                stepSize: 5
+                            }
+                            //垂直半径 4
+                            P.SpinPreference {
+                                name: "animationVerticalRadius"
+                                label: " --- --- " + qsTr("Vertical Radius")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: settings.animationDirect==4&&colorGradient.value
+                                defaultValue: 50
+                                from: -10000
+                                to: 10000
+                                stepSize: 5
+                            }
+                            //渐变开始值
+                            P.SpinPreference {
+                                name: "cycleColorFrom"
+                                label: " --- " + qsTr("Color From")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: enableColorAnimation.value&&colorGradient.value
+                                defaultValue: 0
+                                from: 0
+                                to: 10000
+                                stepSize: 1
+                            }
+                            //渐变结束值
+                            P.SpinPreference {
+                                name: "cycleColorTo"
+                                label: " --- " + qsTr("Color To")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: enableColorAnimation.value&&colorGradient.value
+                                defaultValue: 15
+                                from: 0
+                                to: 10000
+                                stepSize: 1
+                            }
+                            //渐变颜色
+                            P.SelectPreference {
+                                id:cycleColor
+                                name: "cycleColor"
+                                label: " --- " + qsTr("Cycle Color")
+                                defaultValue: 0
+                                //彩虹
+                                model: [ qsTr("Rainbow") ,qsTr("Custom")+"Ⅰ", qsTr("Custom")+"Ⅱ"]
+                                visible: colorGradient.value
+                            }
+                            //自定义颜色 1
+                            //开始颜色
+                            P.SpinPreference {
+                                name: "cycleColorCustomStart"
+                                label: " --- " + qsTr("Color Start")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: colorGradient.value&&settings.cycleColor==1
+                                defaultValue: 0
+                                from: -5000
+                                to: 5000
+                                stepSize: 16
+                            }
+                            //结束颜色
+                            P.SpinPreference {
+                                name: "cycleColorCustomEnd"
+                                label: " --- " + qsTr("Color End")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: colorGradient.value&&settings.cycleColor==1
+                                defaultValue: 160
+                                from: -5000
+                                to: 5000
+                                stepSize: 16
+                            }
+                            //自定义颜色 2
+                            Row{
+                                spacing: 4
+                                visible: colorGradient.value&&settings.cycleColor==2
+                                Column {
+                                    Label {
+                                        text: qsTr("00~05")
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 12
                                     }
-                                    Column {
-                                        Label {
-                                            text: qsTr("06~10")
-                                            anchors.right: parent.right
-                                            anchors.rightMargin: 12
+                                    P.ObjectPreferenceGroup {
+                                        syncProperties: true
+                                        enabled: currentItem
+                                        defaultValue: thiz.settings
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor0"
+                                            defaultValue: colorInit(0)
+                                            visible: colorGradient.value&&settings.cycleColor==2
                                         }
-                                        P.ObjectPreferenceGroup {
-                                            syncProperties: true
-                                            enabled: currentItem
-                                            defaultValue: thiz.settings
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor6"
-                                                defaultValue: colorInit(6)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor7"
-                                                defaultValue: colorInit(7)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor8"
-                                                defaultValue: colorInit(8)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor9"
-                                                defaultValue: colorInit(9)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor10"
-                                                defaultValue: colorInit(10)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor1"
+                                            defaultValue: colorInit(1)
+                                            visible: colorGradient.value&&settings.cycleColor==2
                                         }
-                                    }
-                                    Column {
-                                        Label {
-                                            text: qsTr("11~15")
-                                            anchors.right: parent.right
-                                            anchors.rightMargin: 12
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor2"
+                                            defaultValue: colorInit(2)
+                                            visible: colorGradient.value&&settings.cycleColor==2
                                         }
-                                        P.ObjectPreferenceGroup {
-                                            syncProperties: true
-                                            enabled: currentItem
-                                            defaultValue: thiz.settings
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor11"
-                                                defaultValue: colorInit(11)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor12"
-                                                defaultValue: colorInit(12)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor13"
-                                                defaultValue: colorInit(13)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor14"
-                                                defaultValue: colorInit(14)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
-                                            NoDefaultColorPreference {
-                                                name: "cycleColor15"
-                                                defaultValue: colorInit(15)
-                                                visible: colorGradient.value&&settings.cycleColor==2
-                                            }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor3"
+                                            defaultValue: colorInit(3)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor4"
+                                            defaultValue: colorInit(4)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor5"
+                                            defaultValue: colorInit(5)
+                                            visible: colorGradient.value&&settings.cycleColor==2
                                         }
                                     }
                                 }
-                                //饱和度
-                                P.SpinPreference {
-                                    name: "cycleSaturation"
-                                    label: " --- " + qsTr("Saturation")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: colorGradient.value&&settings.cycleColor!=2
-                                    defaultValue: 100
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
+                                Column {
+                                    Label {
+                                        text: qsTr("06~10")
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 12
+                                    }
+                                    P.ObjectPreferenceGroup {
+                                        syncProperties: true
+                                        enabled: currentItem
+                                        defaultValue: thiz.settings
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor6"
+                                            defaultValue: colorInit(6)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor7"
+                                            defaultValue: colorInit(7)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor8"
+                                            defaultValue: colorInit(8)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor9"
+                                            defaultValue: colorInit(9)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor10"
+                                            defaultValue: colorInit(10)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                    }
                                 }
-                                //亮度
-                                P.SpinPreference {
-                                    name: "cycleValue"
-                                    label: " --- " + qsTr("Value")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: colorGradient.value&&settings.cycleColor!=2
-                                    defaultValue: 100
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
+                                Column {
+                                    Label {
+                                        text: qsTr("11~15")
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 12
+                                    }
+                                    P.ObjectPreferenceGroup {
+                                        syncProperties: true
+                                        enabled: currentItem
+                                        defaultValue: thiz.settings
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor11"
+                                            defaultValue: colorInit(11)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor12"
+                                            defaultValue: colorInit(12)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor13"
+                                            defaultValue: colorInit(13)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor14"
+                                            defaultValue: colorInit(14)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                        NoDefaultColorPreference {
+                                            name: "cycleColor15"
+                                            defaultValue: colorInit(15)
+                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        }
+                                    }
                                 }
-                                //透明度
-                                P.SpinPreference {
-                                    name: "cycleOpacity"
-                                    label: " --- " + qsTr("Opacity")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: colorGradient.value&&settings.cycleColor!=2
-                                    defaultValue: 100
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                }
-                                //渐变动画
-                                P.SwitchPreference {
-                                    id: enableColorAnimation
-                                    name: "enableColorAnimation"
-                                    label: " --- " + qsTr("Color Animation")
-                                    visible: colorGradient.value
-                                }
-                                //循环时间
-                                // BUG 更改之后无法立刻看到预览
-                                P.SpinPreference {
-                                    name: "cycleTime"
-                                    label: " --- --- " + qsTr("Cycle Time")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableColorAnimation.value&&colorGradient.value
-                                    defaultValue: 500
-                                    from: 0
-                                    to: 5000
-                                    stepSize: 100
-                                }
-                                P.SpinPreference {
-                                    name: "pauseColorAnimationTime"
-                                    label: " --- --- " + qsTr("Pause Time")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableColorAnimation.value&&colorGradient.value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 10000
-                                    stepSize: 100
-                                }
-                                //是否缓存
-                                P.SwitchPreference {
-                                    name: "enableColorAnimationCached"
-                                    label: " --- " + qsTr("Cached")
-                                    visible: colorGradient.value
-                                }
-                                //TODO渐变次数
+                            }
+                            //饱和度
+                            P.SpinPreference {
+                                name: "cycleSaturation"
+                                label: " --- " + qsTr("Saturation")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: colorGradient.value&&settings.cycleColor!=2
+                                defaultValue: 100
+                                from: 0
+                                to: 100
+                                stepSize: 1
+                            }
+                            //亮度
+                            P.SpinPreference {
+                                name: "cycleValue"
+                                label: " --- " + qsTr("Value")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: colorGradient.value&&settings.cycleColor!=2
+                                defaultValue: 100
+                                from: 0
+                                to: 100
+                                stepSize: 1
+                            }
+                            //透明度
+                            P.SpinPreference {
+                                name: "cycleOpacity"
+                                label: " --- " + qsTr("Opacity")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: colorGradient.value&&settings.cycleColor!=2
+                                defaultValue: 100
+                                from: 0
+                                to: 100
+                                stepSize: 1
+                            }
+                            //渐变动画
+                            P.SwitchPreference {
+                                id: enableColorAnimation
+                                name: "enableColorAnimation"
+                                label: " --- " + qsTr("Color Animation")
+                                visible: colorGradient.value
+                            }
+                            //循环时间
+                            // BUG 更改之后无法立刻看到预览
+                            P.SpinPreference {
+                                name: "cycleTime"
+                                label: " --- --- " + qsTr("Cycle Time")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: enableColorAnimation.value&&colorGradient.value
+                                defaultValue: 500
+                                from: 0
+                                to: 5000
+                                stepSize: 100
+                            }
+                            P.SpinPreference {
+                                name: "pauseColorAnimationTime"
+                                label: " --- --- " + qsTr("Pause Time")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: enableColorAnimation.value&&colorGradient.value
+                                defaultValue: 0
+                                from: 0
+                                to: 10000
+                                stepSize: 100
+                            }
+                            //是否缓存
+                            P.SwitchPreference {
+                                name: "enableColorAnimationCached"
+                                label: " --- " + qsTr("Cached")
+                                visible: colorGradient.value
+                            }
+                            //TODO渐变次数
                         }
                     }
                 }

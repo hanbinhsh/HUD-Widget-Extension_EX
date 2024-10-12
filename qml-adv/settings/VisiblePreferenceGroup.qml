@@ -161,11 +161,129 @@ Flickable {
                 name: "enableFadeTransition"
                 label: qsTr("Enable Fade Animation")
             }
-            P.SwitchPreference {
-                name: "fadeTransitionHorizontal"
-                label: " --- " + qsTr("Horizontal Direction")
+            P.SelectPreference {
+                id: fadeTransitionDirect
+                name: "fadeTransitionDirect"
+                label: " --- " + qsTr("Animation Direct")
+                defaultValue: 1
+                //从左到右,从下到上,从左上到右下
+                //旋转 3
+                //中心 4
+                //高级选项5 用于改变线性的start,end值
+                model: [ qsTr("Horizontal"), qsTr("Vertical"), qsTr("Oblique"), qsTr("Center"), qsTr("Conical"),qsTr("Advanced")]
                 visible: enableFadeTransition.value
             }
+            //高级设置 5
+            //s.x x轴起始值
+            P.SpinPreference {
+                name: "fadeTransitionAdvancedStartX"
+                label: " --- --- " + qsTr("Start X")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
+                defaultValue: 0
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //s.y y轴起始值
+            P.SpinPreference {
+                name: "fadeTransitionAdvancedStartY"
+                label: " --- --- " + qsTr("Start Y")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
+                defaultValue: 0
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //e.x x轴结束值
+            P.SpinPreference {
+                name: "fadeTransitionAdvancedEndX"
+                label: " --- --- " + qsTr("End X")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
+                defaultValue: 100
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //e.y y轴结束值
+            P.SpinPreference {
+                name: "fadeTransitionAdvancedEndY"
+                label: " --- --- " + qsTr("End Y")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
+                defaultValue: 100
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //方向为3,4时提供的垂直水平角度选项,为4时提供水平/垂直半径
+            //水平
+            P.SpinPreference {
+                name: "fadeTransitionHorizontal"
+                label: " --- --- " + qsTr("Horizontal")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: (fadeTransitionDirect.value==4||fadeTransitionDirect.value==3)&&enableFadeTransition.value
+                defaultValue: 0
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //垂直
+            P.SpinPreference {
+                name: "fadeTransitionVertical"
+                label: " --- --- " + qsTr("Vertical")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: (fadeTransitionDirect.value==4||fadeTransitionDirect.value==3)&&enableFadeTransition.value
+                defaultValue: 0
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //角度
+            P.SpinPreference {
+                name: "fadeTransitionAngle"
+                label: " --- --- " + qsTr("Angle")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: (fadeTransitionDirect.value==4||fadeTransitionDirect.value==3)&&enableFadeTransition.value
+                defaultValue: 0
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //水平半径 3
+            P.SpinPreference {
+                name: "fadeTransitionHorizontalRadius"
+                label: " --- --- " + qsTr("Horizontal Radius")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: fadeTransitionDirect.value==3&&enableFadeTransition.value
+                defaultValue: 50
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //垂直半径 4
+            P.SpinPreference {
+                name: "fadeTransitionVerticalRadius"
+                label: " --- --- " + qsTr("Vertical Radius")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: fadeTransitionDirect.value==3&&enableFadeTransition.value
+                defaultValue: 50
+                from: -10000
+                to: 10000
+                stepSize: 5
+            }
+            //上方控制动画形状
             //渐变开始 开始值
             P.SpinPreference {
                 name: "fadeTransition_sta_start"
@@ -249,6 +367,12 @@ Flickable {
                 from: 0
                 to: 10000
                 stepSize: 50
+            }
+            //缓存
+            P.SwitchPreference {
+                name: "fadeTransitionCached"
+                label: " --- " + qsTr("Cached")
+                visible: enableFadeTransition.value
             }
         }
     }

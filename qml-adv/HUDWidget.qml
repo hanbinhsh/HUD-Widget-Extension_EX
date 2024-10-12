@@ -435,7 +435,7 @@ T.Widget {
                 easing.type: settings.showAnimation_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //消逝动画
-            property bool opciMaskForward: false
+            property bool opciMaskForward: true
             NumberAnimation on staOpciMask {
                 id: opciMask_sta
                 from: opciMaskForward ? settings.fadeTransition_sta_end ?? 0 : settings.fadeTransition_sta_start ?? 0

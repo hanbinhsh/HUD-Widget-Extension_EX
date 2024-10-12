@@ -78,10 +78,9 @@ MouseArea {
     readonly property bool rotationEnabled: Boolean(delegate.settings.rotationDisplay)
     readonly property bool rotationAnimationEnabled: Boolean(delegate.settings.enableAdvancedRotationAnimation)
     //透明度动态显示
-    property real endOpciMask : 0
-    property real staOpciMask : 0
-    property bool opciMaskAnimationEnd : true
-    property real endOpci: 0
+    property real endOpciMask : settings.fadeTransition_end_start ?? 1000
+    property real staOpciMask : settings.fadeTransition_sta_start ?? 0
+    property real endOpci: 100
     //点击移动动画
     property real clickAnimationX : 0
     property real clickAnimationY : 0
@@ -295,17 +294,74 @@ MouseArea {
         // 启动动画
         moveAnimation.start();
     }
+    Gradient {
+        id: grad
+        GradientStop { position: staOpciMask/1000.0; color: Qt.rgba(255, 255, 255, 1) }// sta
+        GradientStop { position: endOpciMask/1000.0; color: Qt.rgba(255, 255, 255, endOpci/100.0) }// end
+    }
+    LinearGradient {
+        id: linearG
+        anchors.fill: parent
+        visible: false
+        gradient: grad
+        start: {
+            switch (settings.fadeTransitionDirect) {
+                case 0 : 
+                case 1 : 
+                case 2 : 
+                case 3 : return Qt.point(0, 0); break; 
+                case 5 : return Qt.point(settings.fadeTransitionAdvancedStartX ?? 0, settings.fadeTransitionAdvancedStartY ?? 0); break;
+                default: return Qt.point(0, 0); break;
+            }
+            return Qt.point(0, 0);
+        }
+        end: {
+            switch (settings.fadeTransitionDirect) {
+                case 0 : return Qt.point(delegate.width, 0); break;//1.横向渐变
+                case 1 : return Qt.point(0, delegate.height); break;//2.竖向渐变
+                case 2 : return Qt.point(delegate.width, delegate.height); break;//3.斜向渐变
+                case 5 : return Qt.point(settings.fadeTransitionAdvancedEndX ?? 100, settings.fadeTransitionAdvancedEndY ?? 100); break;
+                default: return Qt.point(delegate.width, 0); break; 
+            }
+            return Qt.point(delegate.width, 0);
+        }
+        cached: settings.fadeTransitionCached ?? false
+    }
+    // 3
+    RadialGradient {
+        id: radialG
+        visible: false
+        anchors.fill: parent
+        gradient: grad
+        angle: settings.fadeTransitionAngle ?? 0
+        horizontalOffset: settings.fadeTransitionHorizontal ?? 0
+        verticalOffset: settings.fadeTransitionVertical ?? 0
+        horizontalRadius: settings.fadeTransitionHorizontalRadius ?? 50
+        verticalRadius: settings.fadeTransitionVerticalRadius ?? 50
+        cached: settings.fadeTransitionCached ?? false
+    }
+    // 4
+    ConicalGradient {
+        id: conicalG
+        visible: false
+        anchors.fill: parent
+        gradient: grad
+        angle: settings.fadeTransitionAngle ?? 0
+        horizontalOffset: settings.fadeTransitionHorizontal ?? 0
+        verticalOffset: settings.fadeTransitionVertical ?? 0
+        cached: settings.fadeTransitionCached ?? false
+    }
     layer {
-        enabled: settings.enableFadeTransition ? opciMaskAnimationEnd : false
+        enabled: settings.enableFadeTransition ?? false
         effect: OpacityMask {
-            maskSource: Rectangle {
-                width: delegate.width
-                height: delegate.height
-                gradient: Gradient {
-                    orientation: settings.fadeTransitionHorizontal ? Gradient.Horizontal : Gradient.Vertical
-                    GradientStop { position: staOpciMask/1000.0; color: Qt.rgba(255, 255, 255, 1) }// sta
-                    GradientStop { position: endOpciMask/1000.0; color: Qt.rgba(255, 255, 255, endOpci/100.0) }// end
-                }
+            maskSource: switch(settings.fadeTransitionDirect ?? 1){
+                case 0:
+                case 1:
+                case 2:
+                case 5: return linearG;
+                case 3: return radialG;
+                case 4: return conicalG;
+                default: return linearG;
             }
         }
     }
