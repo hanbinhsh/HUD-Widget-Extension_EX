@@ -812,30 +812,6 @@ DataSourceElement {
                                 to: 10000
                                 stepSize: 5
                             }
-                            //渐变开始值
-                            P.SpinPreference {
-                                name: "cycleColorFrom"
-                                label: " --- " + qsTr("Color From")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value
-                                defaultValue: 0
-                                from: 0
-                                to: 10000
-                                stepSize: 1
-                            }
-                            //渐变结束值
-                            P.SpinPreference {
-                                name: "cycleColorTo"
-                                label: " --- " + qsTr("Color To")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value
-                                defaultValue: 15
-                                from: 0
-                                to: 10000
-                                stepSize: 1
-                            }
                             //渐变颜色
                             P.SelectPreference {
                                 id:cycleColor
@@ -1058,6 +1034,30 @@ DataSourceElement {
                                 from: 0
                                 to: 10000
                                 stepSize: 100
+                            }
+                            //渐变开始值
+                            P.SpinPreference {
+                                name: "cycleColorFrom"
+                                label: " --- " + qsTr("Color From")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: enableColorAnimation.value&&colorGradient.value
+                                defaultValue: 0
+                                from: 0
+                                to: 10000
+                                stepSize: 1
+                            }
+                            //渐变结束值
+                            P.SpinPreference {
+                                name: "cycleColorTo"
+                                label: " --- " + qsTr("Color To")
+                                editable: true
+                                display: P.TextFieldPreference.ExpandLabel
+                                visible: enableColorAnimation.value&&colorGradient.value
+                                defaultValue: 15
+                                from: 0
+                                to: 10000
+                                stepSize: 1
                             }
                             //是否缓存
                             P.SwitchPreference {
