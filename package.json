@@ -1,10 +1,10 @@
 {
     "name": "com.hanbinhsh.widget.hud_edit",
-    "version": "0.6.4",
+    "version": "0.7.2",
     
     "title": {
-        "en": "HUD Widget Extension_EX",
-        "zh": "HUD 状态栏挂件扩展_EX"
+        "en": "HUD Widget Extension EX",
+        "zh": "HUD 状态栏挂件扩展 EX"
     },
 
     "description": {
@@ -25,10 +25,10 @@
             "location": "/widget/adv",
             "catalog": "widget",
             "title": {
-                "en": "HUD Custom_EX",
-                "zh": "HUD 自定义挂件_EX",
-                "zh_TW": "HUD 客製化掛件_EX",
-                "ja": "HUD カスタム_EX"
+                "en": "HUD Custom EX",
+                "zh": "HUD 自定义挂件 EX",
+                "zh_TW": "HUD 客製化掛件 EX",
+                "ja": "HUD カスタム EX"
             },
             "preview": "Images/preview-adv.png",
             "entry": "qml-adv/HUDWidget.qml"
