@@ -201,6 +201,172 @@ NVG.Window {
                         }
                     }
                     P.ObjectPreferenceGroup {
+                        defaultValue: widget.defaultSettings
+                        syncProperties: true
+                        P.SwitchPreference {
+                            id: enableOverallGradientEffect
+                            name: "enableOverallGradientEffect"
+                            label: qsTr("Enable Overall Gradient Effect")
+                            message: qsTr("Also see https://webgradients.com/")
+                            defaultValue: false
+                        }
+                        NoDefaultColorPreference {
+                            name: "overallGradientColor0"
+                            label: " --- " + qsTr("Start Color")
+                            defaultValue: "#a18cd1"
+                            visible: enableOverallGradientEffect.value
+                        }
+                        NoDefaultColorPreference {
+                            name: "overallGradientColor1"
+                            label: " --- " + qsTr("End Color")
+                            defaultValue: "#fbc2eb"
+                            visible: enableOverallGradientEffect.value
+                        }
+                        P.SelectPreference {
+                            id: overallGradientDirection
+                            name: "overallGradientDirect"
+                            label: " --- " + qsTr("Gradient Direction")
+                            defaultValue: 1
+                            //从左到右,从下到上,从左上到右下
+                            //旋转 3
+                            //中心 4
+                            //高级选项5 用于改变线性的start,end值
+                            model: [ qsTr("Horizontal"), qsTr("Vertical"), qsTr("Oblique"), qsTr("Center"), qsTr("Conical"),qsTr("Advanced")]
+                            visible: enableOverallGradientEffect.value
+                        }
+                        //方向为3,4时提供的垂直水平角度选项,为4时提供水平/垂直半径
+                        //水平
+                        P.SpinPreference {
+                            name: "overallGradientHorizontal"
+                            label: " --- --- " + qsTr("Horizontal")
+                            editable: true
+                            display: P.TextFieldPreference.ExpandLabel
+                            visible: (overallGradientDirection.value==4||overallGradientDirection.value==3)&&enableOverallGradientEffect.value
+                            defaultValue: 0
+                            from: -10000
+                            to: 10000
+                            stepSize: 5
+                        }
+                        //垂直
+                        P.SpinPreference {
+                            name: "overallGradientVertical"
+                            label: " --- --- " + qsTr("Vertical")
+                            editable: true
+                            display: P.TextFieldPreference.ExpandLabel
+                            visible: (overallGradientDirection.value==4||overallGradientDirection.value==3)&&enableOverallGradientEffect.value
+                            defaultValue: 0
+                            from: -10000
+                            to: 10000
+                            stepSize: 5
+                        }
+                        //角度
+                        P.SpinPreference {
+                            name: "overallGradientAngle"
+                            label: " --- --- " + qsTr("Angle")
+                            editable: true
+                            display: P.TextFieldPreference.ExpandLabel
+                            visible: (overallGradientDirection.value==4||overallGradientDirection.value==3)&&enableOverallGradientEffect.value
+                            defaultValue: 0
+                            from: -10000
+                            to: 10000
+                            stepSize: 5
+                        }
+                        //水平半径 3
+                        P.SpinPreference {
+                            name: "overallGradientHorizontalRadius"
+                            label: " --- --- " + qsTr("Horizontal Radius")
+                            editable: true
+                            display: P.TextFieldPreference.ExpandLabel
+                            visible: overallGradientDirection.value==3&&enableOverallGradientEffect.value
+                            defaultValue: 50
+                            from: -10000
+                            to: 10000
+                            stepSize: 5
+                        }
+                        //垂直半径 3
+                        P.SpinPreference {
+                            name: "overallGradientVerticalRadius"
+                            label: " --- --- " + qsTr("Vertical Radius")
+                            editable: true
+                            display: P.TextFieldPreference.ExpandLabel
+                            visible: overallGradientDirection.value==3&&enableOverallGradientEffect.value
+                            defaultValue: 50
+                            from: -10000
+                            to: 10000
+                            stepSize: 5
+                        }
+                        Row{
+                            spacing: 8
+                            visible: enableOverallGradientEffect.value&&overallGradientDirection.value == 5
+                            Column {
+                                Label {
+                                    text: qsTr("Start X & Y")
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                                P.ObjectPreferenceGroup {
+                                    syncProperties: true
+                                    defaultValue: widget.defaultSettings
+                                    //s.y x轴起始值
+                                    P.SpinPreference {
+                                        name: "overallGradientStartX"
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //s.y y轴起始值
+                                    P.SpinPreference {
+                                        name: "overallGradientStartY"
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                }
+                            }
+                            Column {
+                                Label {
+                                    text: qsTr("End X & Y")
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                }
+                                P.ObjectPreferenceGroup {
+                                    syncProperties: true
+                                    defaultValue: widget.defaultSettings
+                                    //e.x x轴结束值
+                                    P.SpinPreference {
+                                        name: "overallGradientEndX"
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        defaultValue: 100
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //e.y y轴结束值
+                                    P.SpinPreference {
+                                        name: "overallGradientEndY"
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        defaultValue: 100
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                }
+                            }
+                        }
+                        //缓存
+                        P.SwitchPreference {
+                            name: "overallGradientCached"
+                            label: " --- " + qsTr("Cached")
+                            visible: enableOverallGradientEffect.value
+                        }
+                    }
+                    P.ObjectPreferenceGroup {
                         defaultValue: widget.settings
                         syncProperties: true
                         //矩形区域
@@ -283,7 +449,7 @@ NVG.Window {
                         id: elemPage
                         width: parent.width
                         implicitHeight: switch(elemBar.currentIndex){
-                            case 0: return normal.height + 56;
+                            case 0: return layoutNormalSetting.contentHeight + 56;
                             case 1: return layoutVisibleSetting.contentHeight + 56;
                             case 2: return layoutTransformSetting.contentHeight + 56;
                             case 3: return layoutActionSetting.contentHeight + 56;
@@ -308,62 +474,9 @@ NVG.Window {
                             currentIndex: elemBar.currentIndex
                             //效果设置
                             Item{
-                                //必须资源
-                                Flickable {
-                                    anchors.fill: parent
-                                    contentWidth: width
-                                    contentHeight: normal.height
-                                    topMargin: 16
-                                    bottomMargin: 16
-                                    Column {
-                                        id: normal
-                                        width: parent.width
-                                        P.ObjectPreferenceGroup {
-                                            syncProperties: true
-                                            enabled: currentItem
-                                            width: parent.width
-                                            defaultValue: currentItem
-                                            //必须资源
-                                            //部件编辑界面的背景设置
-                                            P.BackgroundPreference {
-                                                name: "background"
-                                                label: qsTr("Background")
-
-                                                defaultBackground {
-                                                    normal:  pDefaultBackground.value?.normal ??
-                                                            pDefaultBackground.defaultBackground.normal
-                                                    hovered: pDefaultBackground.value?.hovered ??
-                                                            pDefaultBackground.defaultBackground.hovered
-                                                    pressed: pDefaultBackground.value?.pressed ??
-                                                            pDefaultBackground.defaultBackground.pressed
-                                                }
-                                                preferableFilter: pDefaultBackground.preferableFilter
-                                            }
-                                            P.SelectPreference {
-                                                name: "separate"
-                                                label: qsTr("Background Hierarchy")
-                                                textRole: "label"
-                                                valueRole: "value"
-                                                defaultValue: 0
-                                                model: [
-                                                    { label: qsTr("<Default>"), value: undefined },
-                                                    { label: qsTr("Element"), value: 0 },
-                                                    { label: qsTr("Item"), value: 1 }
-                                                ]
-                                            }
-                                            //部件编辑界面的颜色设置
-                                            NoDefaultColorPreference {
-                                                name: "color"
-                                                label: qsTr("Color")
-                                                defaultValue: ctx_widget.defaultBackgroundColor
-                                            }
-                                            //部件编辑界面的数据设置
-                                            P.DataPreference {
-                                                name: "data"
-                                                label: qsTr("Data")
-                                            }
-                                        }
-                                    }
+                                NormalPreferenceGroup{
+                                    item: currentItem
+                                    id: layoutNormalSetting
                                 }
                             }
                             Item{

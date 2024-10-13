@@ -164,7 +164,7 @@ Flickable {
             P.SelectPreference {
                 id: fadeTransitionDirect
                 name: "fadeTransitionDirect"
-                label: " --- " + qsTr("Animation Direct")
+                label: " --- " + qsTr("Animation Direction")
                 defaultValue: 1
                 //从左到右,从下到上,从左上到右下
                 //旋转 3
@@ -271,7 +271,7 @@ Flickable {
                 to: 10000
                 stepSize: 5
             }
-            //垂直半径 4
+            //垂直半径 3
             P.SpinPreference {
                 name: "fadeTransitionVerticalRadius"
                 label: " --- --- " + qsTr("Vertical Radius")

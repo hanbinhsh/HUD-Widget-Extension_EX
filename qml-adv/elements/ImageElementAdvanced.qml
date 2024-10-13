@@ -1985,7 +1985,7 @@ DataSourceElement {
             source: (enableColorGradient&&(settings.animationDirect>=0&&settings.animationDirect<=3||settings.animationDirect==6)) ? imageSource : null
             visible: (enableColorGradient&&(settings.animationDirect>=0&&settings.animationDirect<=3||settings.animationDirect==6))
             start: {
-                switch (settings.animationDirect) {
+                switch (settings.animationDirect ?? 0) {
                     case 0 : 
                     case 1 : 
                     case 2 : 
@@ -1996,7 +1996,7 @@ DataSourceElement {
                 return Qt.point(0, 0);
             }
             end: {
-                switch (settings.animationDirect) {
+                switch (settings.animationDirect ?? 0) {
                     case 0 : return Qt.point(imageSource.width, 0); break;//1.横向渐变
                     case 1 : return Qt.point(0, imageSource.height); break;//2.竖向渐变
                     case 2 : return Qt.point(imageSource.width, imageSource.height); break;//3.斜向渐变

@@ -305,7 +305,7 @@ MouseArea {
         visible: false
         gradient: grad
         start: {
-            switch (settings.fadeTransitionDirect) {
+            switch (settings.fadeTransitionDirect ?? 1) {
                 case 0 : 
                 case 1 : 
                 case 2 : 
@@ -316,7 +316,7 @@ MouseArea {
             return Qt.point(0, 0);
         }
         end: {
-            switch (settings.fadeTransitionDirect) {
+            switch (settings.fadeTransitionDirect ?? 1) {
                 case 0 : return Qt.point(delegate.width, 0); break;//1.横向渐变
                 case 1 : return Qt.point(0, delegate.height); break;//2.竖向渐变
                 case 2 : return Qt.point(delegate.width, delegate.height); break;//3.斜向渐变

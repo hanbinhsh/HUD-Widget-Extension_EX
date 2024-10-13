@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-
+import QtGraphicalEffects 1.12 
 import NERvGear 1.0 as NVG
 import NERvGear.Templates 1.0 as T
 
@@ -25,6 +25,82 @@ T.Widget {
 
     implicitWidth: 64
     implicitHeight: 64
+
+    // 颜色渐变
+    Gradient {
+        id: grad
+        GradientStop { position: 0.0; color: defaultSettings.overallGradientColor0 ?? "#a18cd1" }
+        GradientStop { position: 1.0; color: defaultSettings.overallGradientColor1 ?? "#fbc2eb" }
+    }
+    LinearGradient {
+        id: linearG
+        anchors.fill: widget
+        visible: false
+        gradient: grad
+        start: {
+            switch (defaultSettings.overallGradientDirect ?? 1) {
+                case 0 : 
+                case 1 : 
+                case 2 : 
+                case 3 : return Qt.point(0, 0); break; 
+                case 5 : return Qt.point(defaultSettings.overallGradientStartX ?? 0, defaultSettings.overallGradientStartY ?? 0); break;
+                default: return Qt.point(0, 0); break;
+            }
+            return Qt.point(0, 0);
+        }
+        end: {
+            switch (defaultSettings.overallGradientDirect ?? 1) {
+                case 0 : return Qt.point(widget.width, 0); break;//1.横向渐变
+                case 1 : return Qt.point(0, widget.height); break;//2.竖向渐变
+                case 2 : return Qt.point(widget.width, widget.height); break;//3.斜向渐变
+                case 5 : return Qt.point(defaultSettings.overallGradientEndX ?? 100, defaultSettings.overallGradientEndY ?? 100); break;
+                default: return Qt.point(widget.width, 0); break; 
+            }
+            return Qt.point(widget.width, 0);
+        }
+        cached: defaultSettings.overallGradientCached ?? false
+    }
+    // 3
+    RadialGradient {
+        id: radialG
+        visible: false
+        anchors.fill: widget
+        gradient: grad
+        angle: defaultSettings.overallGradientAngle ?? 0
+        horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
+        verticalOffset: defaultSettings.overallGradientVertical ?? 0
+        horizontalRadius: defaultSettings.overallGradientHorizontalRadius ?? 50
+        verticalRadius: defaultSettings.overallGradientVerticalRadius ?? 50
+        cached: defaultSettings.overallGradientCached ?? false
+    }
+    // 4
+    ConicalGradient {
+        id: conicalG
+        visible: false
+        anchors.fill: widget
+        gradient: grad
+        angle: defaultSettings.overallGradientAngle ?? 0
+        horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
+        verticalOffset: defaultSettings.overallGradientVertical ?? 0
+        cached: defaultSettings.overallGradientCached ?? false
+    }
+    layer {
+        enabled: defaultSettings.enableOverallGradientEffect ?? false
+        effect: OpacityMask {
+            anchors.fill: widget;
+            source: switch(defaultSettings.overallGradientDirect ?? 1){
+                case 0:
+                case 1:
+                case 2:
+                case 5: return linearG;
+                case 3: return radialG;
+                case 4: return conicalG;
+                default: return linearG;
+            }
+            maskSource: widget
+        }
+    }
+    // 颜色渐变结束
 
     //菜单中的编辑模式
     menu: Menu {
