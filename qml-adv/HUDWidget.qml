@@ -18,7 +18,7 @@ T.Widget {
     readonly property Item interactionItem: makeInteractionItem(widget, settings, "interactionItem_NB")
 
     //挂件框上的名称&&编辑界面蓝条上的字
-    title: qsTr("HUD Edit")
+    title: qsTr("HUD EX")
     solid: settings.solid ?? false
     resizable: true
     editing: dialog.item?.visible ?? false
@@ -35,24 +35,24 @@ T.Widget {
         }
     }
 
-    // Component.onCompleted: { // upgrade settings
-    //     if (settings.font !== undefined) {
-    //         defaultSettings.font = settings.font;
-    //         settings.font = undefined;
-    //     }
-    //     if (settings.background !== undefined) {
-    //         defaultSettings.background = settings.background;
-    //         settings.background = undefined;
-    //     }
-    //     if (settings.foreground !== undefined) {
-    //         defaultSettings.foreground = settings.foreground;
-    //         settings.foreground = undefined;
-    //     }
-    //     if (settings.base !== undefined) {
-    //         defaultSettings.base = settings.base;
-    //         settings.base = undefined;
-    //     }
-    // }
+    Component.onCompleted: { // upgrade settings
+        if (settings.font !== undefined) {
+            defaultSettings.font = settings.font;
+            settings.font = undefined;
+        }
+        if (settings.background !== undefined) {
+            defaultSettings.background = settings.background;
+            settings.background = undefined;
+        }
+        if (settings.foreground !== undefined) {
+            defaultSettings.foreground = settings.foreground;
+            settings.foreground = undefined;
+        }
+        if (settings.base !== undefined) {
+            defaultSettings.base = settings.base;
+            settings.base = undefined;
+        }
+    }
 
     function makeInteractionItem(parent, settings, key) {
         let c = null;
@@ -83,12 +83,12 @@ T.Widget {
     QtObject { // Public API
         id: ctx_widget
 
-        readonly property font defaultFont: Qt.font(settings.font ?? initialFont)
+        readonly property font defaultFont: Qt.font(defaultSettings.font ?? initialFont)
 
-        readonly property var defaultBackground: settings.background
-        readonly property color defaultBackgroundColor: settings.base ?? "transparent"
+        readonly property var defaultBackground: defaultSettings.background
+        readonly property color defaultBackgroundColor: defaultSettings.base ?? "transparent"
 
-        readonly property color defaultTextColor: settings.foreground ?? "#BBFFFFFF"
+        readonly property color defaultTextColor: defaultSettings.foreground ?? "#BBFFFFFF"
         readonly property color defaultStyleColor: "#33FFFFFF"
 
         readonly property bool exposed: widget.NVG.View.exposed
