@@ -117,6 +117,9 @@ ItemPreference {
                         anchors.bottom: canvas.top
                         anchors.bottomMargin: 16
 
+                        // 修改
+                        acceptedButtons: Qt.AllButtons
+
                         x: model.position * canvas.width - colorCircle.radius
                         z: currentStopIndex === model.index ? 1 : 0
                         width: 22
@@ -147,9 +150,18 @@ ItemPreference {
                             canvas.requestPaint();
                         }
 
+                        // 修改
                         onPressed: {
-                            currentStopIndex = index;
-                            dragHelper.x = x + colorCircle.radius;
+                            if(mouse.button===Qt.LeftButton){
+                                currentStopIndex = index;
+                                dragHelper.x = x + colorCircle.radius;
+                            }else if(mouse.button===Qt.RightButton){
+                                if (stopsModel.count > 1) {
+                                    currentStopIndex = 0;
+                                    canvas.requestPaint();
+                                    stopsModel.remove(index);
+                                }
+                            }
                         }
 
                         onReleased: {

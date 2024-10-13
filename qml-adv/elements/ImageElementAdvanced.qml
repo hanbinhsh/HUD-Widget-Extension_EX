@@ -1579,7 +1579,7 @@ DataSourceElement {
                                     visible: enableInnerShadow.value
                                     defaultValue: 5
                                     from: 0
-                                    to: 1000
+                                    to: 33
                                     stepSize: 1
                                 }
                                 //水平位移
@@ -2077,7 +2077,7 @@ DataSourceElement {
         visible: settings.enableGlow ?? false
         cached: settings.glowCache ?? false//缓存
         radius: settings.glowRadius ?? 5//作用范围
-        samples: settings.glowSamples ?? 50//采样数
+        samples: settings.glowSamples ?? 5//采样数
         spread: (settings.glowSpread ?? 50)/100//强度
         color: settings.glowColor ?? "white"//颜色
         transparentBorder: allowGlowTransparentBorder ?? false//透明边框 bool
@@ -2090,7 +2090,7 @@ DataSourceElement {
         visible: settings.enableDropShadow ?? false
         color: settings.dropShadowColor ?? "white"//颜色
         radius: settings.dropShadowRadius ?? 5//半径
-        samples: settings.dropShadowSamples ?? 50//样本数
+        samples: settings.dropShadowSamples ?? 5//样本数
         horizontalOffset: settings.dropShadowHorizontalOffset ?? 0//水平位移
         verticalOffset: settings.dropShadowVerticalOffset ?? 0//垂直位移
         transparentBorder: settings.dropShadowTransparentBorder ?? false//透明边框
@@ -2103,7 +2103,7 @@ DataSourceElement {
         visible: settings.enableInnerShadow ?? false
         color: settings.innerShadowColor ?? "white"//颜色
         radius: settings.innerShadowRadius ?? 5//半径
-        samples: settings.innerShadowSamples ?? 50//样本数
+        samples: settings.innerShadowSamples ?? 5//样本数
         horizontalOffset: settings.innerShadowHorizontalOffset ?? 0//水平位移
         verticalOffset: settings.innerShadowVerticalOffset ?? 0//垂直位移
         fast: settings.innerShadowFastAlgorithm ?? false//快速渲染
