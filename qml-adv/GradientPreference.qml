@@ -100,7 +100,7 @@ ItemPreference {
                 Layout.leftMargin: 12
                 Layout.rightMargin: 12
 
-                implicitWidth: 320
+                implicitWidth: 200
 
                 strokeColor: dialog.Style.dividerColor
                 stopCount: stopsModel.count

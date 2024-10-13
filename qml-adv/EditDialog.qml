@@ -22,6 +22,14 @@ NVG.Window {
     minimumHeight: 700
     transientParent: widget.NVG.View.window
     onClosing: titleBar.forceActiveFocus()
+
+    function colorAlpha(c, a) { return Qt.rgba(c.r, c.g, c.b, a); }
+    function gradientStops(stops, fallback) {
+        if (Array.isArray(stops))
+            return stops;
+        return [ { color: fallback, position: 0 }, { color: "transparent", position: 1 } ];
+    }
+
     function duplicateSettingsMap(src, parent) {
         const dst = NVG.Settings.createMap(parent);
         src.keys().forEach(function (key) {
@@ -210,18 +218,31 @@ NVG.Window {
                             message: qsTr("Also see https://webgradients.com/")
                             defaultValue: false
                         }
+                        // P.SwitchPreference {
+                        //     id: useFillGradient
+                        //     name: "useFillGradient"
+                        //     label: qsTr("Use Fill Gradient")
+                        //     defaultValue: false
+                        //     visible: enableOverallGradientEffect.value
+                        // }
                         NoDefaultColorPreference {
                             name: "overallGradientColor0"
                             label: " --- " + qsTr("Start Color")
                             defaultValue: "#a18cd1"
-                            visible: enableOverallGradientEffect.value
+                            visible: enableOverallGradientEffect.value//&&!useFillGradient.value
                         }
                         NoDefaultColorPreference {
                             name: "overallGradientColor1"
                             label: " --- " + qsTr("End Color")
                             defaultValue: "#fbc2eb"
-                            visible: enableOverallGradientEffect.value
+                            visible: enableOverallGradientEffect.value//&&!useFillGradient.value
                         }
+                        // GradientPreference {
+                        //     name: "fillStops"
+                        //     label: qsTr("Fill Gradient")
+                        //     defaultValue: gradientStops(null, colorAlpha("#a18cd1", 0.5))
+                        //     visible: enableOverallGradientEffect.value&&useFillGradient.value
+                        // }
                         P.SelectPreference {
                             id: overallGradientDirection
                             name: "overallGradientDirect"

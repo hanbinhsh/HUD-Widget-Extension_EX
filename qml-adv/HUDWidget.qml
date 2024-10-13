@@ -32,11 +32,21 @@ T.Widget {
         GradientStop { position: 0.0; color: defaultSettings.overallGradientColor0 ?? "#a18cd1" }
         GradientStop { position: 1.0; color: defaultSettings.overallGradientColor1 ?? "#fbc2eb" }
     }
+    // Gradient {
+    //     id: advgrad
+    // }
     LinearGradient {
         id: linearG
         anchors.fill: widget
         visible: false
-        gradient: grad
+        gradient: {
+            // if (defaultSettings.useFillGradient ?? 0){
+                return grad;
+            // }else{
+            //     return advgrad;
+            // }
+        }
+        
         start: {
             switch (defaultSettings.overallGradientDirect ?? 1) {
                 case 0 : 
