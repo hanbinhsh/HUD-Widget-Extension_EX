@@ -1735,11 +1735,6 @@ DataSourceElement {
                                 label: " --- " + qsTr("Enable Data Source")
                                 visible: enableBlend.value
                             }
-                            // P.DataPreference {
-                            //     name: "blendData"
-                            //     label: " --- --- " + qsTr("Blend Data")
-                            //     visible: blendDataEnabled.value&&enableBlend.value
-                            // }
                         //不透明遮罩
                             P.SwitchPreference {
                                 id: enableOpacityMask
@@ -1771,11 +1766,6 @@ DataSourceElement {
                                 label: " --- " + qsTr("Enable Data Source")
                                 visible: enableOpacityMask.value
                             }
-                            // P.DataPreference {
-                            //     name: "opacityMaskData"
-                            //     label: " --- --- " + qsTr("Opacity Mask Data")
-                            //     visible: opacityMaskDataEnabled.value&&enableOpacityMask.value
-                            // }
                         //覆盖遮罩
                             P.SwitchPreference {
                                 id: enableThresholdMask
@@ -1825,11 +1815,6 @@ DataSourceElement {
                                 label: " --- " + qsTr("Enable Data Source")
                                 visible: enableThresholdMask.value
                             }
-                            // P.DataPreference {
-                            //     name: "thresholdMaskData"
-                            //     label: " --- --- " + qsTr("Threshold Mask Data")
-                            //     visible: thresholdMaskDataEnabled.value&&enableThresholdMask.value
-                            // }
                         //取代
                             P.SwitchPreference {
                                 id: enableDisplace
@@ -1867,11 +1852,6 @@ DataSourceElement {
                                 label: " --- " + qsTr("Enable Data Source")
                                 visible: enableDisplace.value
                             }
-                            // P.DataPreference {
-                            //     name: "displaceData"
-                            //     label: " --- --- " + qsTr("Displace Data")
-                            //     visible: displaceDataEnabled.value&&enableDisplace.value
-                            // }
                         }
                     }
                 }
@@ -2160,7 +2140,7 @@ DataSourceElement {
             playing: status === Image.Ready
             configuration: {
                 if (blendMaskedBlurDataEnabled)//启用数据源
-                    return blendMaskedBlurDataEnabled.result;
+                    return maskedBluroutput.result;
                 return maskedBlurIamge;
             }
         }
