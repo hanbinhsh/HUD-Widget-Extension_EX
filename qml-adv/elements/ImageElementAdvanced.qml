@@ -64,6 +64,40 @@ DataSourceElement {
             return cycleCustomColor2[(idxx+index)%16]
         }
     }
+    property var defaultStops: [{ position: 0.000, color: getColor(15) },{ position: 0.067, color: getColor(14) },
+                                { position: 0.133, color: getColor(13) },{ position: 0.200, color: getColor(12) },
+                                { position: 0.267, color: getColor(11) },{ position: 0.333, color: getColor(10) },
+                                { position: 0.400, color: getColor(9) },{ position: 0.467, color: getColor(8) },
+                                { position: 0.533, color: getColor(7) },{ position: 0.600, color: getColor(6) },
+                                { position: 0.667, color: getColor(5) },{ position: 0.733, color: getColor(4) },
+                                { position: 0.800, color: getColor(3) },{ position: 0.867, color: getColor(2) },
+                                { position: 0.933, color: getColor(1) },{ position: 1.000, color: getColor(0) }]
+    function generateGradient(){
+        if(settings.cycleColor===3){
+            if(settings.fillStops.length!=0&&settings.enableColorAnimation)
+            for (var i = 0; i < settings.fillStops.length; i++) {
+                settings.fillStops[i].position = (settings.fillStops[i].position + idxx/100.0) % 1;
+            }
+            return makeGradient(settings.fillStops)
+        }else{
+            return makeGradient(defaultStops)
+        }
+    }
+    // 渐变组件生成
+    function makeGradient(stopdefs) {
+        if(Array.isArray(stopdefs))
+            return gradientComponent.createObject(null, {stopdefs});
+        return makeGradient(defaultStops)
+    }
+    Component {
+        id: gradientComponent
+        Gradient {
+            property var stopdefs
+            stops: stopdefs.map( d => gradientStopComponent.createObject(null, d) );
+        }
+    }
+    Component { id: gradientStopComponent; GradientStop { } }
+    // 渐变组件生成完成
 //发光
     readonly property bool allowGlowTransparentBorder: settings.glowTransparentBorder ?? false
 //遮罩
@@ -819,7 +853,7 @@ DataSourceElement {
                                 label: " --- " + qsTr("Cycle Color")
                                 defaultValue: 0
                                 //彩虹
-                                model: [ qsTr("Rainbow") ,qsTr("Custom")+"Ⅰ", qsTr("Custom")+"Ⅱ"]
+                                model: [ qsTr("Rainbow") ,qsTr("Custom")+"Ⅰ", qsTr("Custom")+"Ⅱ", qsTr("Custom")+"Ⅲ"]
                                 visible: colorGradient.value
                             }
                             //自定义颜色 1
@@ -968,13 +1002,20 @@ DataSourceElement {
                                     }
                                 }
                             }
+                            //自定义颜色3
+                            GradientPreference {
+                                name: "fillStops"
+                                label: " --- " + qsTr("Fill Gradient")
+                                defaultValue: gradientStops(null, colorAlpha("#a18cd1", 0.5))
+                                visible: colorGradient.value&&settings.cycleColor==3
+                            }
                             //饱和度
                             P.SpinPreference {
                                 name: "cycleSaturation"
                                 label: " --- " + qsTr("Saturation")
                                 editable: true
                                 display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor!=2
+                                visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
                                 defaultValue: 100
                                 from: 0
                                 to: 100
@@ -986,7 +1027,7 @@ DataSourceElement {
                                 label: " --- " + qsTr("Value")
                                 editable: true
                                 display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor!=2
+                                visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
                                 defaultValue: 100
                                 from: 0
                                 to: 100
@@ -998,7 +1039,7 @@ DataSourceElement {
                                 label: " --- " + qsTr("Opacity")
                                 editable: true
                                 display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor!=2
+                                visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
                                 defaultValue: 100
                                 from: 0
                                 to: 100
@@ -1041,7 +1082,7 @@ DataSourceElement {
                                 label: " --- " + qsTr("Color From")
                                 editable: true
                                 display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value
+                                visible: enableColorAnimation.value&&colorGradient.value&&settings.cycleColor!=3
                                 defaultValue: 0
                                 from: 0
                                 to: 10000
@@ -1053,7 +1094,7 @@ DataSourceElement {
                                 label: " --- " + qsTr("Color To")
                                 editable: true
                                 display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value
+                                visible: enableColorAnimation.value&&colorGradient.value&&settings.cycleColor!=3
                                 defaultValue: 15
                                 from: 0
                                 to: 10000
@@ -2006,7 +2047,7 @@ DataSourceElement {
                 }
                 return Qt.point(imageSource.width, 0);
             }
-            gradient: gradientRainbow
+            gradient: generateGradient()
         }
         //颜色动画选项4
         RadialGradient {
@@ -2020,7 +2061,7 @@ DataSourceElement {
             verticalRadius:settings.animationVerticalRadius ?? 50
             source: (enableColorGradient&&(settings.animationDirect==4)) ? imageSource : null
             visible: (enableColorGradient&&(settings.animationDirect==4))
-            gradient: gradientRainbow
+            gradient: generateGradient()
         }
         //颜色动画选项5
         ConicalGradient {
@@ -2032,27 +2073,7 @@ DataSourceElement {
             verticalOffset: settings.animationVertical ?? 0
             source: (enableColorGradient&&(settings.animationDirect==5)) ? imageSource : null
             visible: (enableColorGradient&&(settings.animationDirect==5))
-            gradient: gradientRainbow
-        }
-        //动画颜色
-        Gradient {
-            id: gradientRainbow
-            GradientStop { position: 0.000; color: getColor(15) }
-            GradientStop { position: 0.067; color: getColor(14) }
-            GradientStop { position: 0.133; color: getColor(13) }
-            GradientStop { position: 0.200; color: getColor(12) }
-            GradientStop { position: 0.267; color: getColor(11) }
-            GradientStop { position: 0.333; color: getColor(10) }
-            GradientStop { position: 0.400; color: getColor(9) }
-            GradientStop { position: 0.467; color: getColor(8) }
-            GradientStop { position: 0.533; color: getColor(7) }
-            GradientStop { position: 0.600; color: getColor(6) }
-            GradientStop { position: 0.667; color: getColor(5) }
-            GradientStop { position: 0.733; color: getColor(4) }
-            GradientStop { position: 0.800; color: getColor(3) }
-            GradientStop { position: 0.867; color: getColor(2) }
-            GradientStop { position: 0.933; color: getColor(1) }
-            GradientStop { position: 1.000; color: getColor(0) }
+            gradient: generateGradient()
         }
         //颜色渐变动画
         //TODO 需要重新开关来启用效果
@@ -2066,8 +2087,8 @@ DataSourceElement {
                 target: thiz  // 目标对象
                 property: "idxx" // 目标对象中的属性
                 duration: settings.cycleTime ?? 500 // 变化时间
-                from: settings.cycleColorFrom ?? 0
-                to: settings.cycleColorTo ?? 15// 目标值
+                from: settings.cycleColor===3 ? 0 : settings.cycleColorFrom ?? 0
+                to: settings.cycleColor===3 ? 1 : settings.cycleColorTo ?? 15// 目标值
             }
         }
 //发光
@@ -2109,7 +2130,6 @@ DataSourceElement {
         fast: settings.innerShadowFastAlgorithm ?? false//快速渲染
         cached: settings.innerShadowCache ?? false//缓存
     }
-
 //模糊
     //快速模糊
         FastBlur {

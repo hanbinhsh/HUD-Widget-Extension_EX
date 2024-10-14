@@ -80,7 +80,7 @@ MouseArea {
     //透明度动态显示
     property real endOpciMask : settings.fadeTransition_end_start ?? 1000
     property real staOpciMask : settings.fadeTransition_sta_start ?? 0
-    property real endOpci: 100
+    property real endOpci: 0
     //点击移动动画
     property real clickAnimationX : 0
     property real clickAnimationY : 0

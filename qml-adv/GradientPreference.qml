@@ -58,7 +58,10 @@ ItemPreference {
     }
 
     onEffectiveStopsChanged: previewCanvas.requestPaint()
-    onCurrentStopIndexChanged: pStopColor.load(stopsModel.get(currentStopIndex).color)
+    onCurrentStopIndexChanged: {
+        pStopPosition.load(stopsModel.get(currentStopIndex).position*1000)
+        pStopColor.load(stopsModel.get(currentStopIndex).color)
+    }
 
     ListModel { id: stopsModel }
 
@@ -147,6 +150,7 @@ ItemPreference {
 
                             const pos = Math.round(dragHelper.x * 100 / canvas.width) / 100;
                             stopsModel.setProperty(index, "position", pos);
+                            pStopPosition.load(stopsModel.get(currentStopIndex).position*100)
                             canvas.requestPaint();
                         }
 
@@ -229,6 +233,21 @@ ItemPreference {
                 label: qsTr("Stop Color")
                 onPreferenceEdited: {
                     stopsModel.setProperty(currentStopIndex, "color", save());
+                    canvas.requestPaint();
+                }
+            }
+            SpinPreference {
+                id: pStopPosition
+                label: qsTr("Position")
+                editable: true
+                Layout.fillWidth: true
+                display: TextFieldPreference.ExpandLabel
+                stepSize: 1
+                from: 0
+                to: 100
+                onPreferenceEdited: {
+                    let value = save() / 100; // 将值除以100
+                    stopsModel.setProperty(currentStopIndex, "position", value);
                     canvas.requestPaint();
                 }
             }

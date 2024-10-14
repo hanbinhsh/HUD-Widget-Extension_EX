@@ -27,24 +27,37 @@ T.Widget {
     implicitHeight: 64
 
     // 颜色渐变
+    property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 1.0, color: "#fbc2eb" }]
     Gradient {
         id: grad
         GradientStop { position: 0.0; color: defaultSettings.overallGradientColor0 ?? "#a18cd1" }
         GradientStop { position: 1.0; color: defaultSettings.overallGradientColor1 ?? "#fbc2eb" }
     }
-    // Gradient {
-    //     id: advgrad
-    // }
+    // 渐变组件生成
+    function makeGradient(stopdefs) {
+        if(Array.isArray(stopdefs))
+            return gradientComponent.createObject(null, {stopdefs});
+        return makeGradient(defaultStops)
+    }
+    Component {
+        id: gradientComponent
+        Gradient {
+            property var stopdefs
+            stops: stopdefs.map( d => gradientStopComponent.createObject(null, d) );
+        }
+    }
+    Component { id: gradientStopComponent; GradientStop { } }
+    // 渐变组件生成完成
     LinearGradient {
         id: linearG
         anchors.fill: widget
         visible: false
         gradient: {
-            // if (defaultSettings.useFillGradient ?? 0){
+            if (!defaultSettings.useFillGradient){
                 return grad;
-            // }else{
-            //     return advgrad;
-            // }
+            }else{
+                return makeGradient(defaultSettings.fillStops);
+            }
         }
         
         start: {
@@ -75,7 +88,13 @@ T.Widget {
         id: radialG
         visible: false
         anchors.fill: widget
-        gradient: grad
+        gradient: {
+            if (!defaultSettings.useFillGradient){
+                return grad;
+            }else{
+                return makeGradient(defaultSettings.fillStops);
+            }
+        }
         angle: defaultSettings.overallGradientAngle ?? 0
         horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
         verticalOffset: defaultSettings.overallGradientVertical ?? 0
@@ -88,7 +107,13 @@ T.Widget {
         id: conicalG
         visible: false
         anchors.fill: widget
-        gradient: grad
+        gradient: {
+            if (!defaultSettings.useFillGradient){
+                return grad;
+            }else{
+                return makeGradient(defaultSettings.fillStops);
+            }
+        }
         angle: defaultSettings.overallGradientAngle ?? 0
         horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
         verticalOffset: defaultSettings.overallGradientVertical ?? 0
@@ -521,8 +546,9 @@ T.Widget {
                 easing.type: settings.showAnimation_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //消逝动画
-            property bool opciMaskForward: true
+            property bool opciMaskForward: false
             NumberAnimation on staOpciMask {
+                running: false
                 id: opciMask_sta
                 from: opciMaskForward ? settings.fadeTransition_sta_end ?? 0 : settings.fadeTransition_sta_start ?? 0
                 to: opciMaskForward ? settings.fadeTransition_sta_start ?? 0 : settings.fadeTransition_sta_end ?? 0
@@ -530,12 +556,14 @@ T.Widget {
             }
             NumberAnimation on endOpciMask {
                 id: opciMask_end
+                running: false
                 from: opciMaskForward ? settings.fadeTransition_end_end ?? 0 : settings.fadeTransition_end_start ?? 1000
                 to: opciMaskForward ? settings.fadeTransition_end_start ?? 1000 : settings.fadeTransition_end_end ?? 0
                 duration: settings.showAnimation_end_Duration ?? 250
             }
             NumberAnimation on endOpci {
                 id: opciMaskAnimation_End
+                running: false
                 from: opciMaskForward ? 0 : 100
                 to: opciMaskForward ? 100 : 0
                 duration: settings.showAnimation_Duration ?? 100
