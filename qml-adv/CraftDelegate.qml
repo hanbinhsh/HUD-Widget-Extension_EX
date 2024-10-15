@@ -5,6 +5,8 @@ import QtGraphicalEffects 1.12
 import "utils.js" as Utils
 
 import QtWebSockets 1.1
+
+import "../../top.mashiros.widget.advp/qml/" as ADVP
 //二级挂件属性
 MouseArea {
     // clip:true//超出父项直接裁剪
@@ -385,19 +387,10 @@ MouseArea {
         transparentBorder: settings.aDVDropShadowTransparentBorder ?? false//透明边框
         cached: settings.aDVGaussianBlurCached ?? false//缓存
     }
-    WebSocket {
-        url: "ws://localhost:" + Number(settings.aDVPort ?? 5050)
-        active: settings.enableADV ?? false
-        onStatusChanged: {
-            if(status === WebSocket.Closed || status === WebSocket.Error) {
-                console.log("ADV WS Access failed")
-            }
-        }
-        onBinaryMessageReceived: {
-            let arrayBuffer = new Float32Array(message);
-            // console.log(arrayBuffer.slice())
-            updatedAudioData(arrayBuffer.slice());
-        }
+    Connections {
+        enabled: settings.enableADV ?? false
+        target: ADVP.Common
+        onAudioDataUpdated: updatedAudioData(audioData)
     }
     property int opaADV: 0
     ColorOverlay{
