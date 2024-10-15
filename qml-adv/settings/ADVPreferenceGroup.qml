@@ -56,17 +56,6 @@ Flickable {
                 visible: enableADV.value
             }
             P.SpinPreference {
-                name: "aDVPort"
-                label: qsTr("Port")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: enableADV.value
-                defaultValue: 5050
-                from: 0
-                to: 99999
-                stepSize: 1
-            }
-            P.SpinPreference {
                 name: "aDVZ"
                 label: qsTr("Z")
                 editable: true
