@@ -12,8 +12,10 @@
         "zh": "在原版的基础上加入了很多功能,但是是什么功能呢..."
     },
 
+    "homepage": "https://github.com/hanbinhsh/HUD-Widget-Extension_EX",
+
     "bugs": { "email": "hanbinhsh@qq.com" },
-    "author": { "name": "Joshua GPBeta edited by IceRinne" },
+    "author": { "name": "Joshua GPBeta mixed by IceRinne" },
 
     "engines": {
         "qt.quick": ">=2.12",
