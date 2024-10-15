@@ -3,6 +3,8 @@ import NERvGear 1.0 as NVG
 //动画必备
 import QtGraphicalEffects 1.12 
 import "utils.js" as Utils
+
+import QtWebSockets 1.1
 //二级挂件属性
 MouseArea {
     // clip:true//超出父项直接裁剪
@@ -57,10 +59,8 @@ MouseArea {
 
     //增加
     //移动值
-    property real mX : ( settings.translateSetting ? (settings.translateX ?? 0) + (animationX ?? 0) ?? 0 + (animationX ?? 0) : 0 + (animationX ?? 0) )
-             + cycleMoveX + clickAnimationX + showAnimationX;
-    property real mY : ( settings.translateSetting ? (settings.translateY ?? 0) + (animationY ?? 0) ?? 0 + (animationY ?? 0) : 0 + (animationY ?? 0) )
-             + cycleMoveY + clickAnimationY + showAnimationY;
+    property real mX : ((settings.translateSetting ? (settings.translateX ?? 0) : 0) + (animationX ?? 0)) + cycleMoveX + clickAnimationX + showAnimationX;
+    property real mY : ((settings.translateSetting ? (settings.translateY ?? 0) : 0) + (animationY ?? 0)) + cycleMoveY + clickAnimationY + showAnimationY;
     //悬停移动动画
     property real animationX : 0
     property real animationY : 0
@@ -112,7 +112,6 @@ MouseArea {
 
     anchors.verticalCenter: {
         const align = settings.alignment;
-
         // default to vertical center
         if (!(align & Qt.AlignVertical_Mask))
             return parent.verticalCenter;
@@ -122,7 +121,6 @@ MouseArea {
     anchors.verticalCenterOffset: settings.vertical ?? 0
     anchors.horizontalCenter: {
         const align = settings.alignment;
-
         // default to horizontal center
         if (!(align & Qt.AlignHorizontal_Mask))
             return parent.horizontalCenter;
@@ -364,5 +362,58 @@ MouseArea {
                 default: return linearG;
             }
         }
+    }
+
+    // 音频显示
+    NVG.ImageSource {
+        id: aDVImage_source
+        anchors.fill: parent
+        visible: Boolean(settings.enableADV && settings.showADVImage)
+        fillMode: settings.aDVImageFill ?? Image.PreserveAspectFit
+        //透明度
+        opacity: 1
+        configuration: settings.aDVImage;
+    }
+    GaussianBlur {
+        id: aDVImage_source_gaussian
+        anchors.fill: delegate
+        source: settings.useADVGaussian ? aDVImage_source : null
+        visible: Boolean(settings.useADVGaussian && settings.enableADV)
+        radius: settings.aDVGaussianBlurRadius ?? 5//半径
+        deviation: settings.aDVGaussianBlurDeviation ?? 3//偏差值
+        samples: settings.aDVGaussianBlurSamples ?? 5//样本数
+        transparentBorder: settings.aDVDropShadowTransparentBorder ?? false//透明边框
+        cached: settings.aDVGaussianBlurCached ?? false//缓存
+    }
+    WebSocket {
+        url: "ws://localhost:" + Number(settings.aDVPort ?? 5050)
+        active: settings.enableADV ?? false
+        onStatusChanged: {
+            if(status === WebSocket.Closed || status === WebSocket.Error) {
+                console.log("ADV WS Access failed")
+            }
+        }
+        onBinaryMessageReceived: {
+            let arrayBuffer = new Float32Array(message);
+            // console.log(arrayBuffer.slice())
+            updatedAudioData(arrayBuffer.slice());
+        }
+    }
+    property int opaADV: 0
+    ColorOverlay{
+        visible: settings.enableADV ?? false
+        anchors.fill: delegate
+        source: settings.useADVGaussian ? aDVImage_source_gaussian : aDVImage_source
+        color: settings.aDVColor ?? "white"
+        opacity: opaADV/100.0
+        z: settings.aDVZ ?? -1
+    }
+    function updatedAudioData(audioData) {
+        let v = 0;
+        let s = Math.pow(2,settings.aDVSample ?? 0)
+        for (let i=0;i<128;i+=s) {
+            v += audioData[i]
+        }
+        opaADV = v*5/(128/s)
     }
 }

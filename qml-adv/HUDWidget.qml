@@ -271,6 +271,7 @@ T.Widget {
             implicitHeight: Math.max(bgSource.implicitHeight, 16)
 
             //编辑可见性界面
+            // TODO 尝试通过数据更改某些物品的颜色或者渐变？？？
             hidden: {
                 switch (modelData.visibility) {
                 case "normal": return widget.NVG.View.hovered;
