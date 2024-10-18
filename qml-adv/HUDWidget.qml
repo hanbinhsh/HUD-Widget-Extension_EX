@@ -4,6 +4,8 @@ import QtGraphicalEffects 1.12
 import NERvGear 1.0 as NVG
 import NERvGear.Templates 1.0 as T
 
+import "Launcher" as LC
+
 import "utils.js" as Utils
 //一级挂件属性
 T.Widget {
@@ -141,10 +143,47 @@ T.Widget {
     menu: Menu {
         Action {
             text: qsTr("Editing Mode...")
-
             onTriggered: dialog.active = true
         }
+        Action {
+            text: qsTr("Save shot to Sao root")
+            onTriggered: {
+                widget.grabToImage(function(result) {
+                    result.saveToFile("../Widget.png");
+                });
+                NVG.SystemCall.messageBox({text: qsTr("Save success.")});
+            }
+        }
+        // Action {
+        //     text: qsTr("EX Launcher")
+        //     onTriggered: {
+        //         launcher.toggleLauncherView()
+        //     }
+        // }
+        // Action {
+        //     text: qsTr("Export")
+        //     onTriggered: {
+        //         console.log(settings.name)
+        //     }
+        // }
     }
+
+    // Loader {
+    //     id: launcher
+    //     visible: false
+
+    //     // 加载的动态组件
+    //     sourceComponent: LC.LauncherView {
+    //         id: launcherView
+    //         isVisible: launcher.visible  // 绑定外层 Loader 的 visible 属性
+    //     }
+
+    //     function toggleLauncherView() {
+    //         if (launcher.item) {  // 确保组件实例已加载
+    //             launcher.item.isVisible = !launcher.item.isVisible;  // 使用 loader.item 来访问实例化的 launcherView
+    //         }
+    //     }
+    // }
 
     Component.onCompleted: { // upgrade settings
         if (settings.font !== undefined) {
@@ -274,12 +313,12 @@ T.Widget {
             // TODO 尝试通过数据更改某些物品的颜色或者渐变？？？
             hidden: {
                 switch (modelData.visibility) {
-                case "normal": return widget.NVG.View.hovered;
-                case "hovered": return !widget.NVG.View.hovered;
-                case "data": return !Boolean(dataOutput.result);
-                case "data&hovered": return !Boolean(dataOutput.result)&&widget.NVG.View.hovered;//新增
-                case "data&normal": return !Boolean(dataOutput.result)&&!widget.NVG.View.hovered;//新增
-                default: break;
+                    case "normal": return widget.NVG.View.hovered;
+                    case "hovered": return !widget.NVG.View.hovered;
+                    case "data": return !Boolean(dataOutput.result);
+                    case "data&hovered": return !Boolean(dataOutput.result)&&widget.NVG.View.hovered;//新增
+                    case "data&normal": return !Boolean(dataOutput.result)&&!widget.NVG.View.hovered;//新增
+                    default: break;
                 }
                 return false;
             }
@@ -462,6 +501,9 @@ T.Widget {
                 if (!widget.editing) {// TODO 2级界面加入此行
                     if (actionSource.configuration)
                         actionSource.trigger(thiz);
+                }
+                if(settings.showEXLauncher){
+                    launcher.toggleLauncherView()
                 }
                 if(settings.moveOnClick && !isAnimationRunning){
                     isAnimationRunning = true // 标记动画已经开始

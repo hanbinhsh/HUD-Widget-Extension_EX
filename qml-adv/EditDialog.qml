@@ -72,6 +72,15 @@ NVG.Window {
         onAccepted: itemView.model.remove(itemView.currentTarget.index)
         Label { text: qsTr("Are you sure to remove this item?") }
     }
+    Dialog {
+        id: cutDialog
+        anchors.centerIn: parent
+        title: "Save Success"
+        modal: true
+        parent: Overlay.overlay
+        standardButtons: Dialog.Yes
+        Label { text: qsTr("Saved the item shot to the root path of Sao") }
+    }
     property var easingModel : [qsTr("Linear"),//0
                                 qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),//1-4
                                 qsTr("InCubic"),qsTr("OutCubic"),qsTr("InOutCubic"),qsTr("OutInCubic"),//5-8
@@ -91,6 +100,17 @@ NVG.Window {
             id: titleBar
             text: dialog.title
             height:50
+            //截图按钮
+            ToolButton {
+                icon.name: "regular:\uf0c4"
+                enabled: currentItem
+                onClicked: {
+                    itemView.currentTarget.grabToImage(function(result) {
+                           result.saveToFile("../Item.png");
+                    });
+                    cutDialog.open()
+                }
+            }
             //编辑按钮
             ToolButton {
                 icon.name: "regular:\uf044"
@@ -476,6 +496,7 @@ NVG.Window {
                             case 3: return layoutActionSetting.contentHeight + 56;
                             case 4: return displayMaskSetting.contentHeight + 56;
                             case 5: return layoutADVSetting.contentHeight + 56;
+                            //case 6: return layoutEXSetting.contentHeight + 56;
                             return 0;
                         }
                         //Component.onCompleted: elemBar.currentIndex = 3
@@ -484,7 +505,7 @@ NVG.Window {
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Normal"),qsTr("Visible"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask"),qsTr("ADV")]
+                                model: [qsTr("Normal"),qsTr("Visible"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask"),qsTr("ADV")]//,qsTr("EXLauncher")
                                 TabButton {
                                     text: modelData
                                     width: Math.max(128, elemBar.width / 3)
@@ -532,6 +553,12 @@ NVG.Window {
                                     id: layoutADVSetting
                                 }
                             }
+                            // Item{
+                            //     EXLauncherPerferenceGroup{
+                            //         item: currentItem
+                            //         id: layoutEXSetting
+                            //     }
+                            // }
                         }
                     }
                 }
