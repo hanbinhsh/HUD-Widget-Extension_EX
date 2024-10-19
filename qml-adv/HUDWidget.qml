@@ -151,39 +151,31 @@ T.Widget {
                 widget.grabToImage(function(result) {
                     result.saveToFile("../Widget.png");
                 });
-                NVG.SystemCall.messageBox({text: qsTr("Save success.")});
+                NVG.SystemCall.messageBox({
+                    title: "Success",
+                    modal: true,
+                    text: qsTr("Save success.")
+                });
+            }
+        }
+        Action {
+            text: qsTr("EX Launcher")
+            onTriggered: {
+                LC.LauncherCore.toggleLauncherView()
             }
         }
         // Action {
-        //     text: qsTr("EX Launcher")
-        //     onTriggered: {
-        //         launcher.toggleLauncherView()
-        //     }
-        // }
-        // Action {
         //     text: qsTr("Export")
         //     onTriggered: {
-        //         console.log(settings.name)
+        //         console.log(widget.name)
         //     }
         // }
     }
 
-    // Loader {
-    //     id: launcher
-    //     visible: false
-
-    //     // 加载的动态组件
-    //     sourceComponent: LC.LauncherView {
-    //         id: launcherView
-    //         isVisible: launcher.visible  // 绑定外层 Loader 的 visible 属性
-    //     }
-
-    //     function toggleLauncherView() {
-    //         if (launcher.item) {  // 确保组件实例已加载
-    //             launcher.item.isVisible = !launcher.item.isVisible;  // 使用 loader.item 来访问实例化的 launcherView
-    //         }
-    //     }
-    // }
+    Connections {
+        enabled: true
+        target: LC.LauncherCore
+    }
 
     Component.onCompleted: { // upgrade settings
         if (settings.font !== undefined) {
@@ -296,11 +288,8 @@ T.Widget {
         model: NVG.Settings.makeList(widget.settings, "items")
         delegate: CraftDelegate {
             id: thiz
-
             readonly property NVG.DataSource dataSource: dataSource
-
             property bool targetVisible: true
-
             view: itemView
             settings: modelData
             index: model.index
@@ -312,6 +301,9 @@ T.Widget {
             //编辑可见性界面
             // TODO 尝试通过数据更改某些物品的颜色或者渐变？？？
             hidden: {
+                if(settings.onlyDisplayOnEXLauncher&&!LC.LauncherCore.vis){
+                    return true
+                }
                 switch (modelData.visibility) {
                     case "normal": return widget.NVG.View.hovered;
                     case "hovered": return !widget.NVG.View.hovered;
@@ -326,8 +318,8 @@ T.Widget {
             interactionSource: modelData.interaction ?? defaultItemInteraction
             interactionSettingsBase: modelData.interaction ? modelData : widget.defaultSettings
 
+            // FIXME 将此处改为settings.onlyDisplayOnEXLauncher，才不会遮挡？
             hoverEnabled: true//Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
-
             //控制挂件是否显示
             // TODO 显示时的动画效果
             // TODO 外层挂件的悬浮动作
@@ -501,9 +493,8 @@ T.Widget {
                 if (!widget.editing) {// TODO 2级界面加入此行
                     if (actionSource.configuration)
                         actionSource.trigger(thiz);
-                }
-                if(settings.showEXLauncher){
-                    launcher.toggleLauncherView()
+                    if(settings.showEXLauncher)
+                        LC.LauncherCore.toggleLauncherView()
                 }
                 if(settings.moveOnClick && !isAnimationRunning){
                     isAnimationRunning = true // 标记动画已经开始
@@ -559,17 +550,14 @@ T.Widget {
                     animationSpin_Click.running = true
                 }
             }
-
             NVG.DataSource {
                 id: dataSource
                 configuration: modelData.data
             }
-            
             NVG.DataSourceRawOutput {//加了||"data&hovered"
                 id: dataOutput
                 source: modelData.visibility === "data"||"data&hovered"||"data&normal" ? dataSource : null
             }
-
             NVG.ActionSource {
                 id: actionSource
                 text: modelData.label || this.title

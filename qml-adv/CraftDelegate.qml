@@ -11,6 +11,7 @@ import "../../top.mashiros.widget.advp/qml/" as ADVP
 MouseArea {
     // clip:true//超出父项直接裁剪
     id: delegate
+    propagateComposedEvents: true
 
     property Item view // Note: CraftView type recusive
     property NVG.SettingsMap settings

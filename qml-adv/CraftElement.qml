@@ -6,6 +6,8 @@ import NERvGear 1.0 as NVG
 
 import "utils.js" as Utils
 
+import "Launcher" as LC
+
 CraftDelegate {
     id: craftElement
 
@@ -20,6 +22,11 @@ CraftDelegate {
 
     implicitWidth: Math.max(loader.implicitWidth, 16)
     implicitHeight: Math.max(loader.implicitHeight, 16)
+
+    Connections {
+        enabled: true
+        target: LC.LauncherCore
+    }
 
     Loader {
         id: loader
@@ -339,7 +346,9 @@ CraftDelegate {
             //选择了动作
             if (settings.action&&settings.enableAction) {
                 actionSource.trigger(this);
-                return;
+            }
+            if(settings.showEXLauncher){
+                LC.LauncherCore.toggleLauncherView()
             }
             if(settings.moveOnClick && !isAnimationRunning){
                 isAnimationRunning = true // 标记动画已经开始

@@ -35,15 +35,21 @@ Flickable {
             // 部件编辑界面的动作设置
             P.ActionPreference {
                 name: "action"
-                label: "--- " + qsTr("Action")
+                label: " --- " + qsTr("Action")
                 //message: value ? "" : qsTr("Defaults to toggle slideshow")
+                visible: enableAction.value
+            }
+            //显示exl
+            P.SwitchPreference {
+                name: "showEXLauncher"
+                label: " --- " + qsTr("Click to show EXLauncher")
                 visible: enableAction.value
             }
             // TODO 悬停动作 （移动，缩放）
             //中心
             P.SpinPreference {
                 name: "zoomMouse_OriginX"
-                label: "--- " + qsTr("Origin X")
+                label: " --- " + qsTr("Origin X")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value
@@ -54,7 +60,7 @@ Flickable {
             }
             P.SpinPreference {
                 name: "zoomMouse_OriginY"
-                label: "--- " + qsTr("Origin Y")
+                label: " --- " + qsTr("Origin Y")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value
@@ -67,13 +73,13 @@ Flickable {
             P.SwitchPreference {
                 id: moveOnHover
                 name: "moveOnHover"
-                label: "--- " + qsTr("Move On Hover")
+                label: " --- " + qsTr("Move On Hover")
                 visible: enableAction.value
             }
             //距离
             P.SpinPreference {
                 name: "moveHover_Distance"
-                label: "--- --- " + qsTr("Distance")
+                label: " --- --- " + qsTr("Distance")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&moveOnHover.value
@@ -85,7 +91,7 @@ Flickable {
             //方向
             P.SpinPreference {
                 name: "moveHover_Direction"
-                label: "--- --- " + qsTr("Direction")
+                label: " --- --- " + qsTr("Direction")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&moveOnHover.value
@@ -97,7 +103,7 @@ Flickable {
             //持续时间
             P.SpinPreference {
                 name: "moveHover_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&moveOnHover.value
@@ -109,7 +115,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "moveOnHover_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&moveOnHover.value
@@ -118,13 +124,13 @@ Flickable {
             P.SwitchPreference {
                 id: zoomOnHover
                 name: "zoomOnHover"
-                label: "--- " + qsTr("Zoom On Hover")
+                label: " --- " + qsTr("Zoom On Hover")
                 visible: enableAction.value
             }
             //大小
             P.SpinPreference {
                 name: "zoomHover_XSize"
-                label: "--- --- " + qsTr("X Scale")
+                label: " --- --- " + qsTr("X Scale")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&zoomOnHover.value
@@ -135,7 +141,7 @@ Flickable {
             }
             P.SpinPreference {
                 name: "zoomHover_YSize"
-                label: "--- --- " + qsTr("Y Scale")
+                label: " --- --- " + qsTr("Y Scale")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&zoomOnHover.value
@@ -147,7 +153,7 @@ Flickable {
             //持续时间
             P.SpinPreference {
                 name: "zoomHover_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&zoomOnHover.value
@@ -159,7 +165,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "zoomHover_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&zoomOnHover.value
@@ -168,13 +174,13 @@ Flickable {
             P.SwitchPreference {
                 id: spinOnHover
                 name: "spinOnHover"
-                label: "--- " + qsTr("Spin On Hover")
+                label: " --- " + qsTr("Spin On Hover")
                 visible: enableAction.value
             }
             //角度
             P.SpinPreference {
                 name: "spinHover_Direction"
-                label: "--- --- " + qsTr("Direction")
+                label: " --- --- " + qsTr("Direction")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&spinOnHover.value
@@ -186,7 +192,7 @@ Flickable {
             //时间
             P.SpinPreference {
                 name: "spinHover_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&spinOnHover.value
@@ -198,7 +204,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "spinHover_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&spinOnHover.value
@@ -209,13 +215,13 @@ Flickable {
             P.SwitchPreference {
                 id: glimmerOnHover
                 name: "glimmerOnHover"
-                label: "--- " + qsTr("Glimmer On Hover")
+                label: " --- " + qsTr("Glimmer On Hover")
                 visible: enableAction.value
             }
             //时间
             P.SpinPreference {
                 name: "glimmerHover_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&glimmerOnHover.value
@@ -227,7 +233,7 @@ Flickable {
             //最小透明度
             P.SpinPreference {
                 name: "glimmerHover_MinOpacity"
-                label: "--- --- " + qsTr("Min Opacity")
+                label: " --- --- " + qsTr("Min Opacity")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&glimmerOnHover.value
@@ -239,7 +245,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "glimmerHover_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&glimmerOnHover.value
@@ -249,13 +255,13 @@ Flickable {
             P.SwitchPreference {
                 id: zoomOnClick
                 name: "zoomOnClick"
-                label: "--- " + qsTr("Zoom On Click")
+                label: " --- " + qsTr("Zoom On Click")
                 visible: enableAction.value
             }
             //大小
             P.SpinPreference {
                 name: "zoomClick_XSize"
-                label: "--- --- " + qsTr("X Scale")
+                label: " --- --- " + qsTr("X Scale")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&zoomOnClick.value
@@ -266,7 +272,7 @@ Flickable {
             }
             P.SpinPreference {
                 name: "zoomClick_YSize"
-                label: "--- --- " + qsTr("Y Scale")
+                label: " --- --- " + qsTr("Y Scale")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&zoomOnClick.value
@@ -278,7 +284,7 @@ Flickable {
             //持续时间
             P.SpinPreference {
                 name: "zoomClick_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&zoomOnClick.value
@@ -290,7 +296,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "zoomClick_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&zoomOnClick.value
@@ -299,19 +305,19 @@ Flickable {
             P.SwitchPreference {
                 id: spinOnClick
                 name: "spinOnClick"
-                label: "--- " + qsTr("Spin On Click")
+                label: " --- " + qsTr("Spin On Click")
                 visible: enableAction.value
             }
             //单次旋转
             P.SwitchPreference {
                 name: "spinOnClickInstantRecuvery"
-                label: "--- --- " + qsTr("Instant Recuvery")
+                label: " --- --- " + qsTr("Instant Recuvery")
                 visible: enableAction.value&&spinOnClick.value
             }
             //角度
             P.SpinPreference {
                 name: "spinClick_Direction"
-                label: "--- --- " + qsTr("Direction")
+                label: " --- --- " + qsTr("Direction")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&spinOnClick.value
@@ -323,7 +329,7 @@ Flickable {
             //时间
             P.SpinPreference {
                 name: "spinClick_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&spinOnClick.value
@@ -335,7 +341,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "spinClick_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&spinOnClick.value
@@ -344,19 +350,19 @@ Flickable {
             P.SwitchPreference {
                 id: moveOnClick
                 name: "moveOnClick"
-                label: "--- " + qsTr("Move On Click")
+                label: " --- " + qsTr("Move On Click")
                 visible: enableAction.value
             }
             //点击第二次后移回
             P.SwitchPreference {
                 name: "moveBackAfterClick"
-                label: "--- --- " + qsTr("Move Back After Click")
+                label: " --- --- " + qsTr("Move Back After Click")
                 visible: enableAction.value&&moveOnClick.value
             }
             //角度
             P.SpinPreference {
                 name: "moveClick_Direction"
-                label: "--- --- " + qsTr("Direction")
+                label: " --- --- " + qsTr("Direction")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&moveOnClick.value
@@ -368,7 +374,7 @@ Flickable {
             //距离
             P.SpinPreference {
                 name: "moveClick_Distance"
-                label: "--- --- " + qsTr("Distance")
+                label: " --- --- " + qsTr("Distance")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&moveOnClick.value
@@ -380,7 +386,7 @@ Flickable {
             //时间
             P.SpinPreference {
                 name: "moveClick_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value&&moveOnClick.value
@@ -392,7 +398,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "moveClick_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: enableAction.value&&moveOnClick.value
@@ -407,13 +413,13 @@ Flickable {
             P.SwitchPreference {
                 id: cycleMove
                 name: "cycleMove"
-                label: "--- " + qsTr("Cycle Moving")
+                label: " --- " + qsTr("Cycle Moving")
                 visible:cycleAnimation.value
             }
             //距离
             P.SpinPreference {
                 name: "moveCycle_Distance"
-                label: "--- --- " + qsTr("Distance")
+                label: " --- --- " + qsTr("Distance")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: cycleAnimation.value&&cycleMove.value
@@ -425,7 +431,7 @@ Flickable {
             //方向
             P.SpinPreference {
                 name: "moveCycle_Direction"
-                label: "--- --- " + qsTr("Direction")
+                label: " --- --- " + qsTr("Direction")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: cycleAnimation.value&&cycleMove.value
@@ -437,7 +443,7 @@ Flickable {
             //持续时间
             P.SpinPreference {
                 name: "moveCycle_Duration"
-                label: "--- --- " + qsTr("Duration")
+                label: " --- --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: cycleAnimation.value&&cycleMove.value
@@ -449,7 +455,7 @@ Flickable {
             //延时
             P.SpinPreference {
                 name: "moveCycle_Delay"
-                label: "--- --- " + qsTr("Delay")
+                label: " --- --- " + qsTr("Delay")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: cycleAnimation.value&&cycleMove.value
@@ -461,7 +467,7 @@ Flickable {
             //等待时间
             P.SpinPreference {
                 name: "moveCycle_Waiting"
-                label: "--- --- " + qsTr("Waiting")
+                label: " --- --- " + qsTr("Waiting")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: cycleAnimation.value&&cycleMove.value
@@ -473,7 +479,7 @@ Flickable {
             //曲线
             P.SelectPreference {
                 name: "moveCycle_Easing"
-                label: "--- --- " + qsTr("Easing")
+                label: " --- --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
                 visible: cycleAnimation.value&&cycleMove.value

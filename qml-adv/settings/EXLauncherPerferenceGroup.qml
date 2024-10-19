@@ -27,24 +27,8 @@ Flickable {
             width: parent.width
             //必须资源
             P.SwitchPreference {
-                name: "showEXLauncher"
-                label: qsTr("Click to show EXLauncher")
-            }
-            P.SwitchPreference {
-                id: displayOnEXLauncher
-                name: "displayOnEXLauncher"
-                label: qsTr("Display On EXLauncher")
-            }
-            P.SpinPreference {
-                name: "eXLauncherZ"
-                label: qsTr("Display Z")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: displayOnEXLauncher.value
-                defaultValue: 1
-                from: -999
-                to: 999
-                stepSize: 1
+                name: "onlyDisplayOnEXLauncher"
+                label: qsTr("Only Display On EXLauncher")
             }
         }
     }
