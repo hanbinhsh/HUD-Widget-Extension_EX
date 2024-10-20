@@ -134,7 +134,19 @@ NVG.View {
                 switch(eXLSettings.leftClickEvent ?? 3){
                     case 0: {isVisible = false; break;}
                     case 1: {dialog.active = true; break;}
-                    case 2: ;
+                    case 2: {
+                        if (actionL.configuration)
+                            actionL.trigger(eXLauncherView); break;
+                    };
+                    default: break;
+                }
+                switch(eXLSettings.leftClickEvent2 ?? 3){
+                    case 0: {isVisible = false; break;}
+                    case 1: {dialog.active = true; break;}
+                    case 2: {
+                        if (actionL.configuration)
+                            actionL.trigger(eXLauncherView); break;
+                    };
                     default: break;
                 }
             }
@@ -142,7 +154,19 @@ NVG.View {
                 switch(eXLSettings.rightClickEvent ?? 0){
                     case 0: {isVisible = false; break;}
                     case 1: {dialog.active = true; break;}
-                    case 2: ;
+                    case 2: {
+                        if (actionR.configuration)
+                            actionR.trigger(eXLauncherView); break;
+                    };
+                    default: break;
+                }
+                switch(eXLSettings.rightClickEvent2 ?? 3){
+                    case 0: {isVisible = false; break;}
+                    case 1: {dialog.active = true; break;}
+                    case 2: {
+                        if (actionR.configuration)
+                            actionR.trigger(eXLauncherView); break;
+                    };
                     default: break;
                 }
             }
@@ -150,10 +174,21 @@ NVG.View {
                 switch(eXLSettings.middleClickEvent ?? 1){
                     case 0: {isVisible = false; break;}
                     case 1: {dialog.active = true; break;}
-                    case 2: ;
+                    case 2: {
+                        if (actionM.configuration)
+                            actionM.trigger(eXLauncherView); break;
+                    };
                     default: break;
                 }
-                
+                switch(eXLSettings.middleClickEvent2 ?? 3){
+                    case 0: {isVisible = false; break;}
+                    case 1: {dialog.active = true; break;}
+                    case 2: {
+                        if (actionM.configuration)
+                            actionM.trigger(eXLauncherView); break;
+                    };
+                    default: break;
+                }
             }
         }
     }
@@ -177,6 +212,19 @@ NVG.View {
         y: eXLSettings.enableShowAnimation ? -Number(eXLSettings.showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180) : eXLSettings.viewBGY ?? 0
         width: eXLSettings.viewBGW ?? Screen.width
         height: eXLSettings.viewBGH ?? Screen.height
+    }
+
+    NVG.ActionSource {
+        id: actionL
+        configuration: eXLSettings.action_L
+    }
+    NVG.ActionSource {
+        id: actionR
+        configuration: eXLSettings.action_R
+    }
+    NVG.ActionSource {
+        id: actionM
+        configuration: eXLSettings.action_M
     }
 }
 

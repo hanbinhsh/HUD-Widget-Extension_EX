@@ -69,6 +69,7 @@ Flickable {
                 to: 10000
                 stepSize: 10
             }
+            P.Separator{visible: enableAction.value}
         //悬停移动
             P.SwitchPreference {
                 id: moveOnHover
@@ -120,6 +121,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&moveOnHover.value
             }
+            P.Separator{visible: enableAction.value}
         //悬停缩放
             P.SwitchPreference {
                 id: zoomOnHover
@@ -170,6 +172,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&zoomOnHover.value
             }
+            P.Separator{visible: enableAction.value}
         //悬停旋转
             P.SwitchPreference {
                 id: spinOnHover
@@ -209,6 +212,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&spinOnHover.value
             }
+            P.Separator{visible: enableAction.value}
         // TODO 3D旋转
         // TODO 持续旋转
         //悬停闪烁
@@ -250,6 +254,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&glimmerOnHover.value
             }
+            P.Separator{visible: enableAction.value}
     //// 点击
         //点击缩放
             P.SwitchPreference {
@@ -301,6 +306,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&zoomOnClick.value
             }
+            P.Separator{visible: enableAction.value}
         //点击旋转
             P.SwitchPreference {
                 id: spinOnClick
@@ -346,6 +352,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&spinOnClick.value
             }
+            P.Separator{visible: enableAction.value}
         //点击移动
             P.SwitchPreference {
                 id: moveOnClick
@@ -403,6 +410,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&moveOnClick.value
             }
+            P.Separator{visible: enableAction.value}
     //周期动画
             P.SwitchPreference {
                 id: cycleAnimation

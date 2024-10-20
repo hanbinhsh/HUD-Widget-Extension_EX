@@ -53,6 +53,15 @@
             },
             "entry": "qml-adv/elements/TextElementAdvanced.qml"
         }, {
+            "location": "/data",
+            "catalog": "data",
+            "title": {
+                "en": "ADV Data",
+                "zh": "音频数据",
+                "zh_TW": "音频数据"
+            },
+            "entry": "qml-adv/ADVData/ADVData.qml"
+        }, {
             "location": "/preset/info",
             "catalog": "preset/widget",
             "title": {

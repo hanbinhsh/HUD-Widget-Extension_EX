@@ -61,6 +61,7 @@ Flickable {
                     // undefined
                 }
             }
+            P.Separator{}
             //显示时间
             P.SpinPreference {
                 name: "displayTime"
@@ -105,6 +106,7 @@ Flickable {
                 stepSize: 50
                 display: P.TextFieldPreference.ExpandLabel
             }
+            P.Separator{}
         //显示动画
             P.SwitchPreference {
                 id: enableShowAnimation
@@ -155,6 +157,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableShowAnimation.value
             }
+            P.Separator{}
         //消逝动画
             P.SwitchPreference {
                 id: enableFadeTransition

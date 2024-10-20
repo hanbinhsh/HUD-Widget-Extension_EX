@@ -314,20 +314,52 @@ NVG.Window {
                                             P.SelectPreference {
                                                 name: "leftClickEvent"
                                                 label: qsTr("Left Click")
-                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("-Action-"), qsTr("None") ]
+                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("Action"), qsTr("None") ]
                                                 defaultValue: 3
                                             }
                                             P.SelectPreference {
                                                 name: "rightClickEvent"
                                                 label: qsTr("Right Click")
-                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("-Action-"), qsTr("None") ]
+                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("Action"), qsTr("None") ]
                                                 defaultValue: 0
                                             }
                                             P.SelectPreference {
                                                 name: "middleClickEvent"
                                                 label: qsTr("Middle Click")
-                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("-Action-"), qsTr("None") ]
+                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("Action"), qsTr("None") ]
                                                 defaultValue: 1
+                                            }
+                                            P.Separator{}
+                                            P.SelectPreference {
+                                                name: "leftClickEvent2"
+                                                label: qsTr("Left Click") + " Ⅱ"
+                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("Action"), qsTr("None") ]
+                                                defaultValue: 3
+                                            }
+                                            P.SelectPreference {
+                                                name: "rightClickEvent2"
+                                                label: qsTr("Right Click") + " Ⅱ"
+                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("Action"), qsTr("None") ]
+                                                defaultValue: 3
+                                            }
+                                            P.SelectPreference {
+                                                name: "middleClickEvent2"
+                                                label: qsTr("Middle Click") + " Ⅱ"
+                                                model: [ qsTr("Hide"), qsTr("Setting"), qsTr("Action"), qsTr("None") ]
+                                                defaultValue: 3
+                                            }
+                                            P.Separator{}
+                                            P.ActionPreference {
+                                                name: "action_L"
+                                                label: qsTr("Left Action")
+                                            }
+                                            P.ActionPreference {
+                                                name: "action_R"
+                                                label: qsTr("Right Action")
+                                            }
+                                            P.ActionPreference {
+                                                name: "action_M"
+                                                label: qsTr("Middle Action")
                                             }
                                         }
                                     }
@@ -380,11 +412,12 @@ NVG.Window {
                                                 to: 10000
                                                 stepSize: 10
                                             }
+                                            P.Separator{}
                                             //显示动画
                                             P.SwitchPreference {
                                                 id: enableShowAnimation
                                                 name: "enableShowAnimation"
-                                                label: qsTr("Enable Image Show Animation")
+                                                label: qsTr("Enable Image Display Animation")
                                             }
                                             //角度
                                             P.SpinPreference {

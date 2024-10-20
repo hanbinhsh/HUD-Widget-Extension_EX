@@ -35,7 +35,7 @@ DataSourceElement {
         return (value, unit) => value + ' ' + unit;
     }
 
-    title: qsTranslate("utils", "Numeric or Text")
+    title: qsTranslate("utils", "Advanced Text")
     implicitHeight: textSource.implicitHeight
     Binding on implicitWidth {
         delayed: true // avoid binding loop

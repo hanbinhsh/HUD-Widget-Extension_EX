@@ -67,6 +67,7 @@ Flickable {
                 to: 10000
                 stepSize: 100
             }
+            P.Separator{}
             //旋转设置
             //旋转设置开关
             P.SwitchPreference {
@@ -247,6 +248,7 @@ Flickable {
                 to: 240
                 stepSize: 10
             }
+            P.Separator{}
             //缩放
             P.SwitchPreference {
                 id: scaleSetting
@@ -323,6 +325,7 @@ Flickable {
                     }
                 }
             }
+            P.Separator{}
             //平移
             P.SwitchPreference {
                 id: translateSetting
