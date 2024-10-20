@@ -33,17 +33,32 @@ T.Data {
                 model: [ qsTr("128"), qsTr("64"), qsTr("32"), qsTr("16"), qsTr("8"), qsTr("4") ]
                 defaultValue: 0
             }
+            P.SelectPreference {
+                name: "channel"
+                label: qsTr("Channel")
+                model: [ qsTr("All"), qsTr("Left"), qsTr("Right") ]//, qsTr("Custom")
+                defaultValue: 0
+            }
         }
 
         readonly property var config: (advv.update.configuration instanceof Object) ? advv.update.configuration : {}
 
         function updatedAudioData(audioData) {
+            let lc = 0;
+            let rc = 128;
+            switch(config?.channel ?? 0){
+                case 0: lc = 0;rc = 128;break;
+                case 2: lc = 0;rc = 64;break;
+                case 1: lc = 64;rc = 128;break;
+                //case 3: ;break;
+                default: lc = 0;rc = 128;break;
+            }
             let v = 0;
             let s = Math.pow(2, config?.aDVSample ?? 0)
-            for (let i=0;i<128;i+=s) {
+            for (let i=lc;i<rc;i+=s) {
                 v += audioData[i]
             }
-            valADV = v*5/(128/s)
+            valADV = v*5/((rc-lc)/s)
         }
     }
 
