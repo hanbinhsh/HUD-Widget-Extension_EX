@@ -66,6 +66,17 @@ Flickable {
                 to: 999
                 stepSize: 1
             }
+            P.SpinPreference {
+                name: "aDVDecrease"
+                label: qsTr("Decrease")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: enableADV.value
+                defaultValue: 1000
+                from: 100
+                to: 100000
+                stepSize: 100
+            }
             P.SelectPreference {
                 name: "aDVSample"
                 label: qsTr("Sample")

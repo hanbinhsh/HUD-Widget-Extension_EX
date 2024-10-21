@@ -120,6 +120,10 @@ Flickable {
                 to: 100
                 stepSize: 5
             }
+            P.SwitchPreference {
+                name: itemName + "hideOriginal"
+                label: qsTr("Hide Original")
+            }
             P.Separator{}
             P.SwitchPreference {
                 id: colorOverlay
@@ -130,11 +134,6 @@ Flickable {
                 name: itemName + "overlayColor"
                 label: " --- " + qsTr("Color")
                 defaultValue: "transparent"
-                visible: colorOverlay.value
-            }
-            P.SwitchPreference {
-                name: itemName + "hideOriginal"
-                label: " --- " + qsTr("Hide Original")
                 visible: colorOverlay.value
             }
             P.SpinPreference {
@@ -158,6 +157,47 @@ Flickable {
                 to: 100
                 stepSize: 5
                 visible: colorOverlay.value
+            }
+            P.Separator{}
+            P.SwitchPreference {
+                id: enableEXLADV
+                name: itemName + "enableEXLADV"
+                label: qsTr("Enable ADV")
+            }
+            P.ColorPreference {
+                name: itemName + "eXLADVColor"
+                label: " --- " + qsTr("Color")
+                defaultValue: "white"
+                visible: enableEXLADV.value
+            }
+            P.SpinPreference {
+                name: itemName + "eXLADVZ"
+                label: " --- " + qsTr("Z")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: enableEXLADV.value
+                defaultValue: -1
+                from: -999
+                to: 999
+                stepSize: 1
+            }
+            P.SpinPreference {
+                name: itemName + "eXLADVDecrease"
+                label: " --- " + qsTr("Decrease")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: enableEXLADV.value
+                defaultValue: 1000
+                from: 100
+                to: 100000
+                stepSize: 100
+            }
+            P.SelectPreference {
+                name: "eXLADVSample"//全局
+                label: " --- " + qsTr("Sample")
+                model: [ qsTr("128"), qsTr("64"), qsTr("32"), qsTr("16"), qsTr("8"), qsTr("4") ]
+                defaultValue: 0
+                visible: enableEXLADV.value
             }
         }
     }

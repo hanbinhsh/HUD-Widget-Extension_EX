@@ -6,6 +6,7 @@ import NERvGear 1.0 as NVG
 import NERvGear.Templates 1.0 as T
 
 import "."
+import "../../../top.mashiros.widget.advp/qml/" as ADVP
 
 NVG.View {
     id: eXLauncherView
@@ -193,6 +194,34 @@ NVG.View {
         }
     }
 
+    NVG.ActionSource {
+        id: actionL
+        configuration: eXLSettings.action_L
+    }
+    NVG.ActionSource {
+        id: actionR
+        configuration: eXLSettings.action_R
+    }
+    NVG.ActionSource {
+        id: actionM
+        configuration: eXLSettings.action_M
+    }
+
+    Connections {
+        enabled: Boolean((eXLSettings.enableEXLADV||eXLSettings.adv_enableEXLADV)&&isVisible)
+        target: ADVP.Common
+        onAudioDataUpdated: updatedAudioData(audioData)
+    }
+    function updatedAudioData(audioData) {
+        let v = 0;
+        let s = Math.pow(2,eXLSettings.eXLADVSample ?? 0)
+        for (let i=0;i<128;i+=s) {
+            v += audioData[i]
+        }
+        opaADV = v*5/(128/s)
+    }
+    property int opaADV: 0
+
     Loader {
         id: dialog
         active: false
@@ -200,7 +229,7 @@ NVG.View {
             onClosing: dialog.active = false
         }
     }
-
+    //////////////////////////////////NOR  NOR  NOR  NOR  NOR  NOR  NOR  NOR//////////////////////////////////
     NVG.ImageSource {
         id: eXLImage
         visible: Boolean(eXLSettings.useViewImage&&!eXLSettings.hideOriginal)
@@ -241,22 +270,16 @@ NVG.View {
         duration: eXLSettings.moveAnimation_DurationY ?? 3000
         running: eXLSettings.enableMoveAnimation ?? false
     }
-
-    NVG.ActionSource {
-        id: actionL
-        configuration: eXLSettings.action_L
+    // 音频显示
+    ColorOverlay{
+        visible: eXLSettings.enableEXLADV ?? false
+        anchors.fill: eXLImage
+        source: eXLImage
+        color: eXLSettings.eXLADVColor ?? "white"
+        opacity: (opaADV/100.0)/((eXLSettings.eXLADVDecrease ?? 1000)/1000)
+        z: eXLSettings.eXLADVZ ?? -1
     }
-    NVG.ActionSource {
-        id: actionR
-        configuration: eXLSettings.action_R
-    }
-    NVG.ActionSource {
-        id: actionM
-        configuration: eXLSettings.action_M
-    }
-
     //////////////////////////////////ADV  ADV  ADV  ADV  ADV  ADV  ADV  ADV//////////////////////////////////
-
     NVG.ImageSource {
         id: adv_eXLImage
         visible: Boolean(eXLSettings.adv_useViewImage&&!eXLSettings.adv_hideOriginal)
@@ -296,6 +319,16 @@ NVG.View {
         to: eXLSettings.adv_moveAnimation_YTo ?? 0
         duration: eXLSettings.adv_moveAnimation_DurationY ?? 3000
         running: eXLSettings.adv_enableMoveAnimation ?? false
+    }
+    // 音频显示
+    ColorOverlay{
+        id: adv_ADVCO
+        visible: eXLSettings.adv_enableEXLADV ?? false
+        anchors.fill: adv_eXLImage
+        source: adv_eXLImage
+        color: eXLSettings.adv_eXLADVColor ?? "white"
+        opacity: (opaADV/100.0)/((eXLSettings.adv_eXLADVDecrease ?? 1000)/1000)
+        z: eXLSettings.adv_eXLADVZ ?? -1
     }
 }
 

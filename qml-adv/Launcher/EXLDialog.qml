@@ -87,6 +87,7 @@ NVG.Window {
                                     case 1: return backgroundEXLS.contentHeight + 56;
                                     case 2: return mouseEventEXLS.contentHeight + 56;
                                     case 3: return animationEXLS.contentHeight + 56;
+                                    case 4: return aDVEXLS.contentHeight + 56;
                                     return 0;
                                 }
                                 header:TabBar {

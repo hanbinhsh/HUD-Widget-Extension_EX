@@ -399,7 +399,7 @@ MouseArea {
         anchors.fill: delegate
         source: settings.useADVGaussian ? aDVImage_source_gaussian : aDVImage_source
         color: settings.aDVColor ?? "white"
-        opacity: opaADV/100.0
+        opacity: (opaADV/100.0)/((settings.aDVDecrease ?? 1000)/1000)
         z: settings.aDVZ ?? -1
     }
     function updatedAudioData(audioData) {
