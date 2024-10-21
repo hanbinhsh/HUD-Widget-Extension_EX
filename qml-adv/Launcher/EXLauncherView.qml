@@ -203,8 +203,9 @@ NVG.View {
 
     NVG.ImageSource {
         id: eXLImage
-        visible: Boolean(eXLSettings.useViewImage)
+        visible: Boolean(eXLSettings.useViewImage&&!eXLSettings.hideOriginal)
         fillMode: eXLSettings.viewBGImageFill ?? Image.PreserveAspectFit
+        playing: status === Image.Ready
         //透明度
         opacity: eXLSettings.viewBGImageOpacity ? eXLSettings.viewBGImageOpacity/100.0 : 1.0
         configuration: eXLSettings.viewBGImage;
@@ -212,6 +213,33 @@ NVG.View {
         y: eXLSettings.enableShowAnimation ? -Number(eXLSettings.showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180) : eXLSettings.viewBGY ?? 0
         width: eXLSettings.viewBGW ?? Screen.width
         height: eXLSettings.viewBGH ?? Screen.height
+        z: eXLSettings.viewBGZ ?? 0
+    }
+    ColorOverlay{
+        visible:eXLSettings.colorOverlay ?? false
+        anchors.fill: eXLImage
+        source: eXLImage
+        color: eXLSettings.overlayColor ?? "transparent"
+        z: eXLSettings.overlayColorZ ?? 0
+        opacity: eXLSettings.overlayColorOpacity ? eXLSettings.overlayColorOpacity/100.0 : 100
+    }
+    NumberAnimation {
+        loops: Animation.Infinite
+        target: eXLImage
+        property: "x"
+        from: eXLSettings.moveAnimation_XFrom ?? 0
+        to: eXLSettings.moveAnimation_XTo ?? 0
+        duration: eXLSettings.moveAnimation_DurationX ?? 3000
+        running: eXLSettings.enableMoveAnimation ?? false
+    }
+    NumberAnimation {
+        loops: Animation.Infinite
+        target: eXLImage
+        property: "y"
+        from: eXLSettings.moveAnimation_YFrom ?? 0
+        to: eXLSettings.moveAnimation_YTo ?? 0
+        duration: eXLSettings.moveAnimation_DurationY ?? 3000
+        running: eXLSettings.enableMoveAnimation ?? false
     }
 
     NVG.ActionSource {
@@ -225,6 +253,49 @@ NVG.View {
     NVG.ActionSource {
         id: actionM
         configuration: eXLSettings.action_M
+    }
+
+    //////////////////////////////////ADV  ADV  ADV  ADV  ADV  ADV  ADV  ADV//////////////////////////////////
+
+    NVG.ImageSource {
+        id: adv_eXLImage
+        visible: Boolean(eXLSettings.adv_useViewImage&&!eXLSettings.adv_hideOriginal)
+        fillMode: eXLSettings.adv_viewBGImageFill ?? Image.PreserveAspectFit
+        playing: status === Image.Ready
+        //透明度
+        opacity: eXLSettings.adv_viewBGImageOpacity ? eXLSettings.adv_viewBGImageOpacity/100.0 : 1.0
+        configuration: eXLSettings.adv_viewBGImage;
+        x: eXLSettings.adv_enableShowAnimation ? Number(eXLSettings.adv_showAnimation_Distance ?? 10) * Math.cos(Number(eXLSettings.adv_showAnimation_Direction ?? 0) * Math.PI / 180) : (eXLSettings.adv_viewBGX ?? 0)
+        y: eXLSettings.adv_enableShowAnimation ? -Number(eXLSettings.adv_showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.adv_showAnimation_Direction ?? 0) * Math.PI / 180) : eXLSettings.adv_viewBGY ?? 0
+        width: eXLSettings.adv_viewBGW ?? Screen.width
+        height: eXLSettings.adv_viewBGH ?? Screen.height
+        z: eXLSettings.adv_viewBGZ ?? 0
+    }
+    ColorOverlay{
+        visible:eXLSettings.adv_colorOverlay ?? false
+        anchors.fill: adv_eXLImage
+        source: adv_eXLImage
+        color: eXLSettings.adv_overlayColor ?? "transparent"
+        z: eXLSettings.adv_overlayColorZ ?? 0
+        opacity: eXLSettings.adv_overlayColorOpacity ? eXLSettings.adv_overlayColorOpacity/100.0 : 100
+    }
+    NumberAnimation {
+        loops: Animation.Infinite
+        target: adv_eXLImage
+        property: "x"
+        from: eXLSettings.adv_moveAnimation_XFrom ?? 0
+        to: eXLSettings.adv_moveAnimation_XTo ?? 0
+        duration: eXLSettings.adv_moveAnimation_DurationX ?? 3000
+        running: eXLSettings.adv_enableMoveAnimation ?? false
+    }
+    NumberAnimation {
+        loops: Animation.Infinite
+        target: adv_eXLImage
+        property: "y"
+        from: eXLSettings.adv_moveAnimation_YFrom ?? 0
+        to: eXLSettings.adv_moveAnimation_YTo ?? 0
+        duration: eXLSettings.adv_moveAnimation_DurationY ?? 3000
+        running: eXLSettings.adv_enableMoveAnimation ?? false
     }
 }
 
