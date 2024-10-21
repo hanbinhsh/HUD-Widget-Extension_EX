@@ -185,7 +185,7 @@ Flickable {
                 visible: enableMoveAnimation.value
                 defaultValue: 3000
                 from: 0
-                to: 10000
+                to: 99999
                 stepSize: 10
             }
             P.SpinPreference {
@@ -196,7 +196,7 @@ Flickable {
                 visible: enableMoveAnimation.value
                 defaultValue: 3000
                 from: 0
-                to: 10000
+                to: 99999
                 stepSize: 10
             }
         }
