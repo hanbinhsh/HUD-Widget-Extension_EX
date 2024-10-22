@@ -34,10 +34,44 @@ T.Data {
                 defaultValue: 0
             }
             P.SelectPreference {
+                id: channel
                 name: "channel"
                 label: qsTr("Channel")
-                model: [ qsTr("All"), qsTr("Left"), qsTr("Right") ]//, qsTr("Custom")
+                model: [ qsTr("All"), qsTr("Left"), qsTr("Right"), qsTr("Custom") ]
                 defaultValue: 0
+            }
+            P.SpinPreference {
+                name: "left"
+                label: qsTr("left")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: channel.value === 3
+                defaultValue: 0
+                from: 0
+                to: 127
+                stepSize: 1
+            }
+            P.SpinPreference {
+                name: "right"
+                label: qsTr("right")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: channel.value === 3
+                defaultValue: 127
+                from: 0
+                to: 127
+                stepSize: 1
+            }
+            P.SpinPreference {
+                name: "decrease"
+                label: qsTr("Decrease")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: channel.value === 3
+                defaultValue: 1000
+                from: 0
+                to: 100000
+                stepSize: 100
             }
         }
 
@@ -50,7 +84,15 @@ T.Data {
                 case 0: lc = 0;rc = 128;break;
                 case 2: lc = 0;rc = 64;break;
                 case 1: lc = 64;rc = 128;break;
-                //case 3: ;break;
+                case 3: 
+                    if(config.left<config.right){
+                        lc = config.left;
+                        rc = config.right;
+                    }else{
+                        lc = config.right;
+                        rc = config.left;
+                    }
+                    break;
                 default: lc = 0;rc = 128;break;
             }
             let v = 0;
@@ -58,7 +100,7 @@ T.Data {
             for (let i=lc;i<rc;i+=s) {
                 v += audioData[i]
             }
-            valADV = v*5/((rc-lc)/s)
+            valADV = v*5/((rc-lc)/s)/((config?.decrease ?? 1000)/1000)
         }
     }
 

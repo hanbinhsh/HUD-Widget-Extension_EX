@@ -16,4 +16,8 @@ QtObject {
             launcherView.isVisible = true
         }
     }
+
+    function toggleLauncherSetting() {
+        launcherView.toggleSetting()
+    }
 }

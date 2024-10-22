@@ -159,17 +159,17 @@ T.Widget {
             }
         }
         Action {
-            text: qsTr("EX Launcher")
+            text: qsTr("Open EX Launcher")
             onTriggered: {
                 LC.LauncherCore.toggleLauncherView()
             }
         }
-        // Action {
-        //     text: qsTr("Export")
-        //     onTriggered: {
-        //         console.log(widget.name)
-        //     }
-        // }
+        Action {
+            text: qsTr("EX Launcher Setting")
+            onTriggered: {
+                LC.LauncherCore.toggleLauncherSetting()
+            }
+        }
     }
 
     Connections {

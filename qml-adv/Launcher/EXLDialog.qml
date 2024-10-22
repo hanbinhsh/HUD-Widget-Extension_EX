@@ -62,17 +62,18 @@ NVG.Window {
                         implicitHeight: switch(pBar.currentIndex){
                             case 0: return elemPage.height + 56;
                             case 1: return advancedElemPage.height + 56;
-                            return 0;
+                            case 2: return menuElemPage.height + 56;
+                            default: 0;
                         }
                         header:TabBar {
                             id: pBar
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Basic"),qsTr("Advanced")]
+                                model: [qsTr("Basic"), qsTr("Advanced"), qsTr("Menu")]
                                 TabButton {
                                     text: modelData
-                                    width: Math.max(128, elemBar.width / 2)
+                                    width: Math.max(128, elemBar.width / 3)
                                 }
                             }
                         }
@@ -88,7 +89,7 @@ NVG.Window {
                                     case 2: return mouseEventEXLS.contentHeight + 56;
                                     case 3: return animationEXLS.contentHeight + 56;
                                     case 4: return aDVEXLS.contentHeight + 56;
-                                    return 0;
+                                    default: 0;
                                 }
                                 header:TabBar {
                                     id: elemBar
@@ -118,7 +119,7 @@ NVG.Window {
                                 implicitHeight: switch(advancedElemBar.currentIndex){
                                     case 0: return backgroundEXLSA.contentHeight + 56;
                                     case 1: return animationEXLSA.contentHeight + 56;
-                                    return 0;
+                                    default: 0;
                                 }
                                 header:TabBar {
                                     id: advancedElemBar
@@ -137,6 +138,32 @@ NVG.Window {
                                     currentIndex: advancedElemBar.currentIndex
                                     Item{BackgroundEXLS{id: backgroundEXLSA; itemName: "adv_"}}
                                     Item{AnimationEXLS{id: animationEXLSA; itemName: "adv_"}}
+                                }
+                            }
+                            // Menu
+                            Page {
+                                id: menuElemPage
+                                width: parent.width
+                                implicitHeight: switch(menuElemBar.currentIndex){
+                                    // case 0: return backgroundEXLSA.contentHeight + 56;
+                                    // case 1: return animationEXLSA.contentHeight + 56;
+                                    default: 0;
+                                }
+                                header:TabBar {
+                                    id: menuElemBar
+                                    width: parent.width
+                                    clip:true//超出父项直接裁剪
+                                    Repeater {
+                                        model: [qsTr("Background"), qsTr("Animation")]
+                                        TabButton {
+                                            text: modelData
+                                            width: Math.max(128, menuElemBar.width / 2)
+                                        }
+                                    }
+                                }
+                                StackLayout {
+                                    width: parent.width
+                                    currentIndex: menuElemBar.currentIndex
                                 }
                             }
                         }

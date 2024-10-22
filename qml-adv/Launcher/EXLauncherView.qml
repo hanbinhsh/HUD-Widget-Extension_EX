@@ -35,6 +35,10 @@ NVG.View {
         }
     }
 
+    function toggleSetting() {
+        dialog.active = true
+    }
+
     // 当 isVisible 改变时触发动画
     onIsVisibleChanged: {
         if (isVisible) {

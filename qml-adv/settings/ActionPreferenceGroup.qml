@@ -410,7 +410,7 @@ Flickable {
                 defaultValue: 3
                 visible: enableAction.value&&moveOnClick.value
             }
-            P.Separator{visible: enableAction.value}
+            P.Separator{}
     //周期动画
             P.SwitchPreference {
                 id: cycleAnimation
@@ -491,6 +491,13 @@ Flickable {
                 model: easingModel
                 defaultValue: 3
                 visible: cycleAnimation.value&&cycleMove.value
+            }
+            P.Separator{}
+        //数据控制的动画
+            P.SwitchPreference {
+                id: dataAnimation
+                name: "dataAnimation"
+                label: qsTr("Data Animation")
             }
         }
     }
