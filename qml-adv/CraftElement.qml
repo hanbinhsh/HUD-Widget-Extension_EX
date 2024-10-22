@@ -185,6 +185,41 @@ CraftDelegate {
         duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
         easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
     }
+    //数据移动
+    NumberAnimation on moveDataX {
+        id: moveDataX
+        running: false
+        duration: settings.moveData_Duration ?? 300// 动画持续时间，单位为毫秒
+        easing.type: settings.moveData_Easing ?? 3 // 使用缓动函数使动画更平滑
+    }
+    NumberAnimation on moveDataY {
+        id: moveDataY
+        running: false
+        duration: settings.moveData_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: settings.moveData_Easing ?? 3 // 使用缓动函数使动画更平滑
+    }
+    Timer {
+        repeat: true
+        interval: settings.moveData_Duration ?? 300
+        running: Boolean(settings.dataAnimation&&settings.dataAnimation_move)&&craftElement.NVG.View.exposed
+        onTriggered: {
+            moveDataX.stop()
+            moveDataX.to = Number(settings.moveData_Distance_data ? distanceData.result??0 : settings.moveData_Distance ?? 10) 
+            * Math.cos(Number(settings.moveData_Direction_data ? directionData.result??0 : settings.moveData_Direction ?? 0) * Math.PI / 180)
+            moveDataX.start()
+        }
+    }
+    Timer {
+        repeat: true
+        interval: settings.moveData_Trigger ?? 300
+        running: Boolean(settings.dataAnimation&&settings.dataAnimation_move)&&craftElement.NVG.View.exposed
+        onTriggered: {
+            moveDataY.stop()
+            moveDataY.to = -Number(settings.moveData_Distance_data ? distanceData.result??0 : settings.moveData_Distance ?? 10)
+            * Math.sin(Number(settings.moveData_Direction_data ? directionData.result??0 : settings.moveData_Direction ?? 0) * Math.PI / 180)
+            moveDataY.start()
+        }
+    }
     //点击移动
     property bool isAnimationRunning: false // 标志变量，控制动画状态
     NumberAnimation on clickAnimationX {
@@ -406,6 +441,23 @@ CraftDelegate {
         NVG.ActionSource {
             id: actionSource
             configuration: settings.action
+        }
+        // 数据移动
+        NVG.DataSource {
+            id: distanceDataSource
+            configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Distance_data) ? settings.distanceData : null
+        }
+        NVG.DataSource {
+            id: directionDataSource
+            configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Direction_data) ? settings.directionData : null
+        }
+        NVG.DataSourceRawOutput {
+            id: distanceData
+            source: distanceDataSource
+        }
+        NVG.DataSourceRawOutput {
+            id: directionData
+            source: directionDataSource
         }
     }
 }

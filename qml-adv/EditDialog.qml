@@ -496,7 +496,6 @@ NVG.Window {
                             case 3: return layoutActionSetting.contentHeight + 56;
                             case 4: return displayMaskSetting.contentHeight + 56;
                             case 5: return layoutADVSetting.contentHeight + 56;
-                            case 6: return layoutEXSetting.contentHeight + 56;
                             return 0;
                         }
                         //Component.onCompleted: elemBar.currentIndex = 3
@@ -505,7 +504,7 @@ NVG.Window {
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Normal"),qsTr("Visible"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask"),qsTr("ADV"),qsTr("EXLauncher")]
+                                model: [qsTr("Normal"),qsTr("Visible"),qsTr("Transform"),qsTr("Action"),qsTr("Display Mask"),qsTr("ADV")]
                                 TabButton {
                                     text: modelData
                                     width: Math.max(128, elemBar.width / 3)
@@ -551,12 +550,6 @@ NVG.Window {
                                 ADVPreferenceGroup{
                                     item: currentItem
                                     id: layoutADVSetting
-                                }
-                            }
-                            Item{
-                                EXLauncherPerferenceGroup{
-                                    item: currentItem
-                                    id: layoutEXSetting
                                 }
                             }
                         }

@@ -356,6 +356,180 @@ Flickable {
                 to: 10000
                 stepSize: 10
             }
+            P.Separator{}
+            //周期动画
+            P.SwitchPreference {
+                id: cycleAnimation
+                name: "cycleAnimation"
+                label: qsTr("Cycle Animation")
+            }
+        //周期平移
+            P.SwitchPreference {
+                id: cycleMove
+                name: "cycleMove"
+                label: " --- " + qsTr("Cycle Moving")
+                visible:cycleAnimation.value
+            }
+            //距离
+            P.SpinPreference {
+                name: "moveCycle_Distance"
+                label: " --- --- " + qsTr("Distance")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: cycleAnimation.value&&cycleMove.value
+                defaultValue: 10
+                from: -1000
+                to: 1000
+                stepSize: 10
+            }
+            //方向
+            P.SpinPreference {
+                name: "moveCycle_Direction"
+                label: " --- --- " + qsTr("Direction")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: cycleAnimation.value&&cycleMove.value
+                defaultValue: 0
+                from: -180
+                to: 180
+                stepSize: 5
+            }
+            //持续时间
+            P.SpinPreference {
+                name: "moveCycle_Duration"
+                label: " --- --- " + qsTr("Duration")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: cycleAnimation.value&&cycleMove.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //延时
+            P.SpinPreference {
+                name: "moveCycle_Delay"
+                label: " --- --- " + qsTr("Delay")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: cycleAnimation.value&&cycleMove.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //等待时间
+            P.SpinPreference {
+                name: "moveCycle_Waiting"
+                label: " --- --- " + qsTr("Waiting")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: cycleAnimation.value&&cycleMove.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //曲线
+            P.SelectPreference {
+                name: "moveCycle_Easing"
+                label: " --- --- " + qsTr("Easing")
+                model: easingModel
+                defaultValue: 3
+                visible: cycleAnimation.value&&cycleMove.value
+            }
+            P.Separator{}
+        //数据控制的动画
+            P.SwitchPreference {
+                id: dataAnimation
+                name: "dataAnimation"
+                label: qsTr("Data Animation")
+            }
+            // 数据移动动画
+            P.SwitchPreference {
+                id: dataAnimation_move
+                name: "dataAnimation_move"
+                label: " --- " + qsTr("Data Move Animation")
+                visible: dataAnimation.value
+            }
+            //距离
+            P.SpinPreference {
+                name: "moveData_Distance"
+                label: " --- --- " + qsTr("Distance")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: dataAnimation.value&&dataAnimation_move.value&&!moveData_Distance_data.value
+                defaultValue: 10
+                from: -1000
+                to: 1000
+                stepSize: 10
+            }
+            P.SwitchPreference {
+                id: moveData_Distance_data
+                name: "moveData_Distance_data"
+                label: " --- --- " + qsTr("Distance Use Data")
+                visible: dataAnimation.value&&dataAnimation_move.value
+            }
+            P.DataPreference {
+                name: "distanceData"
+                label: " --- --- " + qsTr("Distance Data")
+                visible: dataAnimation.value&&dataAnimation_move.value&&moveData_Distance_data.value
+            }
+            //方向
+            P.SpinPreference {
+                name: "moveData_Direction"
+                label: " --- --- " + qsTr("Direction")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: dataAnimation.value&&dataAnimation_move.value&&!moveData_Direction_data.value
+                defaultValue: 0
+                from: -180
+                to: 180
+                stepSize: 5
+            }
+            P.SwitchPreference {
+                id: moveData_Direction_data
+                name: "moveData_Direction_data"
+                label: " --- --- " + qsTr("Direction Use Data")
+                visible: dataAnimation.value&&dataAnimation_move.value
+            }
+            P.DataPreference {
+                name: "directionData"
+                label: " --- --- " + qsTr("Direction Data")
+                visible: dataAnimation.value&&dataAnimation_move.value&&moveData_Direction_data.value
+            }
+            //检测时间
+            P.SpinPreference {
+                name: "moveData_Trigger"
+                label: " --- --- " + qsTr("Trigger Cycle")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: dataAnimation.value&&dataAnimation_move.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //持续时间
+            P.SpinPreference {
+                name: "moveData_Duration"
+                label: " --- --- " + qsTr("Duration")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: dataAnimation.value&&dataAnimation_move.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //曲线
+            P.SelectPreference {
+                name: "moveData_Easing"
+                label: " --- --- " + qsTr("Easing")
+                model: easingModel
+                defaultValue: 3
+                visible: dataAnimation.value&&dataAnimation_move.value
+            }
         }
     }
 }

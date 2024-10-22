@@ -61,6 +61,10 @@ Flickable {
                     // undefined
                 }
             }
+            P.SwitchPreference {
+                name: "onlyDisplayOnEXLauncher"
+                label: qsTr("Only Display On EXLauncher")
+            }
             P.Separator{}
             //显示时间
             P.SpinPreference {

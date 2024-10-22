@@ -62,14 +62,19 @@ MouseArea {
 
     //增加
     //移动值
-    property real mX : ((settings.translateSetting ? (settings.translateX ?? 0) : 0) + (animationX ?? 0)) + cycleMoveX + clickAnimationX + showAnimationX;
-    property real mY : ((settings.translateSetting ? (settings.translateY ?? 0) : 0) + (animationY ?? 0)) + cycleMoveY + clickAnimationY + showAnimationY;
+    property real mX : ((settings.translateSetting ? (settings.translateX ?? 0) : 0) + (animationX ?? 0))
+     + cycleMoveX + clickAnimationX + showAnimationX + moveDataX;
+    property real mY : ((settings.translateSetting ? (settings.translateY ?? 0) : 0) + (animationY ?? 0))
+     + cycleMoveY + clickAnimationY + showAnimationY + moveDataY;
     //悬停移动动画
     property real animationX : 0
     property real animationY : 0
     //显示移动动画
     property real showAnimationX : 0
     property real showAnimationY : 0
+    //数据移动动画
+    property real moveDataX : 0
+    property real moveDataY : 0
     //悬停缩放动画
     property real animationZoomX : 0
     property real animationZoomY : 0

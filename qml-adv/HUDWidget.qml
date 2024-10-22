@@ -336,6 +336,41 @@ T.Widget {
                 duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
                 easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
+            //数据移动
+            NumberAnimation on moveDataX {
+                id: moveDataX
+                running: false
+                duration: modelData.moveData_Duration ?? 300// 动画持续时间，单位为毫秒
+                easing.type: modelData.moveData_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            NumberAnimation on moveDataY {
+                id: moveDataY
+                running: false
+                duration: modelData.moveData_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: modelData.moveData_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            Timer {
+                repeat: true
+                interval: modelData.moveData_Duration ?? 300
+                running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_move)&&thiz.NVG.View.exposed
+                onTriggered: {
+                    moveDataX.stop()
+                    moveDataX.to = Number(modelData.moveData_Distance_data ? distanceData.result??0 : modelData.moveData_Distance ?? 10) 
+                    * Math.cos(Number(modelData.moveData_Direction_data ? directionData.result??0 : modelData.moveData_Direction ?? 0) * Math.PI / 180)
+                    moveDataX.start()
+                }
+            }
+            Timer {
+                repeat: true
+                interval: modelData.moveData_Trigger ?? 300
+                running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_move)&&thiz.NVG.View.exposed
+                onTriggered: {
+                    moveDataY.stop()
+                    moveDataY.to = -Number(modelData.moveData_Distance_data ? distanceData.result??0 : modelData.moveData_Distance ?? 10)
+                    * Math.sin(Number(modelData.moveData_Direction_data ? directionData.result??0 : modelData.moveData_Direction ?? 0) * Math.PI / 180)
+                    moveDataY.start()
+                }
+            }
             //点击移动
             property bool isAnimationRunning: false // 标志变量，控制动画状态
             NumberAnimation on clickAnimationX {
@@ -562,6 +597,23 @@ T.Widget {
                 id: actionSource
                 text: modelData.label || this.title
                 configuration: modelData.action
+            }
+            // 数据移动
+            NVG.DataSource {
+                id: distanceDataSource
+                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Distance_data) ? modelData.distanceData : null
+            }
+            NVG.DataSource {
+                id: directionDataSource
+                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Direction_data) ? modelData.directionData : null
+            }
+            NVG.DataSourceRawOutput {
+                id: distanceData
+                source: distanceDataSource
+            }
+            NVG.DataSourceRawOutput {
+                id: directionData
+                source: directionDataSource
             }
             // 外层挂件独有
             NumberAnimation on showAnimationX {
