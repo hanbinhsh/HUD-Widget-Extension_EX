@@ -67,7 +67,6 @@ T.Data {
                 label: qsTr("Decrease")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
-                visible: channel.value === 3
                 defaultValue: 1000
                 from: 0
                 to: 100000
