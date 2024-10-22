@@ -337,6 +337,22 @@ T.Widget {
                 easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
             }
             //数据移动
+            NVG.DataSource {
+                id: distanceDataSource
+                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Distance_data) ? modelData.distanceData : null
+            }
+            NVG.DataSource {
+                id: directionDataSource
+                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Direction_data) ? modelData.directionData : null
+            }
+            NVG.DataSourceRawOutput {
+                id: distanceData
+                source: distanceDataSource
+            }
+            NVG.DataSourceRawOutput {
+                id: directionData
+                source: directionDataSource
+            }
             NumberAnimation on moveDataX {
                 id: moveDataX
                 running: false
@@ -351,7 +367,7 @@ T.Widget {
             }
             Timer {
                 repeat: true
-                interval: modelData.moveData_Duration ?? 300
+                interval: modelData.moveData_Trigger ?? 300
                 running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_move)&&thiz.NVG.View.exposed
                 onTriggered: {
                     moveDataX.stop()
@@ -369,6 +385,31 @@ T.Widget {
                     moveDataY.to = -Number(modelData.moveData_Distance_data ? distanceData.result??0 : modelData.moveData_Distance ?? 10)
                     * Math.sin(Number(modelData.moveData_Direction_data ? directionData.result??0 : modelData.moveData_Direction ?? 0) * Math.PI / 180)
                     moveDataY.start()
+                }
+            }
+            //数据旋转
+            NVG.DataSource {
+                id: spinDataSource
+                configuration: (modelData.dataAnimation&&modelData.dataAnimation_spin) ? modelData.spinData : null
+            }
+            NVG.DataSourceRawOutput {
+                id: spinData
+                source: spinDataSource
+            }
+            NumberAnimation on spinDataA {
+                id: spinDataAnimation
+                running: false
+                duration: modelData.spinData_Duration ?? 300 // 动画持续时间，单位为毫秒
+                easing.type: modelData.spinData_Easing ?? 3 // 使用缓动函数使动画更平滑
+            }
+            Timer {
+                repeat: true
+                interval: modelData.spinData_Trigger ?? 300
+                running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_spin)&&thiz.NVG.View.exposed
+                onTriggered: {
+                    spinDataAnimation.stop()
+                    spinDataAnimation.to = spinData.result ?? 0
+                    spinDataAnimation.start()
                 }
             }
             //点击移动
@@ -597,23 +638,6 @@ T.Widget {
                 id: actionSource
                 text: modelData.label || this.title
                 configuration: modelData.action
-            }
-            // 数据移动
-            NVG.DataSource {
-                id: distanceDataSource
-                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Distance_data) ? modelData.distanceData : null
-            }
-            NVG.DataSource {
-                id: directionDataSource
-                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Direction_data) ? modelData.directionData : null
-            }
-            NVG.DataSourceRawOutput {
-                id: distanceData
-                source: distanceDataSource
-            }
-            NVG.DataSourceRawOutput {
-                id: directionData
-                source: directionDataSource
             }
             // 外层挂件独有
             NumberAnimation on showAnimationX {

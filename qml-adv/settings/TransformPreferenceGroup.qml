@@ -530,6 +530,52 @@ Flickable {
                 defaultValue: 3
                 visible: dataAnimation.value&&dataAnimation_move.value
             }
+            P.Separator{}
+            //数据控制旋转
+            P.SwitchPreference {
+                id: dataAnimation_spin
+                name: "dataAnimation_spin"
+                label: " --- " + qsTr("Data Spin Animation")
+                visible: dataAnimation.value
+            }
+            //数据
+            P.DataPreference {
+                name: "spinData"
+                label: " --- --- " + qsTr("Spin Data")
+                visible: dataAnimation.value&&dataAnimation_spin.value
+            }
+            //检测时间
+            P.SpinPreference {
+                name: "spinData_Trigger"
+                label: " --- --- " + qsTr("Trigger Cycle")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: dataAnimation.value&&dataAnimation_spin.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //持续时间
+            P.SpinPreference {
+                name: "spinData_Duration"
+                label: " --- --- " + qsTr("Duration")
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+                visible: dataAnimation.value&&dataAnimation_spin.value
+                defaultValue: 300
+                from: 0
+                to: 10000
+                stepSize: 10
+            }
+            //曲线
+            P.SelectPreference {
+                name: "spinData_Easing"
+                label: " --- --- " + qsTr("Easing")
+                model: easingModel
+                defaultValue: 3
+                visible: dataAnimation.value&&dataAnimation_spin.value
+            }
         }
     }
 }

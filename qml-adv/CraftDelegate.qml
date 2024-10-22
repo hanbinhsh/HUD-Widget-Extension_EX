@@ -75,6 +75,8 @@ MouseArea {
     //数据移动动画
     property real moveDataX : 0
     property real moveDataY : 0
+    //数据旋转
+    property real spinDataA : 0
     //悬停缩放动画
     property real animationZoomX : 0
     property real animationZoomY : 0
@@ -140,7 +142,7 @@ MouseArea {
     //挂件高度
     z: interactionItem?.extraZ ?? settings.z ?? 0
     //挂件旋转
-    rotation: (settings.rotation ?? 0)+(animationSpin??0)
+    rotation: (settings.rotation ?? 0)+(animationSpin??0)+spinDataA
     //透明度
     opacity: settings.opacity ?? 1
     //大小

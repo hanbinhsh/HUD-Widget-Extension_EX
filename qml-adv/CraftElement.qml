@@ -186,6 +186,22 @@ CraftDelegate {
         easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
     }
     //数据移动
+    NVG.DataSource {
+        id: distanceDataSource
+        configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Distance_data) ? settings.distanceData : null
+    }
+    NVG.DataSource {
+        id: directionDataSource
+        configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Direction_data) ? settings.directionData : null
+    }
+    NVG.DataSourceRawOutput {
+        id: distanceData
+        source: distanceDataSource
+    }
+    NVG.DataSourceRawOutput {
+        id: directionData
+        source: directionDataSource
+    }
     NumberAnimation on moveDataX {
         id: moveDataX
         running: false
@@ -200,7 +216,7 @@ CraftDelegate {
     }
     Timer {
         repeat: true
-        interval: settings.moveData_Duration ?? 300
+        interval: settings.moveData_Trigger ?? 300
         running: Boolean(settings.dataAnimation&&settings.dataAnimation_move)&&craftElement.NVG.View.exposed
         onTriggered: {
             moveDataX.stop()
@@ -218,6 +234,31 @@ CraftDelegate {
             moveDataY.to = -Number(settings.moveData_Distance_data ? distanceData.result??0 : settings.moveData_Distance ?? 10)
             * Math.sin(Number(settings.moveData_Direction_data ? directionData.result??0 : settings.moveData_Direction ?? 0) * Math.PI / 180)
             moveDataY.start()
+        }
+    }
+    //数据旋转
+    NVG.DataSource {
+        id: spinDataSource
+        configuration: (settings.dataAnimation&&settings.dataAnimation_spin) ? settings.spinData : null
+    }
+    NVG.DataSourceRawOutput {
+        id: spinData
+        source: spinDataSource
+    }
+    NumberAnimation on spinDataA {
+        id: spinDataAnimation
+        running: false
+        duration: settings.spinData_Duration ?? 300 // 动画持续时间，单位为毫秒
+        easing.type: settings.spinData_Easing ?? 3 // 使用缓动函数使动画更平滑
+    }
+    Timer {
+        repeat: true
+        interval: settings.spinData_Trigger ?? 300
+        running: Boolean(settings.dataAnimation&&settings.dataAnimation_spin)&&craftElement.NVG.View.exposed
+        onTriggered: {
+            spinDataAnimation.stop()
+            spinDataAnimation.to = spinData.result ?? 0
+            spinDataAnimation.start()
         }
     }
     //点击移动
@@ -441,23 +482,6 @@ CraftDelegate {
         NVG.ActionSource {
             id: actionSource
             configuration: settings.action
-        }
-        // 数据移动
-        NVG.DataSource {
-            id: distanceDataSource
-            configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Distance_data) ? settings.distanceData : null
-        }
-        NVG.DataSource {
-            id: directionDataSource
-            configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Direction_data) ? settings.directionData : null
-        }
-        NVG.DataSourceRawOutput {
-            id: distanceData
-            source: distanceDataSource
-        }
-        NVG.DataSourceRawOutput {
-            id: directionData
-            source: directionDataSource
         }
     }
 }
