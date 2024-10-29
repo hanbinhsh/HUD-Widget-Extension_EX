@@ -15,7 +15,7 @@ import "../utils.js" as Utils
 NVG.Window {
     id: eXLDialog
 
-    readonly property var currentItem: itemView.currentTarget?.settings ?? null
+    readonly property var currentItem: eXLItemView.currentTarget?.settings ?? null
 
     Style.theme: Style.Dark
     title: qsTr("EXL Settings")
@@ -39,7 +39,7 @@ NVG.Window {
         parent: Overlay.overlay
         standardButtons: Dialog.Yes | Dialog.No
 
-        onAccepted: itemView.model.remove(itemView.currentTarget.index)
+        onAccepted: eXLItemView.model.remove(eXLItemView.currentTarget.index)
 
         Label { text: qsTr("Are you sure to remove this item?") }
     }
@@ -82,17 +82,17 @@ NVG.Window {
                 enabled: currentItem
                 icon.name: "regular:\uf24d"
                 onClicked: {
-                    const settings = duplicateSettingsMap(currentItem, itemView.model);
+                    const settings = duplicateSettingsMap(currentItem, eXLItemView.model);
                     settings.alignment = undefined;
                     settings.horizon = undefined;
                     settings.vertical = undefined;
-                    itemView.model.append(settings);
-                    itemView.currentTarget = itemView.targetAt(itemView.count - 1);
+                    eXLItemView.model.append(settings);
+                    eXLItemView.currentTarget = eXLItemView.targetAt(eXLItemView.count - 1);
                 }
             }
             //垃圾桶
             ToolButton {
-                enabled: itemView.currentTarget
+                enabled: eXLItemView.currentTarget
                 icon.name: "regular:\uf2ed"
                 onClicked: removeDialog.open()
             }
@@ -102,10 +102,10 @@ NVG.Window {
                 anchors.bottom: parent.bottom
                 icon.name: "regular:\uf067"
                 onClicked: {
-                    const settings = NVG.Settings.createMap(itemView.model);
+                    const settings = NVG.Settings.createMap(eXLItemView.model);
                     settings.label = Utils.randomName();
-                    itemView.model.append(settings);
-                    itemView.currentTarget = itemView.targetAt(itemView.count - 1);
+                    eXLItemView.model.append(settings);
+                    eXLItemView.currentTarget = eXLItemView.targetAt(eXLItemView.count - 1);
                 }
             }
         }
@@ -211,7 +211,7 @@ NVG.Window {
 
                 ItemSelector {
                     width: parent.width
-                    view: itemView
+                    view: eXLItemView
                     extractLabel: function (target, index) {
                         return target.settings.label || qsTr("Item") + " " + (index + 1);
                     }

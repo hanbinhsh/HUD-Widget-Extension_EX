@@ -1,7 +1,7 @@
 import QtQuick 2.12
 
 Item {
-    id: craftView
+    id: eXLCraftView
 
     property alias model: repeater.model
     property alias delegate: repeater.delegate

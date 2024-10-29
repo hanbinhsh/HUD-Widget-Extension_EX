@@ -28,6 +28,26 @@ T.Widget {
     implicitWidth: 64
     implicitHeight: 64
 
+    // EXL动作
+    action: LC.EXLActions{}
+    function showEXL(){
+        LC.LauncherCore.showLauncherView()
+    }
+    function hideEXL(){
+        LC.LauncherCore.hideLauncherView()
+    }
+    function toggleEXL(){
+        LC.LauncherCore.toggleLauncherView()
+    }
+    function showEXLItem(i){
+        LC.LauncherCore.showLauncherViewItem(i)
+    }
+    function hideEXLItem(i){
+        LC.LauncherCore.hideLauncherViewItem(i)
+    }
+    function toggleEXLItem(i){
+        LC.LauncherCore.toggleLauncherViewItem(i)
+    }
     // 颜色渐变
     property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 1.0, color: "#fbc2eb" }]
     Gradient {
@@ -61,7 +81,6 @@ T.Widget {
                 return makeGradient(defaultSettings.fillStops);
             }
         }
-        
         start: {
             switch (defaultSettings.overallGradientDirect ?? 1) {
                 case 0 : 

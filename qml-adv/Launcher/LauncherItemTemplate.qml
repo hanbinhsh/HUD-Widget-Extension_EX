@@ -14,21 +14,24 @@ Item{
     anchors.fill: parent
     property int index
     z: settings.viewItemZ ?? 0
-    
     Connections {
         enabled: true
         target: eXLauncherView
         onVChanged: onVisible()
+        onShowItem: {if(i === index){hideItem()}}
+        onHideItem: {if(i === index){showItem()}}
+        onToggleItem: {if(i === index){toggleItem()}}
     }
-    function onVisible() {
-        if (isVisible) {
-            hideAnimation.stop()
-            thiz.visible = true
-            showAnimation.start()
-        } else {
-            showAnimation.stop()
-            hideAnimation.start()
-        }
+    function onVisible() { isVisible ? showItem() : hideItem() }
+    function toggleItem() { thiz.visible ? hideItem() : showItem() }
+    function showItem(){
+        hideAnimation.stop()
+        thiz.visible = true
+        showAnimation.start()
+    }
+    function hideItem(){
+        showAnimation.stop()
+        hideAnimation.start()
     }
     //////////////////////////////////Animations//////////////////////////////////
     SequentialAnimation {

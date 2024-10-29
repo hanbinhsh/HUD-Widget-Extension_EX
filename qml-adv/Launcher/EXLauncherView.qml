@@ -11,6 +11,7 @@ import "../../../top.mashiros.widget.advp/qml/" as ADVP
 NVG.View {
     id: eXLauncherView
     property bool isVisible: false  // 用于接收外部的 visible 状态
+    property var itemGenerator: eXLItemView
     opacity: 0.0  // 初始 opacity 为 0
     z: eXLSettings.viewZ ?? 0
     y: eXLSettings.viewY ?? 0
@@ -18,15 +19,16 @@ NVG.View {
     width: eXLSettings.viewW ?? Screen.width
     height: eXLSettings.viewH ?? Screen.height
     color: eXLSettings.viewBGColor ?? "#777777"
-
     signal vChanged
-
+    signal showItem(int i)
+    signal hideItem(int i)
+    signal toggleItem(int i)
+    signal ready
     property NVG.SettingsMap eXLSettings: NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
-
     Component.onCompleted: {
         init()
+        ready()
     }
-
     function init(){
         const object = NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
         if (object instanceof NVG.SettingsMap){
@@ -36,11 +38,9 @@ NVG.View {
             NVG.Settings.save(eXLSettings, "com.hanbinhsh.widget.hud_edit", "eXLSettings")
         }
     }
-
     function toggleSetting() {
         dialog.active = true
     }
-
     Loader {
         id: dialog
         active: false
@@ -147,9 +147,8 @@ NVG.View {
     //////////////////////////////////ADV//////////////////////////////////
     //////////////////////////////////Generator//////////////////////////////////
     CraftItem{
-        id: itemView
+        id: eXLItemView
         anchors.fill: parent
-
         readonly property NVG.SettingsMap settings: eXLSettings
         model: NVG.Settings.makeList(eXLSettings, "items")
         delegate: LauncherItemTemplate{
