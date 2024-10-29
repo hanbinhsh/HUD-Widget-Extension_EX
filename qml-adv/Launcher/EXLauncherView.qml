@@ -19,6 +19,8 @@ NVG.View {
     height: eXLSettings.viewH ?? Screen.height
     color: eXLSettings.viewBGColor ?? "#777777"
 
+    signal vChanged
+
     property NVG.SettingsMap eXLSettings: NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
 
     Component.onCompleted: {
@@ -39,97 +41,14 @@ NVG.View {
         dialog.active = true
     }
 
-    // 当 isVisible 改变时触发动画
-    onIsVisibleChanged: {
-        if (isVisible) {
-            hideAnimation.stop()
-            eXLauncherView.visible = true  // 仅当需要显示时将 visible 设为 true
-            showAnimation.start()
-        } else {
-            showAnimation.stop()
-            hideAnimation.start()
+    Loader {
+        id: dialog
+        active: false
+        sourceComponent: EXLDialog{
+            onClosing: dialog.active = false
         }
     }
-
-    SequentialAnimation {
-        id: hideAnimation
-        running: false
-        PauseAnimation { duration: eXLSettings.hidePause ?? 0 }
-        ScriptAction {
-            script: {
-                if(eXLSettings.enableShowAnimation){
-                    hideMoveAnimationX.stop();
-                    hideMoveAnimationY.stop();
-                    showMoveAnimationX.stop();
-                    showMoveAnimationY.stop();
-                    hideMoveAnimationX.running = true;
-                    hideMoveAnimationY.running = true;
-                }
-            }
-        }
-        NumberAnimation { target: eXLauncherView; property: "opacity"; to: 0; duration: eXLSettings.showhideDuration ?? 300 }
-        ScriptAction {
-            script: {
-                eXLauncherView.visible = false  // 当动画完成时隐藏组件
-            }
-        }
-    }
-    SequentialAnimation {
-        id: showAnimation
-        running: false
-        PauseAnimation { duration: eXLSettings.showPause ?? 0 }
-        ScriptAction {
-            script: {
-                if(eXLSettings.enableShowAnimation){
-                    hideMoveAnimationX.stop();
-                    hideMoveAnimationY.stop();
-                    showMoveAnimationX.stop();
-                    showMoveAnimationY.stop();
-                    showMoveAnimationX.running = true;
-                    showMoveAnimationY.running = true;
-                }
-            }
-        }
-        NumberAnimation { target: eXLauncherView; property: "opacity"; to: eXLSettings.viewO ? eXLSettings.viewO/100.0 : 1.0; duration: eXLSettings.showhideDuration ?? 300 }
-    }
-
-    NumberAnimation {
-        id: showMoveAnimationX
-        target: eXLImage;
-        property: "x";
-        from: Number(eXLSettings.showAnimation_Distance ?? 10) * Math.cos(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180);
-        to: eXLSettings.viewBGX ?? 0
-        duration: eXLauncherView.showAnimation_Duration ?? 300
-        easing.type: eXLSettings.showAnimation_Easing ?? 3
-    }
-    NumberAnimation {
-        id: showMoveAnimationY
-        target: eXLImage;
-        property: "y";
-        from: -Number(eXLSettings.showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180)
-        to: eXLSettings.viewBGY ?? 0
-        duration: eXLauncherView.showAnimation_Duration ?? 300
-        easing.type: eXLSettings.showAnimation_Easing ?? 3
-    }
-    NumberAnimation {
-        id: hideMoveAnimationX
-        target: eXLImage;
-        property: "x";
-        to: Number(eXLSettings.showAnimation_Distance ?? 10) * Math.cos(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180);
-        from: eXLSettings.viewBGX ?? 0
-        duration: eXLauncherView.showAnimation_Duration ?? 300
-        easing.type: eXLSettings.showAnimation_Easing ?? 3
-    }
-    NumberAnimation {
-        id: hideMoveAnimationY
-        target: eXLImage;
-        property: "y";
-        to: -Number(eXLSettings.showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180)
-        from: eXLSettings.viewBGY ?? 0
-        duration: eXLauncherView.showAnimation_Duration ?? 300
-        easing.type: eXLSettings.showAnimation_Easing ?? 3
-    }
-
+    //////////////////////////////////Actions//////////////////////////////////
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
@@ -197,7 +116,6 @@ NVG.View {
             }
         }
     }
-
     NVG.ActionSource {
         id: actionL
         configuration: eXLSettings.action_L
@@ -210,9 +128,10 @@ NVG.View {
         id: actionM
         configuration: eXLSettings.action_M
     }
-
+    //////////////////////////////////Actions//////////////////////////////////
+    //////////////////////////////////ADV//////////////////////////////////
     Connections {
-        enabled: Boolean((eXLSettings.enableEXLADV||eXLSettings.adv_enableEXLADV)&&isVisible)
+        enabled: Boolean((eXLSettings.aDVConnection)&&isVisible)
         target: ADVP.Common
         onAudioDataUpdated: updatedAudioData(audioData)
     }
@@ -225,114 +144,51 @@ NVG.View {
         opaADV = v*5/(128/s)
     }
     property int opaADV: 0
+    //////////////////////////////////ADV//////////////////////////////////
+    //////////////////////////////////Generator//////////////////////////////////
+    CraftItem{
+        id: itemView
+        anchors.fill: parent
 
-    Loader {
-        id: dialog
-        active: false
-        sourceComponent: EXLDialog{
-            onClosing: dialog.active = false
+        readonly property NVG.SettingsMap settings: eXLSettings
+        model: NVG.Settings.makeList(eXLSettings, "items")
+        delegate: LauncherItemTemplate{
+            id: thiz
+            index: model.index
+            settings: modelData
         }
     }
-    //////////////////////////////////NOR  NOR  NOR  NOR  NOR  NOR  NOR  NOR//////////////////////////////////
-    NVG.ImageSource {
-        id: eXLImage
-        visible: Boolean(eXLSettings.useViewImage&&!eXLSettings.hideOriginal)
-        fillMode: eXLSettings.viewBGImageFill ?? Image.PreserveAspectFit
-        playing: status === Image.Ready
-        //透明度
-        opacity: eXLSettings.viewBGImageOpacity ? eXLSettings.viewBGImageOpacity/100.0 : 1.0
-        configuration: eXLSettings.viewBGImage;
-        x: eXLSettings.enableShowAnimation ? Number(eXLSettings.showAnimation_Distance ?? 10) * Math.cos(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180) : (eXLSettings.viewBGX ?? 0)
-        y: eXLSettings.enableShowAnimation ? -Number(eXLSettings.showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.showAnimation_Direction ?? 0) * Math.PI / 180) : eXLSettings.viewBGY ?? 0
-        width: eXLSettings.viewBGW ?? Screen.width
-        height: eXLSettings.viewBGH ?? Screen.height
-        z: eXLSettings.viewBGZ ?? 0
+    //////////////////////////////////Generator//////////////////////////////////
+    //////////////////////////////////Animations//////////////////////////////////
+    // 当 isVisible 改变时触发动画
+    onIsVisibleChanged: {
+        vChanged()
+        if (isVisible) {
+            hideAnimation.stop()
+            eXLauncherView.visible = true  // 仅当需要显示时将 visible 设为 true
+            showAnimation.start()
+        } else {
+            showAnimation.stop()
+            hideAnimation.start()
+        }
     }
-    ColorOverlay{
-        visible:eXLSettings.colorOverlay ?? false
-        anchors.fill: eXLImage
-        source: eXLImage
-        color: eXLSettings.overlayColor ?? "transparent"
-        z: eXLSettings.overlayColorZ ?? 0
-        opacity: eXLSettings.overlayColorOpacity ? eXLSettings.overlayColorOpacity/100.0 : 100
+    SequentialAnimation {
+        id: hideAnimation
+        running: false
+        PauseAnimation { duration: eXLSettings.hidePause ?? 0 }
+        NumberAnimation { target: eXLauncherView; property: "opacity"; to: 0; duration: eXLSettings.showhideDuration ?? 300 }
+        ScriptAction {
+            script: {
+                eXLauncherView.visible = false  // 当动画完成时隐藏组件
+            }
+        }
     }
-    NumberAnimation {
-        loops: Animation.Infinite
-        target: eXLImage
-        property: "x"
-        from: eXLSettings.moveAnimation_XFrom ?? 0
-        to: eXLSettings.moveAnimation_XTo ?? 0
-        duration: eXLSettings.moveAnimation_DurationX ?? 3000
-        running: eXLSettings.enableMoveAnimation ?? false
+    SequentialAnimation {
+        id: showAnimation
+        running: false
+        PauseAnimation { duration: eXLSettings.showPause ?? 0 }
+        NumberAnimation { target: eXLauncherView; property: "opacity"; to: eXLSettings.viewO ? eXLSettings.viewO/100.0 : 1.0; duration: eXLSettings.showhideDuration ?? 300 }
     }
-    NumberAnimation {
-        loops: Animation.Infinite
-        target: eXLImage
-        property: "y"
-        from: eXLSettings.moveAnimation_YFrom ?? 0
-        to: eXLSettings.moveAnimation_YTo ?? 0
-        duration: eXLSettings.moveAnimation_DurationY ?? 3000
-        running: eXLSettings.enableMoveAnimation ?? false
-    }
-    // 音频显示
-    ColorOverlay{
-        visible: eXLSettings.enableEXLADV ?? false
-        anchors.fill: eXLImage
-        source: eXLImage
-        color: eXLSettings.eXLADVColor ?? "white"
-        opacity: (opaADV/100.0)/((eXLSettings.eXLADVDecrease ?? 1000)/1000)
-        z: eXLSettings.eXLADVZ ?? -1
-    }
-    //////////////////////////////////ADV  ADV  ADV  ADV  ADV  ADV  ADV  ADV//////////////////////////////////
-    NVG.ImageSource {
-        id: adv_eXLImage
-        visible: Boolean(eXLSettings.adv_useViewImage&&!eXLSettings.adv_hideOriginal)
-        fillMode: eXLSettings.adv_viewBGImageFill ?? Image.PreserveAspectFit
-        playing: status === Image.Ready
-        //透明度
-        opacity: eXLSettings.adv_viewBGImageOpacity ? eXLSettings.adv_viewBGImageOpacity/100.0 : 1.0
-        configuration: eXLSettings.adv_viewBGImage;
-        x: eXLSettings.adv_enableShowAnimation ? Number(eXLSettings.adv_showAnimation_Distance ?? 10) * Math.cos(Number(eXLSettings.adv_showAnimation_Direction ?? 0) * Math.PI / 180) : (eXLSettings.adv_viewBGX ?? 0)
-        y: eXLSettings.adv_enableShowAnimation ? -Number(eXLSettings.adv_showAnimation_Distance ?? 10) * Math.sin(Number(eXLSettings.adv_showAnimation_Direction ?? 0) * Math.PI / 180) : eXLSettings.adv_viewBGY ?? 0
-        width: eXLSettings.adv_viewBGW ?? Screen.width
-        height: eXLSettings.adv_viewBGH ?? Screen.height
-        z: eXLSettings.adv_viewBGZ ?? 0
-    }
-    ColorOverlay{
-        visible:eXLSettings.adv_colorOverlay ?? false
-        anchors.fill: adv_eXLImage
-        source: adv_eXLImage
-        color: eXLSettings.adv_overlayColor ?? "transparent"
-        z: eXLSettings.adv_overlayColorZ ?? 0
-        opacity: eXLSettings.adv_overlayColorOpacity ? eXLSettings.adv_overlayColorOpacity/100.0 : 100
-    }
-    NumberAnimation {
-        loops: Animation.Infinite
-        target: adv_eXLImage
-        property: "x"
-        from: eXLSettings.adv_moveAnimation_XFrom ?? 0
-        to: eXLSettings.adv_moveAnimation_XTo ?? 0
-        duration: eXLSettings.adv_moveAnimation_DurationX ?? 3000
-        running: eXLSettings.adv_enableMoveAnimation ?? false
-    }
-    NumberAnimation {
-        loops: Animation.Infinite
-        target: adv_eXLImage
-        property: "y"
-        from: eXLSettings.adv_moveAnimation_YFrom ?? 0
-        to: eXLSettings.adv_moveAnimation_YTo ?? 0
-        duration: eXLSettings.adv_moveAnimation_DurationY ?? 3000
-        running: eXLSettings.adv_enableMoveAnimation ?? false
-    }
-    // 音频显示
-    ColorOverlay{
-        id: adv_ADVCO
-        visible: eXLSettings.adv_enableEXLADV ?? false
-        anchors.fill: adv_eXLImage
-        source: adv_eXLImage
-        color: eXLSettings.adv_eXLADVColor ?? "white"
-        opacity: (opaADV/100.0)/((eXLSettings.adv_eXLADVDecrease ?? 1000)/1000)
-        z: eXLSettings.adv_eXLADVZ ?? -1
-    }
+    //////////////////////////////////Animations//////////////////////////////////
 }
 

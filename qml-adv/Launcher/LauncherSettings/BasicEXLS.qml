@@ -8,7 +8,7 @@ import NERvGear.Preferences 1.0 as P
 import QtQuick.Window 2.2
 
 Flickable {
-    property string itemName: ""
+    property var current_default: eXLauncherView.eXLSettings
     anchors.fill: parent
     contentWidth: width
     contentHeight: basicEXLS.height
@@ -18,7 +18,7 @@ Flickable {
         id: basicEXLS
         width: parent.width
         P.ObjectPreferenceGroup {
-            defaultValue: eXLauncherView.eXLSettings
+            defaultValue: current_default
             syncProperties: true
             width: parent.width
             //必须资源
@@ -31,9 +31,9 @@ Flickable {
                     }
                     P.ObjectPreferenceGroup {
                         syncProperties: true
-                        defaultValue: eXLauncherView.eXLSettings
+                        defaultValue: current_default
                         P.SpinPreference {
-                            name: itemName + "viewX"
+                            name: "viewX"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -42,7 +42,7 @@ Flickable {
                             stepSize: 5
                         }
                         P.SpinPreference {
-                            name: itemName + "viewY"
+                            name: "viewY"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -59,9 +59,9 @@ Flickable {
                     }
                     P.ObjectPreferenceGroup {
                         syncProperties: true
-                        defaultValue: eXLauncherView.eXLSettings
+                        defaultValue: current_default
                         P.SpinPreference {
-                            name: itemName + "viewW"
+                            name: "viewW"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: Screen.width
@@ -70,7 +70,7 @@ Flickable {
                             stepSize: 5
                         }
                         P.SpinPreference {
-                            name: itemName + "viewH"
+                            name: "viewH"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: Screen.height
@@ -82,7 +82,7 @@ Flickable {
                 }
             }
             P.SpinPreference {
-                name: itemName + "viewZ"
+                name: "viewZ"
                 label: qsTr("EXL Z")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -92,7 +92,7 @@ Flickable {
                 stepSize: 1
             }
             P.SpinPreference {
-                name: itemName + "viewO"
+                name: "viewO"
                 label: qsTr("Max Opacity")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -102,9 +102,21 @@ Flickable {
                 stepSize: 5
             }
             P.ColorPreference {
-                name: itemName + "viewBGColor"
+                name: "viewBGColor"
                 label: qsTr("Background Color")
                 defaultValue: "#777777"
+            }
+            P.SwitchPreference {
+                id: aDVConnection
+                name: "aDVConnection"
+                label: qsTr("ADV Connection")
+            }
+            P.SelectPreference {
+                name: "eXLADVSample"//全局
+                label: " --- " + qsTr("Sample")
+                model: [ qsTr("128"), qsTr("64"), qsTr("32"), qsTr("16"), qsTr("8"), qsTr("4") ]
+                defaultValue: 0
+                visible: aDVConnection.value
             }
         }
     }

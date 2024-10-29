@@ -8,7 +8,7 @@ import NERvGear.Preferences 1.0 as P
 import QtQuick.Window 2.2
 
 Flickable {
-    property string itemName: ""
+    property var current_default: eXLauncherView.eXLSettings
     anchors.fill: parent
     contentWidth: width
     contentHeight: backgroundEXLS.height
@@ -18,29 +18,21 @@ Flickable {
         id: backgroundEXLS
         width: parent.width
         P.ObjectPreferenceGroup {
-            defaultValue: eXLauncherView.eXLSettings
+            defaultValue: current_default
             syncProperties: true
             width: parent.width
             //必须资源
-            P.SwitchPreference {
-                id: useViewImage
-                name: itemName + "useViewImage"
-                label: qsTr("Use Background Image")
-            }
             P.ImagePreference {
-                name: itemName + "viewBGImage"
+                name: "viewBGImage"
                 label: qsTr("Image")
-                visible: useViewImage.value
             }
             P.SelectPreference {
-                name: itemName + "viewBGImageFill"
+                name: "viewBGImageFill"
                 label: qsTr("Fill Mode")
                 model: [ qsTr("Stretch"), qsTr("Fit"), qsTr("Crop"), qsTr("Tile"), qsTr("Tile Vertically"), qsTr("Tile Horizontally"), qsTr("Pad") ]
                 defaultValue: 1
-                visible: useViewImage.value
             }
             Row{
-                visible: useViewImage.value
                 spacing: 8
                 Column {
                     Label {
@@ -49,9 +41,9 @@ Flickable {
                     }
                     P.ObjectPreferenceGroup {
                         syncProperties: true
-                        defaultValue: eXLauncherView.eXLSettings
+                        defaultValue: current_default
                         P.SpinPreference {
-                            name: itemName + "viewBGX"
+                            name: "viewBGX"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -60,7 +52,7 @@ Flickable {
                             stepSize: 5
                         }
                         P.SpinPreference {
-                            name: itemName + "viewBGY"
+                            name: "viewBGY"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -77,9 +69,9 @@ Flickable {
                     }
                     P.ObjectPreferenceGroup {
                         syncProperties: true
-                        defaultValue: eXLauncherView.eXLSettings
+                        defaultValue: current_default
                         P.SpinPreference {
-                            name: itemName + "viewBGW"
+                            name: "viewBGW"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: Screen.width
@@ -88,7 +80,7 @@ Flickable {
                             stepSize: 5
                         }
                         P.SpinPreference {
-                            name: itemName + "viewBGH"
+                            name: "viewBGH"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: Screen.height
@@ -100,7 +92,7 @@ Flickable {
                 }
             }
             P.SpinPreference {
-                name: itemName + "viewBGZ"
+                name: "viewBGZ"
                 label: qsTr("Image Z")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -110,8 +102,7 @@ Flickable {
                 stepSize: 1
             }
             P.SpinPreference {
-                visible: useViewImage.value
-                name: itemName + "viewBGImageOpacity"
+                name: "viewBGImageOpacity"
                 label: qsTr("Image Opacity")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -121,23 +112,23 @@ Flickable {
                 stepSize: 5
             }
             P.SwitchPreference {
-                name: itemName + "hideOriginal"
+                name: "hideOriginal"
                 label: qsTr("Hide Original")
             }
             P.Separator{}
             P.SwitchPreference {
                 id: colorOverlay
-                name: itemName + "colorOverlay"
+                name: "colorOverlay"
                 label: qsTr("Color Overlay")
             }
             P.ColorPreference {
-                name: itemName + "overlayColor"
+                name: "overlayColor"
                 label: " --- " + qsTr("Color")
                 defaultValue: "transparent"
                 visible: colorOverlay.value
             }
             P.SpinPreference {
-                name: itemName + "overlayColorZ"
+                name: "overlayColorZ"
                 label: " --- " + qsTr("Overlay Z")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -148,7 +139,7 @@ Flickable {
                 visible: colorOverlay.value
             }
             P.SpinPreference {
-                name: itemName + "overlayColorOpacity"
+                name: "overlayColorOpacity"
                 label: " --- " + qsTr("Overlay Opacity")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -161,17 +152,17 @@ Flickable {
             P.Separator{}
             P.SwitchPreference {
                 id: enableEXLADV
-                name: itemName + "enableEXLADV"
+                name: "enableEXLADV"
                 label: qsTr("Enable ADV")
             }
             P.ColorPreference {
-                name: itemName + "eXLADVColor"
+                name: "eXLADVColor"
                 label: " --- " + qsTr("Color")
                 defaultValue: "white"
                 visible: enableEXLADV.value
             }
             P.SpinPreference {
-                name: itemName + "eXLADVZ"
+                name: "eXLADVZ"
                 label: " --- " + qsTr("Z")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -182,7 +173,7 @@ Flickable {
                 stepSize: 1
             }
             P.SpinPreference {
-                name: itemName + "eXLADVDecrease"
+                name: "eXLADVDecrease"
                 label: " --- " + qsTr("Decrease")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -191,13 +182,6 @@ Flickable {
                 from: 100
                 to: 100000
                 stepSize: 100
-            }
-            P.SelectPreference {
-                name: "eXLADVSample"//全局
-                label: " --- " + qsTr("Sample")
-                model: [ qsTr("128"), qsTr("64"), qsTr("32"), qsTr("16"), qsTr("8"), qsTr("4") ]
-                defaultValue: 0
-                visible: enableEXLADV.value
             }
         }
     }

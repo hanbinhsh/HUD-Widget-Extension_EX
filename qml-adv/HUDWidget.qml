@@ -673,7 +673,7 @@ T.Widget {
                 running: false
                 from: opciMaskForward ? 0 : 100
                 to: opciMaskForward ? 100 : 0
-                duration: settings.showAnimation_Duration ?? 100
+                duration: settings.showAnimation_fade_Duration ?? 100
             }
             Item {
                 id: itemContent

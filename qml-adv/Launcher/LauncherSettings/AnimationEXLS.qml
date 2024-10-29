@@ -8,7 +8,8 @@ import NERvGear.Preferences 1.0 as P
 import QtQuick.Window 2.2
 
 Flickable {
-    property string itemName: ""
+    property var current_default: eXLauncherView.eXLSettings
+    property bool is_default: false
     anchors.fill: parent
     contentWidth: width
     contentHeight: animationEXLS.height
@@ -18,35 +19,33 @@ Flickable {
         id: animationEXLS
         width: parent.width
         P.ObjectPreferenceGroup {
-            defaultValue: eXLauncherView.eXLSettings
+            defaultValue: current_default
             syncProperties: true
             width: parent.width
             //必须资源
             P.SpinPreference {
-                name: itemName + "showPause"
+                name: "showPause"
                 label: qsTr("Show Pause")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 0
-                from: -9999
-                to: 9999
+                from: 0
+                to: 99999
                 stepSize: 50
-                visible: itemName===""
             }
             P.SpinPreference {
-                name: itemName + "hidePause"
+                name: "hidePause"
                 label: qsTr("Hide Pause")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 0
-                from: -9999
-                to: 9999
+                from: 0
+                to: 99999
                 stepSize: 50
-                visible: itemName===""
             }
             //时间
             P.SpinPreference {
-                name: itemName + "showhideDuration"
+                name: "showhideDuration"
                 label: qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
@@ -54,23 +53,22 @@ Flickable {
                 from: 0
                 to: 10000
                 stepSize: 10
-                visible: itemName===""
             }
-            P.Separator{visible: itemName===""}
+            P.Separator{visible: !is_default}
             //显示动画
             P.SwitchPreference {
                 id: enableShowAnimation
-                name: itemName + "enableShowAnimation"
+                name: "enableShowAnimation"
                 label: qsTr("Enable Image Display Animation")
-                visible: itemName===""
+                visible: !is_default
             }
             //角度
             P.SpinPreference {
-                name: itemName + "showAnimation_Direction"
+                name: "showAnimation_Direction"
                 label: " --- " + qsTr("Direction")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
-                visible: enableShowAnimation.value
+                visible: enableShowAnimation.value&&!is_default
                 defaultValue: 0
                 from: -360
                 to: 360
@@ -78,11 +76,11 @@ Flickable {
             }
             //距离
             P.SpinPreference {
-                name: itemName + "showAnimation_Distance"
+                name: "showAnimation_Distance"
                 label: " --- " + qsTr("Distance")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
-                visible: enableShowAnimation.value
+                visible: enableShowAnimation.value&&!is_default
                 defaultValue: 10
                 from: -99999
                 to: 99999
@@ -90,11 +88,11 @@ Flickable {
             }
             //时间
             P.SpinPreference {
-                name: itemName + "showAnimation_Duration"
+                name: "showAnimation_Duration"
                 label: " --- " + qsTr("Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
-                visible: enableShowAnimation.value
+                visible: enableShowAnimation.value&&!is_default
                 defaultValue: 300
                 from: 0
                 to: 10000
@@ -102,22 +100,23 @@ Flickable {
             }
             //曲线
             P.SelectPreference {
-                name: itemName + "showAnimation_Easing"
+                name: "showAnimation_Easing"
                 label: " --- " + qsTr("Easing")
                 model: easingModel
                 defaultValue: 3
-                visible: enableShowAnimation.value
+                visible: enableShowAnimation.value&&!is_default
             }
             //全屏移动动画
-            P.Separator{visible: itemName===""}
+            P.Separator{visible: !is_default}
             P.SwitchPreference {
                 id: enableMoveAnimation
-                name: itemName + "enableMoveAnimation"
+                name: "enableMoveAnimation"
                 label: qsTr("Enable Image Move Animation")
+                visible: !is_default
                 message: qsTr("You need to Re-switch after changes. Try to set distance to the image size, adjust the background size and set fill mode to tile.")
             }
             Row{
-                visible: enableMoveAnimation.value
+                visible: enableMoveAnimation.value&&!is_default
                 spacing: 8
                 Column {
                     Label {
@@ -126,9 +125,9 @@ Flickable {
                     }
                     P.ObjectPreferenceGroup {
                         syncProperties: true
-                        defaultValue: eXLauncherView.eXLSettings
+                        defaultValue: current_default
                         P.SpinPreference {
-                            name: itemName + "moveAnimation_XFrom"
+                            name: "moveAnimation_XFrom"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -137,7 +136,7 @@ Flickable {
                             stepSize: 10
                         }
                         P.SpinPreference {
-                            name: itemName + "moveAnimation_XTo"
+                            name: "moveAnimation_XTo"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -154,9 +153,9 @@ Flickable {
                     }
                     P.ObjectPreferenceGroup {
                         syncProperties: true
-                        defaultValue: eXLauncherView.eXLSettings
+                        defaultValue: current_default
                         P.SpinPreference {
-                            name: itemName + "moveAnimation_YFrom"
+                            name: "moveAnimation_YFrom"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -165,7 +164,7 @@ Flickable {
                             stepSize: 10
                         }
                         P.SpinPreference {
-                            name: itemName + "moveAnimation_YTo"
+                            name: "moveAnimation_YTo"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
@@ -178,22 +177,22 @@ Flickable {
             }
             //时间
             P.SpinPreference {
-                name: itemName + "moveAnimation_DurationX"
+                name: "moveAnimation_DurationX"
                 label: " --- " + qsTr("Duration X")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
-                visible: enableMoveAnimation.value
+                visible: enableMoveAnimation.value&&!is_default
                 defaultValue: 3000
                 from: 0
                 to: 99999
                 stepSize: 10
             }
             P.SpinPreference {
-                name: itemName + "moveAnimation_DurationY"
+                name: "moveAnimation_DurationY"
                 label: " --- " + qsTr("Duration Y")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
-                visible: enableMoveAnimation.value
+                visible: enableMoveAnimation.value&&!is_default
                 defaultValue: 3000
                 from: 0
                 to: 99999

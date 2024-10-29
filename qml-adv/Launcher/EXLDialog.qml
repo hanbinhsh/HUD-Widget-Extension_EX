@@ -10,8 +10,13 @@ import QtQuick.Window 2.2
 import "."
 import "LauncherSettings"
 
+import "../utils.js" as Utils
+
 NVG.Window {
     id: eXLDialog
+
+    readonly property var currentItem: itemView.currentTarget?.settings ?? null
+
     Style.theme: Style.Dark
     title: qsTr("EXL Settings")
     visible: true
@@ -24,6 +29,35 @@ NVG.Window {
         if (NVG.Settings.isModified(eXLauncherView.eXLSettings)){
             NVG.Settings.save(eXLauncherView.eXLSettings, "com.hanbinhsh.widget.hud_edit", "eXLSettings");
         } 
+    }
+    Dialog {
+        id: removeDialog
+        anchors.centerIn: parent
+
+        title: "Confirm"
+        modal: true
+        parent: Overlay.overlay
+        standardButtons: Dialog.Yes | Dialog.No
+
+        onAccepted: itemView.model.remove(itemView.currentTarget.index)
+
+        Label { text: qsTr("Are you sure to remove this item?") }
+    }
+    function duplicateSettingsMap(src, parent) {
+        const dst = NVG.Settings.createMap(parent);
+        src.keys().forEach(function (key) {
+            const prop = src[key];
+            if (prop instanceof NVG.SettingsMap) {
+                dst[key] = duplicateSettingsMap(prop, dst);
+            } else if (prop instanceof NVG.SettingsList) {
+                dst[key] = duplicateSettingsList(prop, dst);
+            } else {
+                // NOTE: shallow copy should be safe
+                // because we NEVER modify nested objects
+                dst[key] = prop;
+            }
+        });
+        return dst;
     }
     property var easingModel : [qsTr("Linear"),//0
                                 qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),//1-4
@@ -39,6 +73,42 @@ NVG.Window {
                                 qsTr("BezierSpline")];
     Page {
         anchors.fill: parent
+        header: TitleBar {
+            id: titleBar
+            text: qsTr("EX Launcher")
+            height:50
+            //复制
+            ToolButton {
+                enabled: currentItem
+                icon.name: "regular:\uf24d"
+                onClicked: {
+                    const settings = duplicateSettingsMap(currentItem, itemView.model);
+                    settings.alignment = undefined;
+                    settings.horizon = undefined;
+                    settings.vertical = undefined;
+                    itemView.model.append(settings);
+                    itemView.currentTarget = itemView.targetAt(itemView.count - 1);
+                }
+            }
+            //垃圾桶
+            ToolButton {
+                enabled: itemView.currentTarget
+                icon.name: "regular:\uf2ed"
+                onClicked: removeDialog.open()
+            }
+            //添加
+            RoundButton {
+                highlighted: true
+                anchors.bottom: parent.bottom
+                icon.name: "regular:\uf067"
+                onClicked: {
+                    const settings = NVG.Settings.createMap(itemView.model);
+                    settings.label = Utils.randomName();
+                    itemView.model.append(settings);
+                    itemView.currentTarget = itemView.targetAt(itemView.count - 1);
+                }
+            }
+        }
         Flickable {
             anchors.fill: parent
             contentWidth: width
@@ -61,8 +131,7 @@ NVG.Window {
                         width: parent.width
                         implicitHeight: switch(pBar.currentIndex){
                             case 0: return elemPage.height + 56;
-                            case 1: return advancedElemPage.height + 56;
-                            case 2: return menuElemPage.height + 56;
+                            case 1: return menuElemPage.height + 56;
                             default: 0;
                         }
                         header:TabBar {
@@ -70,10 +139,10 @@ NVG.Window {
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Basic"), qsTr("Advanced"), qsTr("Menu")]
+                                model: [qsTr("Basic"), qsTr("Menu")]
                                 TabButton {
                                     text: modelData
-                                    width: Math.max(128, elemBar.width / 3)
+                                    width: Math.max(128, elemBar.width / 2)
                                 }
                             }
                         }
@@ -85,10 +154,9 @@ NVG.Window {
                                 width: parent.width
                                 implicitHeight: switch(elemBar.currentIndex){
                                     case 0: return basicEXLS.contentHeight + 56;
-                                    case 1: return backgroundEXLS.contentHeight + 56;
-                                    case 2: return mouseEventEXLS.contentHeight + 56;
-                                    case 3: return animationEXLS.contentHeight + 56;
-                                    case 4: return aDVEXLS.contentHeight + 56;
+                                    case 1: return mouseEventEXLS.contentHeight + 56;
+                                    case 2: return animationEXLS.contentHeight + 56;
+                                    case 3: return aDVEXLS.contentHeight + 56;
                                     default: 0;
                                 }
                                 header:TabBar {
@@ -96,7 +164,7 @@ NVG.Window {
                                     width: parent.width
                                     clip:true//超出父项直接裁剪
                                     Repeater {
-                                        model: [qsTr("Basic"),qsTr("Background"),qsTr("Mouse Event"),qsTr("Animation")]
+                                        model: [qsTr("Basic"),qsTr("Mouse Event"),qsTr("Animation")]
                                         TabButton {
                                             text: modelData
                                             width: Math.max(128, elemBar.width / 3)
@@ -107,37 +175,8 @@ NVG.Window {
                                     width: parent.width
                                     currentIndex: elemBar.currentIndex
                                     Item{BasicEXLS{id: basicEXLS}}
-                                    Item{BackgroundEXLS{id: backgroundEXLS}}
                                     Item{MouseEventEXLS{id: mouseEventEXLS}}
-                                    Item{AnimationEXLS{id: animationEXLS}}
-                                }
-                            }
-                            // ADVANCED
-                            Page {
-                                id: advancedElemPage
-                                width: parent.width
-                                implicitHeight: switch(advancedElemBar.currentIndex){
-                                    case 0: return backgroundEXLSA.contentHeight + 56;
-                                    case 1: return animationEXLSA.contentHeight + 56;
-                                    default: 0;
-                                }
-                                header:TabBar {
-                                    id: advancedElemBar
-                                    width: parent.width
-                                    clip:true//超出父项直接裁剪
-                                    Repeater {
-                                        model: [qsTr("Background"),qsTr("Animation")]
-                                        TabButton {
-                                            text: modelData
-                                            width: Math.max(128, advancedElemBar.width / 2)
-                                        }
-                                    }
-                                }
-                                StackLayout {
-                                    width: parent.width
-                                    currentIndex: advancedElemBar.currentIndex
-                                    Item{BackgroundEXLS{id: backgroundEXLSA; itemName: "adv_"}}
-                                    Item{AnimationEXLS{id: animationEXLSA; itemName: "adv_"}}
+                                    Item{AnimationEXLS{id: animationEXLS; is_default: true}}
                                 }
                             }
                             // Menu
@@ -166,6 +205,64 @@ NVG.Window {
                                     currentIndex: menuElemBar.currentIndex
                                 }
                             }
+                        }
+                    }
+                }
+
+                ItemSelector {
+                    width: parent.width
+                    view: itemView
+                    extractLabel: function (target, index) {
+                        return target.settings.label || qsTr("Item") + " " + (index + 1);
+                    }
+                }
+
+                P.ObjectPreferenceGroup {
+                    label: qsTr("EX Launcher Items")
+                    defaultValue: currentItem
+                    syncProperties: true
+                    enabled: currentItem
+                    width: parent.width
+                    P.TextFieldPreference {
+                        name: "label"
+                        label: qsTr("Name")
+                        display: P.TextFieldPreference.ExpandControl
+                    }
+                    P.SpinPreference {
+                        name: "viewItemZ"
+                        label: qsTr("Item Z")
+                        editable: true
+                        display: P.TextFieldPreference.ExpandLabel
+                        defaultValue: 0
+                        from: -9999
+                        to: 9999
+                        stepSize: 1
+                    }
+                    Page {
+                        id: advancedElemPage
+                        width: parent.width
+                        implicitHeight: switch(advancedElemBar.currentIndex){
+                            case 0: return backgroundEXLSA.contentHeight + 56;
+                            case 1: return animationEXLSA.contentHeight + 56;
+                            default: 0;
+                        }
+                        header:TabBar {
+                            id: advancedElemBar
+                            width: parent.width
+                            clip:true//超出父项直接裁剪
+                            Repeater {
+                                model: [qsTr("Background"),qsTr("Animation")]
+                                TabButton {
+                                    text: modelData
+                                    width: Math.max(128, advancedElemBar.width / 2)
+                                }
+                            }
+                        }
+                        StackLayout {
+                            width: parent.width
+                            currentIndex: advancedElemBar.currentIndex
+                            Item{BackgroundEXLS{id: backgroundEXLSA; current_default: currentItem}}
+                            Item{AnimationEXLS{id: animationEXLSA; current_default: currentItem}}
                         }
                     }
                 }

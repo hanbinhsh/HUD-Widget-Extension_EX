@@ -365,7 +365,7 @@ Flickable {
             }
             //动画结束时间
             P.SpinPreference {
-                name: "showAnimation_Duration"
+                name: "showAnimation_fade_Duration"
                 label: " --- " + qsTr("End Duration")
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
