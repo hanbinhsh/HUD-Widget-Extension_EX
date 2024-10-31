@@ -10,10 +10,35 @@ import "../../../top.mashiros.widget.advp/qml/" as ADVP
 
 Item{
     id: thiz
+    property Item view
     property NVG.SettingsMap settings
-    anchors.fill: parent
     property int index
+
+    visible: settings.showWithLauncher ?? true
+    
     z: settings.viewItemZ ?? 0
+
+    property real showAnimationX: 0
+    property real showAnimationY: 0
+    property real moveAnimationX: 0
+    property real moveAnimationY: 0
+    x: {
+        if(settings.enableShowAnimation){
+            return (settings.viewBGX ?? 0) + showAnimationX + moveAnimationX
+        }else{
+            return (settings.viewBGX ?? 0) + moveAnimationX
+        }
+    }
+    y: {
+        if(settings.enableShowAnimation){
+            return (settings.viewBGY ?? 0) + showAnimationY + moveAnimationY
+        }else{
+            return (settings.viewBGY ?? 0) + moveAnimationY
+        }
+    }
+    width: settings.viewBGW ?? Screen.width
+    height: settings.viewBGH ?? Screen.height
+
     Connections {
         enabled: true
         target: eXLauncherView
@@ -22,7 +47,10 @@ Item{
         onHideItem: {if(i === index){showItem()}}
         onToggleItem: {if(i === index){toggleItem()}}
     }
-    function onVisible() { isVisible ? showItem() : hideItem() }
+    function onVisible() { 
+        if(isVisible){if(settings.showWithLauncher ?? true){showItem()}
+        }else{if(settings.hideWithLauncher ?? true){hideItem() }}
+    }
     function toggleItem() { thiz.visible ? hideItem() : showItem() }
     function showItem(){
         hideAnimation.stop()
@@ -77,7 +105,7 @@ Item{
     }
     NumberAnimation {
         id: showMoveAnimationX
-        target: eXLImage;
+        target: thiz
         property: "showAnimationX";
         from: Number(settings.showAnimation_Distance ?? 10) * Math.cos(Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180);
         to: 0
@@ -86,7 +114,7 @@ Item{
     }
     NumberAnimation {
         id: showMoveAnimationY
-        target: eXLImage;
+        target: thiz
         property: "showAnimationY";
         from: -Number(settings.showAnimation_Distance ?? 10) * Math.sin(Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180)
         to: 0
@@ -95,7 +123,7 @@ Item{
     }
     NumberAnimation {
         id: hideMoveAnimationX
-        target: eXLImage;
+        target: thiz
         property: "showAnimationX";
         to: Number(settings.showAnimation_Distance ?? 10) * Math.cos(Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180);
         from: 0
@@ -104,7 +132,7 @@ Item{
     }
     NumberAnimation {
         id: hideMoveAnimationY
-        target: eXLImage;
+        target: thiz
         property: "showAnimationY";
         to: -Number(settings.showAnimation_Distance ?? 10) * Math.sin(Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180)
         from: 0
@@ -120,26 +148,7 @@ Item{
         //透明度
         opacity: settings.viewBGImageOpacity ? settings.viewBGImageOpacity/100.0 : 1.0
         configuration: settings.viewBGImage;
-        property real showAnimationX: 0
-        property real showAnimationY: 0
-        property real moveAnimationX: 0
-        property real moveAnimationY: 0
-        x: {
-            if(settings.enableShowAnimation){
-                return (settings.viewBGX ?? 0) + showAnimationX + moveAnimationX
-            }else{
-                return (settings.viewBGX ?? 0) + moveAnimationX
-            }
-        }
-        y: {
-            if(settings.enableShowAnimation){
-                return (settings.viewBGY ?? 0) + showAnimationY + moveAnimationY
-            }else{
-                return (settings.viewBGY ?? 0) + moveAnimationY
-            }
-        }
-        width: settings.viewBGW ?? Screen.width
-        height: settings.viewBGH ?? Screen.height
+        anchors.fill: parent
         z: settings.viewBGZ ?? 0
     }
     ColorOverlay{
@@ -152,7 +161,7 @@ Item{
     }
     NumberAnimation {
         loops: Animation.Infinite
-        target: eXLImage
+        target: thiz
         property: "moveAnimationX"
         from: settings.moveAnimation_XFrom ?? 0
         to: settings.moveAnimation_XTo ?? 0
@@ -161,7 +170,7 @@ Item{
     }
     NumberAnimation {
         loops: Animation.Infinite
-        target: eXLImage
+        target: thiz
         property: "moveAnimationY"
         from: settings.moveAnimation_YFrom ?? 0
         to: settings.moveAnimation_YTo ?? 0

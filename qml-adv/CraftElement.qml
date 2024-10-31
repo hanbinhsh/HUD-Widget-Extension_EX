@@ -188,6 +188,7 @@ CraftDelegate {
     //数据移动
     NVG.DataSource {
         id: distanceDataSource
+        // BUG 以下一行会导致报错107
         configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Distance_data) ? settings.distanceData : null
     }
     NVG.DataSource {

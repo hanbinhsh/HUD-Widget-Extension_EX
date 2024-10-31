@@ -3,10 +3,11 @@ import QtQuick.Controls 2.12
 import QtQuick.Window 2.2
 import QtGraphicalEffects 1.12 
 import NERvGear 1.0 as NVG
-import NERvGear.Templates 1.0 as T
 
 import "."
 import "../../../top.mashiros.widget.advp/qml/" as ADVP
+import "../utils.js" as Utils
+import ".."
 
 NVG.View {
     id: eXLauncherView
@@ -24,7 +25,9 @@ NVG.View {
     signal hideItem(int i)
     signal toggleItem(int i)
     signal ready
+    signal dialogClosing
     property NVG.SettingsMap eXLSettings: NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
+    readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
     Component.onCompleted: {
         init()
         ready()
@@ -45,8 +48,21 @@ NVG.View {
         id: dialog
         active: false
         sourceComponent: EXLDialog{
-            onClosing: dialog.active = false
+            onClosing: {
+                dialog.active = false
+                dialogClosing()
+            }
         }
+    }
+    QtObject { // Public API
+        id: ctx_widget
+        readonly property font defaultFont: Qt.font(initialFont)
+        readonly property var defaultBackground: Utils.NormalBackground
+        readonly property color defaultBackgroundColor:  "transparent"
+        readonly property color defaultTextColor: "#BBFFFFFF"
+        readonly property color defaultStyleColor: "#33FFFFFF"
+        readonly property bool exposed: isVisible
+        readonly property bool editing: isVisible
     }
     //////////////////////////////////Actions//////////////////////////////////
     MouseArea {
@@ -146,6 +162,29 @@ NVG.View {
     property int opaADV: 0
     //////////////////////////////////ADV//////////////////////////////////
     //////////////////////////////////Generator//////////////////////////////////
+    Component { // any items with settings property
+        id: cScaleTransform
+        ConfigurableScale { config: item.settings.scale ?? {} }
+    }
+    Component { // any items with settings property
+        id: cRotateTransform
+        ConfigurableRotation { config: item.settings.rotate ?? {} }
+    }
+    Component {
+        id: cDataSource
+        NVG.DataSource {}
+    }
+    Component {
+        id: cDataRawOutput
+        NVG.DataSourceRawOutput {
+            source: NVG.DataSource {}
+        }
+    }
+    NVG.DataSource {
+        id: dataSource
+        configuration: eXLSettings.data
+    }
+    
     CraftItem{
         id: eXLItemView
         anchors.fill: parent
@@ -155,6 +194,31 @@ NVG.View {
             id: thiz
             index: model.index
             settings: modelData
+            readonly property NVG.DataSource dataSource: dataSource
+            view: eXLItemView
+            
+            Item {
+                anchors.fill: parent
+                ColorBackgroundSource {id: bgSource}
+                parent: thiz
+                Repeater {
+                    model: NVG.Settings.makeList(modelData, "elements")
+                    delegate: CraftElement {
+                        itemSettings: thiz.settings
+                        itemData: dataSource
+                        itemBackground: bgSource
+                        settings: modelData
+                        index: model.index
+                    }
+                }
+            }
+        }
+        Connections {
+            enabled: true
+            target: eXLauncherView
+                onDialogClosing: {
+                eXLItemView.currentTarget = null
+            }
         }
     }
     //////////////////////////////////Generator//////////////////////////////////

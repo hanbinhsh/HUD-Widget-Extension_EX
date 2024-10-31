@@ -17,7 +17,7 @@ NVG.Window {
                                            !(itemSettings?.alignment & Qt.AlignRight)
     readonly property bool resizableHeight: !(itemSettings?.alignment & Qt.AlignTop) ||
                                             !(itemSettings?.alignment & Qt.AlignBottom)
-    property CraftDelegate targetItem
+    property QtObject targetItem
     property QtObject itemSettings
     property var builtinElements: []
     property var builtinInteractions: []

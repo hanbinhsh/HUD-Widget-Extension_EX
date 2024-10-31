@@ -8,8 +8,8 @@ import NERvGear.Preferences 1.0 as P
 import QtQuick.Window 2.2
 
 import "."
+import ".."
 import "LauncherSettings"
-
 import "../utils.js" as Utils
 
 NVG.Window {
@@ -43,6 +43,29 @@ NVG.Window {
 
         Label { text: qsTr("Are you sure to remove this item?") }
     }
+    Loader {
+        id: editor
+        active: false
+        sourceComponent: CraftDialog {
+            builtinElements: Utils.elements
+            builtinInteractions: Utils.partInteractions
+            onAccepted: {
+                const oldSettings = dialog.currentItem;
+                eXLItemView.model.set(eXLItemView.currentTarget.index, itemSettings);
+                itemSettings = null;
+                try { // NOTE: old settings not always destructable
+                    oldSettings.destroy();
+                } catch (err) {}
+            }
+            onClosed: {
+                if (itemSettings) {
+                    const oldSettings = itemSettings;
+                    itemSettings = null; // clear before destroy
+                    oldSettings.destroy();
+                }
+            }
+        }
+    }
     function duplicateSettingsMap(src, parent) {
         const dst = NVG.Settings.createMap(parent);
         src.keys().forEach(function (key) {
@@ -57,6 +80,12 @@ NVG.Window {
                 dst[key] = prop;
             }
         });
+        return dst;
+    }
+    function duplicateSettingsList(src, parent) {
+        const dst = NVG.Settings.createList(parent);
+        for (let i = 0; i < src.count; ++i)
+            dst.append(duplicateSettingsMap(src.get(i), dst));
         return dst;
     }
     property var easingModel : [qsTr("Linear"),//0
@@ -126,6 +155,25 @@ NVG.Window {
                     syncProperties: true
                     enabled: true
                     width: parent.width
+                    P.BackgroundPreference {
+                        visible: false
+                        id: pDefaultBackground
+                        name: "background"
+                        label: qsTr("Default Background")
+                        defaultBackground {
+                            normal: Utils.NormalBackground
+                            hovered: Utils.HoveredBackground
+                            pressed: Utils.PressedBackground
+                        }
+                        preferableFilter: NVG.ResourceFilter {
+                            packagePattern: /com.gpbeta.widget.hud/
+                        }
+                    }
+                    P.DataPreference {
+                        //visible: false
+                        name: "data"
+                        label: qsTr("Data")
+                    }
                     Page {
                         id: pPage
                         width: parent.width
@@ -139,7 +187,7 @@ NVG.Window {
                             width: parent.width
                             clip:true//超出父项直接裁剪
                             Repeater {
-                                model: [qsTr("Basic"), qsTr("Menu")]
+                                model: [qsTr("Launcher"), qsTr("Menu")]
                                 TabButton {
                                     text: modelData
                                     width: Math.max(128, elemBar.width / 2)
@@ -237,6 +285,16 @@ NVG.Window {
                         from: -9999
                         to: 9999
                         stepSize: 1
+                    }
+                    P.SwitchPreference {
+                        name: "showWithLauncher"
+                        label: qsTr("Show with Launcher")
+                        defaultValue: true
+                    }
+                    P.SwitchPreference {
+                        name: "hideWithLauncher"
+                        label: qsTr("Hide with Launcher")
+                        defaultValue: true
                     }
                     Page {
                         id: advancedElemPage

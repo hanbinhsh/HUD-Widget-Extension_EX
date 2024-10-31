@@ -28,11 +28,24 @@ Item {
         }
     }
 
-    ToolButton {
+    Row{
         anchors.top: parent.top
         anchors.topMargin: 4
         anchors.right: parent.right
-        icon.name: "regular:\uf03a"
-        onClicked: selectMenu.popup()
+        ToolButton {
+            enabled: currentItem
+            icon.name: "regular:\uf044"
+            onClicked: {
+                editor.active = true;
+                editor.item.targetItem = eXLItemView.currentTarget;
+                editor.item.itemSettings = duplicateSettingsMap(currentItem, eXLItemView.model);
+                editor.item.show();
+            }
+        }
+        ToolButton {
+            icon.name: "regular:\uf03a"
+            onClicked: selectMenu.popup()
+        }
     }
+    
 }

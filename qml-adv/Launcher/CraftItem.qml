@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import ".."
 
 Item {
     id: eXLCraftView
@@ -8,13 +9,13 @@ Item {
     property alias count: repeater.count
 
     property LauncherItemTemplate currentTarget
-    property LauncherItemTemplate currentHighlight
+    // property LauncherItemTemplate currentHighlight
 
     // property int gridSize: 10
     // property bool gridSnap: true
     // property bool gridGuide: true
 
-    property bool interactive: false
+    // property bool interactive: false
 
     // signal deleteRequest
     // signal deselectRequest
@@ -36,15 +37,15 @@ Item {
     //     visible: interactive && gridGuide
     // }
 
-    // Wireframe {
-    //     anchors.fill: currentHighlight
-    //     z: 255
-    //     color: "#E91E63"
-    //     rotation: currentHighlight?.rotation ?? 0
-    //     transform: currentHighlight?.transformArray ?? null
-    //     visible: interactive && currentHighlight
-    //     anchorsVisible: true
-    // }
+    Wireframe {
+        anchors.fill: currentTarget
+        z: 255
+        color: "#E91E63"
+        // rotation: currentHighlight?.rotation ?? 0
+        // transform: currentHighlight?.transformArray ?? null
+        visible: currentTarget
+        anchorsVisible: true
+    }
 
     // CraftController {
     //     id: controller
