@@ -32,7 +32,7 @@ Flickable {
             P.SelectPreference {
                 name: "visibility"
                 label: qsTr("Visibility")
-                model:[ qsTr("Always"), qsTr("Normal"), qsTr("Hovered"), qsTr("Data"), qsTr("Data&Hovered"), qsTr("Data&Normal")]
+                model:[ qsTr("Always"), qsTr("Normal"), qsTr("Hovered"), qsTr("Data"), qsTr("Data&Hovered"), qsTr("Data&Normal"), qsTr("Hide"), qsTr("HideBeforeAction")]
                 defaultValue: 0
                 load: function (newValue) {
                     if (newValue === undefined) {
@@ -45,11 +45,15 @@ Flickable {
                     case "data": value = 3; break;
                     case "data&hovered": value = 4; break;
                     case "data&normal": value = 5; break;
+                    case "hide": value = 6; break;
+                    case "action": value = 7; break;
                     default: value = -1; break;
                     }
                 }
                 save: function () {
                     switch (value) {
+                    case 7: return "action";
+                    case 6: return "hide";
                     case 5: return "data&normal";
                     case 4: return "data&hovered";
                     case 3: return "data";

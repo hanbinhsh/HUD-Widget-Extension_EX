@@ -216,7 +216,7 @@ NVG.View {
         Connections {
             enabled: true
             target: eXLauncherView
-                onDialogClosing: {
+            onDialogClosing: {
                 eXLItemView.currentTarget = null
             }
         }

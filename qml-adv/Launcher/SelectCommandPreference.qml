@@ -2,7 +2,7 @@ import NERvGear.Preferences 1.0
 
 SelectPreference {
     name: "command"
-    label: qsTr("EX Launcher")
+    label: qsTr("Action")
     textRole: "label"
     defaultValue: 0
 

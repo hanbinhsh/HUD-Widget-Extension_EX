@@ -30,24 +30,17 @@ T.Widget {
 
     // EXL动作
     action: LC.EXLActions{}
-    function showEXL(){
-        LC.LauncherCore.showLauncherView()
-    }
-    function hideEXL(){
-        LC.LauncherCore.hideLauncherView()
-    }
-    function toggleEXL(){
-        LC.LauncherCore.toggleLauncherView()
-    }
-    function showEXLItem(i){
-        LC.LauncherCore.showLauncherViewItem(i)
-    }
-    function hideEXLItem(i){
-        LC.LauncherCore.hideLauncherViewItem(i)
-    }
-    function toggleEXLItem(i){
-        LC.LauncherCore.toggleLauncherViewItem(i)
-    }
+    function showEXL(){LC.LauncherCore.showLauncherView()}
+    function hideEXL(){LC.LauncherCore.hideLauncherView()}
+    function toggleEXL(){LC.LauncherCore.toggleLauncherView()}
+    function showEXLItem(i){LC.LauncherCore.showLauncherViewItem(i)}
+    function hideEXLItem(i){LC.LauncherCore.hideLauncherViewItem(i)}
+    function toggleEXLItem(i){LC.LauncherCore.toggleLauncherViewItem(i)}
+    // 挂件动作
+    signal showHUDItem(int i)
+    signal hideHUDItem(int i)
+    signal toggleHUDItem(int i)
+    function getHUDItemView(){return itemView.model}
     // 颜色渐变
     property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 1.0, color: "#fbc2eb" }]
     Gradient {
@@ -309,6 +302,7 @@ T.Widget {
             id: thiz
             readonly property NVG.DataSource dataSource: dataSource
             property bool targetVisible: true
+            property bool widgetVisibilityAction: modelData.visibility == "action" ? 1 : 0
             view: itemView
             settings: modelData
             index: model.index
@@ -320,10 +314,14 @@ T.Widget {
             //编辑可见性界面
             // TODO 尝试通过数据更改某些物品的颜色或者渐变？？？
             hidden: {
+                if(widgetVisibilityAction ?? false){
+                    return true
+                }
                 if(settings.onlyDisplayOnEXLauncher&&!LC.LauncherCore.vis){
                     return true
                 }
                 switch (modelData.visibility) {
+                    case "hide": return true;
                     case "normal": return widget.NVG.View.hovered;
                     case "hovered": return !widget.NVG.View.hovered;
                     case "data": return !Boolean(dataOutput.result);
@@ -332,6 +330,21 @@ T.Widget {
                     default: break;
                 }
                 return false;
+            }
+            //自定义动作控制显示
+            Connections {
+                enabled: true
+                target: widget
+                onShowHUDItem: {if(i === index){hideItem()}}
+                onHideHUDItem: {if(i === index){showItem()}}
+                onToggleHUDItem: {if(i === index){toggleItem()}}
+            }
+            function toggleItem() { widgetVisibilityAction ? hideItem() : showItem() }
+            function showItem(){
+                widgetVisibilityAction = true
+            }
+            function hideItem(){
+                widgetVisibilityAction = false
             }
 
             interactionSource: modelData.interaction ?? defaultItemInteraction
