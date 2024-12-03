@@ -17,24 +17,12 @@ QtObject {
             launcherView.isVisible = true
         }
     }
-    function hideLauncherView() {
-        launcherView.isVisible = false
-    }
-    function showLauncherView() {
-        launcherView.isVisible = true
-    }
+    function hideLauncherView() {launcherView.isVisible = false}
+    function showLauncherView() {launcherView.isVisible = true}
     // 单个组件
-    function toggleLauncherViewItem(i) {
-        launcherView.toggleItem(i)
-    }
-    function hideLauncherViewItem(i) {
-        launcherView.showItem(i)
-    }
-    function showLauncherViewItem(i) {
-        launcherView.hideItem(i)
-    }
+    function toggleLauncherViewItem(i) {launcherView.toggleItem(i)}
+    function hideLauncherViewItem(i) {launcherView.showItem(i)}
+    function showLauncherViewItem(i) {launcherView.hideItem(i)}
     // 开关设置
-    function toggleLauncherSetting() {
-        launcherView.toggleSetting()
-    }
+    function toggleLauncherSetting() {launcherView.toggleSetting()}
 }
