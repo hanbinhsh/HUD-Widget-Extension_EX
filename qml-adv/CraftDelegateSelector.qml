@@ -32,8 +32,17 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 4
         anchors.right: parent.right
+        //anchors.rightMargin: 50
         icon.name: "regular:\uf03a"
         onClicked: selectMenu.popup()
     }
+    //展开按钮
+    // ToolButton {
+    //     anchors.top: parent.top
+    //     anchors.topMargin: 4
+    //     anchors.right: parent.right
+    //     icon.name: "regular:\uf105"
+    //     //onClicked: selectMenu.popup()
+    // }
 }
 

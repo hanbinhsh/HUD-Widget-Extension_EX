@@ -106,6 +106,7 @@ NVG.Window {
             id: titleBar
             text: qsTr("EX Launcher")
             height:50
+            
             //复制
             ToolButton {
                 enabled: currentItem
@@ -138,6 +139,22 @@ NVG.Window {
                 }
             }
         }
+        footer: TitleBar {
+            id: footerBar
+            height:36
+            // 展开/折叠按钮
+            ToolButton {
+                id: toggleButton
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                icon.name: itemPanel.visible ? "regular:\uf146" : "regular:\uf0fe" // “-” 或 “+” 图标
+                onClicked: {
+                    itemPanel.visible = !itemPanel.visible
+                    launcherPanel.visible = !launcherPanel.visible
+                    itemPanelSlecter.visible = !itemPanelSlecter.visible
+                }
+            }
+        }
         Flickable {
             anchors.fill: parent
             contentWidth: width
@@ -150,6 +167,8 @@ NVG.Window {
                 id: preferencesLayout
                 width: parent.width - 32
                 P.ObjectPreferenceGroup {
+                    id: launcherPanel
+                    visible: true
                     label: qsTr("EX Launcher Settings")
                     defaultValue: eXLauncherView.eXLSettings
                     syncProperties: true
@@ -258,6 +277,8 @@ NVG.Window {
                 }
 
                 ItemSelector {
+                    id: itemPanelSlecter
+                    visible: false
                     width: parent.width
                     view: eXLItemView
                     extractLabel: function (target, index) {
@@ -266,6 +287,8 @@ NVG.Window {
                 }
 
                 P.ObjectPreferenceGroup {
+                    id: itemPanel
+                    visible: false
                     label: qsTr("EX Launcher Items")
                     defaultValue: currentItem
                     syncProperties: true

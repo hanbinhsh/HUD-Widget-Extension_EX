@@ -696,8 +696,8 @@ T.Widget {
             NumberAnimation on endOpciMask {
                 id: opciMask_end
                 running: false
-                from: opciMaskForward ? settings.fadeTransition_end_end ?? 0 : settings.fadeTransition_end_start ?? 1000
-                to: opciMaskForward ? settings.fadeTransition_end_start ?? 1000 : settings.fadeTransition_end_end ?? 0
+                from: opciMaskForward ? settings.fadeTransition_end_end ?? 0 : settings.fadeTransition_end_start ?? 1500
+                to: opciMaskForward ? settings.fadeTransition_end_start ?? 1500 : settings.fadeTransition_end_end ?? 0
                 duration: settings.showAnimation_end_Duration ?? 250
             }
             NumberAnimation on endOpci {
@@ -748,10 +748,12 @@ T.Widget {
                         from: "SHOW"
                         to: "HIDE"
                         SequentialAnimation{
+                            ScriptAction {script: {thiz.playingFadeAnimation = true}}
                             PauseAnimation { duration: settings.hidePauseTime ?? 0 }
                             NumberAnimation {
-                                target: fadeImage; property: "opacity";
-                                duration: (settings.maskVisibleAfterAnimation??true) ? (settings.hideMaskTime ?? 250) : 0
+                                target: fadeImage
+                                property: "opacity"
+                                duration: (settings.usedisplayMask ?? false)&&(settings.maskVisibleAfterAnimation ?? true) ? (settings.hideMaskTime ?? 250) : 0
                             }
                             ScriptAction {
                                 script: {
@@ -791,12 +793,14 @@ T.Widget {
                                 NumberAnimation { target: itemContent; property: "opacity"; duration: settings.hideTime ?? 250 }
                             }
                             PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
+                            ScriptAction {script: {thiz.playingFadeAnimation = false}}
                         }
                     },
                     Transition {
                         from: "HIDE"
                         to: "SHOW"
                         SequentialAnimation{
+                            ScriptAction {script: {thiz.playingFadeAnimation = true}}
                             PauseAnimation { duration: settings.showPauseTime ?? 0 }
                             PropertyAnimation { target: fadeImage; property: "visible"; duration: 0; to: settings.usedisplayMask }
                             PropertyAnimation { target: thiz; property: "targetVisible"; duration: 0 }
@@ -836,6 +840,7 @@ T.Widget {
                                     opciMaskAnimation_End.start()
                                 }
                             }
+                            ScriptAction {script: {thiz.playingFadeAnimation = false}}
                             NumberAnimation { target: fadeImage; property: "opacity"; duration: settings.displayMaskTime ?? 250 }
                             NumberAnimation { 
                                 target: fadeImage;
@@ -843,7 +848,12 @@ T.Widget {
                                 duration: (settings.maskVisibleAfterAnimation??true) ? 0 : (settings.displayMaskTime ?? 250);
                                 to: (settings.maskVisibleAfterAnimation??true) ? (settings.maskOpacity ?? 100)/100 : 0;
                             }
-                            PropertyAnimation { target: fadeImage; property: "visible"; duration: 0; to: (settings.maskVisibleAfterAnimation??true)&&settings.usedisplayMask }
+                            PropertyAnimation { 
+                                target: fadeImage
+                                property: "visible"
+                                duration: 0
+                                to: (settings.maskVisibleAfterAnimation??true)&&settings.usedisplayMask
+                            }
                         }
                     }
                 ]

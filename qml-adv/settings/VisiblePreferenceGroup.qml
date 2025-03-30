@@ -338,7 +338,7 @@ Flickable {
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
                 visible: enableFadeTransition.value
-                defaultValue: 1000
+                defaultValue: 1500
                 from: -100000
                 to: 100000
                 stepSize: 100

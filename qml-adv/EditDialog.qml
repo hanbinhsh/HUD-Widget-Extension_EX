@@ -106,7 +106,7 @@ NVG.Window {
                 enabled: currentItem
                 onClicked: {
                     itemView.currentTarget.grabToImage(function(result) {
-                           result.saveToFile("../Item.png");
+                        result.saveToFile("../Item.png");
                     });
                     cutDialog.open()
                 }
@@ -152,6 +152,17 @@ NVG.Window {
                     itemView.model.append(settings);
                     itemView.currentTarget = itemView.targetAt(itemView.count - 1);
                 }
+            }
+        }
+        footer: TitleBar {
+            id: footerBar
+            //text: dialog.title
+            height:36
+            //显示按钮
+            ToolButton {
+                icon.name: itemView.currentTarget.widgetVisibilityAction ? "regular:\uf06e" : "regular:\uf070"
+                enabled: currentItem
+                onClicked: itemView.currentTarget.visible = !itemView.currentTarget.toggleItem()
             }
         }
         Flickable {

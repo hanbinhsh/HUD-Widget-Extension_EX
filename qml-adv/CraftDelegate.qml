@@ -88,7 +88,7 @@ MouseArea {
     readonly property bool rotationEnabled: Boolean(delegate.settings.rotationDisplay)
     readonly property bool rotationAnimationEnabled: Boolean(delegate.settings.enableAdvancedRotationAnimation)
     //透明度动态显示
-    property real endOpciMask : settings.fadeTransition_end_start ?? 1000
+    property real endOpciMask : settings.fadeTransition_end_start ?? 1500
     property real staOpciMask : settings.fadeTransition_sta_start ?? 0
     property real endOpci: 0
     //点击移动动画
@@ -109,6 +109,8 @@ MouseArea {
         property int moveCycle_Distance: settings.moveCycle_Distance ?? 10        // 每次移动的距离（像素）
         property int moveCycle_Waiting: settings.moveCycle_Waiting ?? 300          // 每次移动后的等待时间（毫秒）
         property var moveCycle_Easing: settings.moveCycle_Easing ?? 3              // 使用的动画曲线
+    //消逝动画
+    property bool playingFadeAnimation: false
     //增加
 
     anchors.top: settings.alignment & Qt.AlignTop ? parent.top : undefined
@@ -360,7 +362,7 @@ MouseArea {
         cached: settings.fadeTransitionCached ?? false
     }
     layer {
-        enabled: settings.enableFadeTransition ?? false
+        enabled: settings.enableFadeTransition ? playingFadeAnimation : false
         effect: OpacityMask {
             maskSource: switch(settings.fadeTransitionDirect ?? 1){
                 case 0:
