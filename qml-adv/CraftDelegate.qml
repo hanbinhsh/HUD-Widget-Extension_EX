@@ -10,18 +10,24 @@ import "../../top.mashiros.widget.advp/qml/" as ADVP
 //二级挂件属性
 MouseArea {
     // clip:true//超出父项直接裁剪
-    id: delegate
+    id: craftDelegate
     propagateComposedEvents: true
 
     property Item view // Note: CraftView type recusive
     property NVG.SettingsMap settings
+    property var environment
     property int index
     property bool hidden
+
+    property string defaultText
+    property NVG.DataSource defaultData
 
     property string interactionState: hidden ? "HIDDEN" :
                                       pressed ? "PRESSED" :
                                       containsMouse ? "HOVERED" : "NORMAL"
     property string interactionSource
+    property bool interactionIndependent: true
+    property MouseArea interactionArea: craftDelegate
     property NVG.SettingsMap interactionSettingsBase
 
     // private
@@ -34,10 +40,10 @@ MouseArea {
         if (url) {
             const c = Qt.createComponent(url);
             if (c.status === Component.Ready) {
-                newItem = c.createObject(delegate, {
+                newItem = c.createObject(craftDelegate, {
                     // changed between independent and shared settings, or new settings replaced
                     settings: Qt.binding(()=>NVG.Settings.makeMap(interactionSettingsBase, "reaction")),
-                    state: Qt.binding(()=>delegate.interactionState)
+                    state: Qt.binding(()=>craftDelegate.interactionState)
                 });
             } else {
                 if (c.status === Component.Error)
@@ -54,7 +60,7 @@ MouseArea {
     // Item.transform is not a notifiable property,
     // we need to explicitly define the array property for binding.
     readonly property var transformArray: {
-        const initProp = { item: delegate };
+        const initProp = { item: craftDelegate };
         const scale = Utils.makeObject(this, scaleEnabled, cScaleTransform, initProp, "scaleTransform_NB");
         const rotate = Utils.makeObject(this, rotateEnabled, cRotateTransform, initProp, "rotateTransform_NB");
         return [scale, rotate].concat(interactionItem?.extraTransform);
@@ -85,8 +91,8 @@ MouseArea {
     //悬停闪烁动画
     property real animationGlimmerTarget : 1
     readonly property real rotationStep: (settings.rotationSpeed ?? 5) * 6 / (settings.rotationFPS ?? 20)
-    readonly property bool rotationEnabled: Boolean(delegate.settings.rotationDisplay)
-    readonly property bool rotationAnimationEnabled: Boolean(delegate.settings.enableAdvancedRotationAnimation)
+    readonly property bool rotationEnabled: Boolean(craftDelegate.settings.rotationDisplay)
+    readonly property bool rotationAnimationEnabled: Boolean(craftDelegate.settings.enableAdvancedRotationAnimation)
     //透明度动态显示
     property real endOpciMask : settings.fadeTransition_end_start ?? 1500
     property real staOpciMask : settings.fadeTransition_sta_start ?? 0
@@ -102,7 +108,7 @@ MouseArea {
         //移动
         property real cycleMoveX : 0
         property real cycleMoveY : 0
-        readonly property bool moveCycleEnabled: Boolean(delegate.settings.cycleMove)
+        readonly property bool moveCycleEnabled: Boolean(craftDelegate.settings.cycleMove)
         property int moveCycle_Delay: settings.moveCycle_Delay ?? 300              // 启动前的延迟（毫秒）
         property int moveCycle_Duration: settings.moveCycle_Duration ?? 300        // 每次移动的持续时间（毫秒）
         property int moveCycle_Direction: settings.moveCycle_Direction ?? 0      // 移动的方向（度数）
@@ -164,9 +170,9 @@ MouseArea {
         return (align & Qt.AlignTop && align & Qt.AlignBottom) ?
                     undefined : settings.height
     }
-    onEntered: if (view) view.currentHighlight = delegate
+    onEntered: if (view) view.currentHighlight = craftDelegate
     onExited: if (view) view.currentHighlight = null
-    onClicked: if (view) view.currentTarget = delegate
+    onClicked: if (view) view.currentTarget = craftDelegate
     //增加
     transform:[
         Rotation {
@@ -201,14 +207,14 @@ MouseArea {
         running: opacityAnimationEnabled && widget.NVG.View.exposed
         loops:Animation.Infinite
         NumberAnimation {
-            target: delegate
+            target: craftDelegate
             property: "opacity"
             duration: settings.opacityAnimationSpeed ?? 500
             from: 0
             to: 1
         }
         NumberAnimation {
-            target: delegate
+            target: craftDelegate
             property: "opacity"
             duration: settings.opacityAnimationSpeed ?? 500
             from: 1
@@ -231,13 +237,13 @@ MouseArea {
         running: false              // 初始不运行
         ParallelAnimation {  // 使用 ParallelAnimation 同时动画化 x 和 y
             NumberAnimation {
-                target: delegate
+                target: craftDelegate
                 property: "cycleMoveX"
                 duration: moveCycle_Duration / 2   // 单程时间是总时间的一半
                 easing.type: moveCycle_Easing
             }
             NumberAnimation {
-                target: delegate
+                target: craftDelegate
                 property: "cycleMoveY"
                 duration: moveCycle_Duration / 2
                 easing.type: moveCycle_Easing
@@ -245,13 +251,13 @@ MouseArea {
         }
         ParallelAnimation {
             NumberAnimation {
-                target: delegate
+                target: craftDelegate
                 property: "cycleMoveX"
                 duration: moveCycle_Duration / 2
                 easing.type: moveCycle_Easing
             }
             NumberAnimation {
-                target: delegate
+                target: craftDelegate
                 property: "cycleMoveY"
                 duration: moveCycle_Duration / 2
                 easing.type: moveCycle_Easing
@@ -327,13 +333,13 @@ MouseArea {
         }
         end: {
             switch (settings.fadeTransitionDirect ?? 1) {
-                case 0 : return Qt.point(delegate.width, 0); break;//1.横向渐变
-                case 1 : return Qt.point(0, delegate.height); break;//2.竖向渐变
-                case 2 : return Qt.point(delegate.width, delegate.height); break;//3.斜向渐变
+                case 0 : return Qt.point(craftDelegate.width, 0); break;//1.横向渐变
+                case 1 : return Qt.point(0, craftDelegate.height); break;//2.竖向渐变
+                case 2 : return Qt.point(craftDelegate.width, craftDelegate.height); break;//3.斜向渐变
                 case 5 : return Qt.point(settings.fadeTransitionAdvancedEndX ?? 100, settings.fadeTransitionAdvancedEndY ?? 100); break;
-                default: return Qt.point(delegate.width, 0); break; 
+                default: return Qt.point(craftDelegate.width, 0); break; 
             }
-            return Qt.point(delegate.width, 0);
+            return Qt.point(craftDelegate.width, 0);
         }
         cached: settings.fadeTransitionCached ?? false
     }
@@ -388,7 +394,7 @@ MouseArea {
     }
     GaussianBlur {
         id: aDVImage_source_gaussian
-        anchors.fill: delegate
+        anchors.fill: craftDelegate
         source: settings.useADVGaussian ? aDVImage_source : null
         visible: Boolean(settings.useADVGaussian && settings.enableADV)
         radius: settings.aDVGaussianBlurRadius ?? 5//半径
@@ -405,7 +411,7 @@ MouseArea {
     property int opaADV: 0
     ColorOverlay{
         visible: settings.enableADV ?? false
-        anchors.fill: delegate
+        anchors.fill: craftDelegate
         source: settings.useADVGaussian ? aDVImage_source_gaussian : aDVImage_source
         color: settings.aDVColor ?? "white"
         opacity: (opaADV/100.0)/((settings.aDVDecrease ?? 1000)/1000)

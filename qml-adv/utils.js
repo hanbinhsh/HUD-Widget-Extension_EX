@@ -44,6 +44,39 @@ const partInteractions = [
 
 const interactions = widgetInteractions.concat(partInteractions);
 
+function widgetEnvironment(widget) {
+    const environment = {
+        name: "com.gpbeta.widget.hud-adv",
+        version: "0.1",
+        widget: {
+            name: widget.name,
+            shared: {},
+            get exposed() { return widget.exposed; },
+            get hovered() { return widget.hovered; },
+            get editing() { return widget.editing; }
+        }
+    };
+    Object.freeze(environment.widget);
+    return Object.freeze(environment);
+}
+
+function itemEnvironment(item, prototype) {
+    const api = {
+        shared: {},
+        get label () { return item.defaultText },
+        get state () { return item.interactionState },
+        get width () { return item.width },
+        get height () { return item.height }
+    };
+    Object.freeze(api);
+    return Object.freeze(Object.create(prototype, { item: { value: api } } ));
+}
+
+function elementEnvironment(element, prototype) {
+    // TODO: add element environment property
+    return prototype;
+}
+
 function findElement(source) {
     return elements.find(element => element.source === source);
 }

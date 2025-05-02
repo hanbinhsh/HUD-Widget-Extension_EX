@@ -14,10 +14,12 @@ T.Widget {
     readonly property QtObject craftSettings: NVG.Settings.makeMap(settings, "craft")
     readonly property NVG.SettingsMap defaultSettings: NVG.Settings.makeMap(settings, "defaults")
 
+    readonly property var initialEnvironment: Utils.widgetEnvironment(ctx_widget)
     readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
     readonly property string defaultItemInteraction: defaultSettings.interaction ?? ""
 
     readonly property Item interactionItem: makeInteractionItem(widget, settings, "interactionItem_NB")
+    readonly property var hoverHandlers: new Map
 
     //挂件框上的名称&&编辑界面蓝条上的字
     title: qsTr("HUD EX")
@@ -303,7 +305,9 @@ T.Widget {
             readonly property NVG.DataSource dataSource: dataSource
             property bool targetVisible: true
             property bool widgetVisibilityAction: modelData.visibility == "action" ? 1 : 0
+            property bool animationVisible: true
             view: itemView
+            environment: Utils.itemEnvironment(thiz, initialEnvironment)
             settings: modelData
             index: model.index
             visible: widget.editing || targetVisible
@@ -346,6 +350,9 @@ T.Widget {
             function hideItem(){
                 widgetVisibilityAction = false
             }
+
+            defaultText: modelData.label ?? ""
+            defaultData: dataSource
 
             interactionSource: modelData.interaction ?? defaultItemInteraction
             interactionSettingsBase: modelData.interaction ? modelData : widget.defaultSettings
@@ -883,10 +890,15 @@ T.Widget {
                     delegate: CraftElement {
                         itemSettings: thiz.settings
                         itemData: dataSource
+                        defaultData: dataSource
+                        defaultText: thiz.defaultText
+                        superArea: thiz
                         itemBackground: bgSource
+                        interactionArea: interactionIndependent ? this : thiz // override
                         interactionState: thiz.interactionState // override
                         interactionSource: modelData.interaction ?? ""
                         interactionSettingsBase: modelData
+                        environment: Utils.elementEnvironment(this, thiz.environment)
                         settings: modelData
                         index: model.index
                     }

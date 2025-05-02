@@ -24,18 +24,6 @@ HUDInteractionTemplate {
 
     transitions: [
         Transition {
-            to: "NORMAL"
-            NumberAnimation {
-                target: tTranslate
-                duration: 250
-                easing.type: Easing.OutBounce
-                easing.amplitude: 0.5
-                properties: "x,y"
-                to: 0
-            }
-            NumberAnimation { target: thiz; duration: 250; property: "opacity"; to: 1 }
-        },
-        Transition {
             to: "PRESSED"
             NumberAnimation {
                 target: tTranslate
@@ -119,6 +107,18 @@ HUDInteractionTemplate {
                     }
                 }
             }
+        },
+        Transition { // last fallback match
+            from: "HOVERED,PRESSED"
+            NumberAnimation {
+                target: tTranslate
+                duration: 250
+                easing.type: Easing.OutBounce
+                easing.amplitude: 0.5
+                properties: "x,y"
+                to: 0
+            }
+            NumberAnimation { target: thiz; duration: 250; property: "opacity"; to: 1 }
         }
     ]
 

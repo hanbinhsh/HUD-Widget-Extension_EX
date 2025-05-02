@@ -20,6 +20,44 @@ CraftDelegate {
     property NVG.DataSource itemData
     property NVG.BackgroundSource itemBackground
 
+    //  最新原版新增
+    property MouseArea itemArea
+    property MouseArea superArea
+    property alias contentEnabled: loader.enabled
+    visible: animationVisible
+    hidden: {
+        switch (settings.visibility) {
+        case "normal":  return superArea.containsMouse;
+        case "hovered": return !superArea.containsMouse;
+        default: break;
+        }
+        return false;
+    }
+    interactionIndependent: Boolean(loader.item?.independentInteractionArea)
+    Component.onCompleted: {
+        // upgrade settings
+        if (settings.effect?.enabled && !settings.filter) {
+            settings.effect.enabled = undefined;
+            settings.filter = "basic";
+        }
+
+        // don't animate intial state
+        loader.opacity = hidden ? 0 : 1;
+        animationVisible = !hidden;
+        hiddenChanged.connect(function () {
+            if (!visibilityAnimation) {
+                visibilityAnimation = cVisibilityAnimation.createObject(craftElement, {
+                                                                            target: loader
+                                                                        });
+                visibilityAnimation.started.connect(() => animationVisible = true);
+                visibilityAnimation.finished.connect(() => animationVisible = visibilityAnimation.to > 0);
+            }
+            visibilityAnimation.to = (hidden ? 0 : 1);
+            if (visibilityAnimation.to !== loader.opacity)
+                visibilityAnimation.restart();
+        });
+    }
+
     implicitWidth: Math.max(loader.implicitWidth, 16)
     implicitHeight: Math.max(loader.implicitHeight, 16)
 
@@ -27,6 +65,9 @@ CraftDelegate {
         enabled: true
         target: LC.LauncherCore
     }
+
+    property NumberAnimation visibilityAnimation
+    property bool animationVisible: true
 
     Loader {
         id: loader
