@@ -1,5 +1,8 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import NERvGear 1.0 as NVG
+
+import "../impl" as Impl
 
 Item {
     id: selector
@@ -38,7 +41,11 @@ Item {
             onClicked: {
                 editor.active = true;
                 editor.item.targetItem = eXLItemView.currentTarget;
-                editor.item.itemSettings = duplicateSettingsMap(currentItem, eXLItemView.model);
+                // editor.item.targetData = eXLItemView.currentTarget.defaultData;
+                // editor.item.targetText = eXLItemView.currentTarget.defaultText;
+                const settings = Impl.Settings.duplicateMap(currentItem, eXLItemView.model);
+                editor.item.targetSettings = settings;
+                editor.item.craftSettings = NVG.Settings.makeMap(settings, "craft");
                 editor.item.show();
             }
         }

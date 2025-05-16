@@ -6,6 +6,7 @@ import NERvGear 1.0 as NVG
 import NERvGear.Controls 1.0
 import NERvGear.Preferences 1.0 as P
 
+import "impl" as Impl
 import "utils.js" as Utils
 import "settings"
 // 一级菜单
@@ -30,32 +31,33 @@ NVG.Window {
         return [ { color: fallback, position: 0 }, { color: "transparent", position: 1 } ];
     }
 
-    function duplicateSettingsMap(src, parent) {
-        const dst = NVG.Settings.createMap(parent);
-        src.keys().forEach(function (key) {
-            const prop = src[key];
-            if (prop instanceof NVG.SettingsMap) {
-                dst[key] = duplicateSettingsMap(prop, dst);
-            } else if (prop instanceof NVG.SettingsList) {
-                dst[key] = duplicateSettingsList(prop, dst);
-            } else {
-                // NOTE: shallow copy should be safe
-                // because we NEVER modify nested objects
-                dst[key] = prop;
-            }
-        });
-        return dst;
+    function duplicateItem(item) {
+        const settings = Impl.Settings.duplicateMap(item, itemView.model);
+        settings.alignment = undefined;
+        settings.horizon = undefined;
+        settings.vertical = undefined;
+        itemView.model.append(settings);
+        itemView.currentTarget = itemView.targetAt(itemView.count - 1);
     }
-    function duplicateSettingsList(src, parent) {
-        const dst = NVG.Settings.createList(parent);
-        for (let i = 0; i < src.count; ++i)
-            dst.append(duplicateSettingsMap(src.get(i), dst));
-        return dst;
+
+    Connections {
+        target: itemView
+
+        onCopyRequest: {
+            if (currentItem)
+                Impl.Settings.copyItem(currentItem);
+        }
+        onPasteRequest: {
+            if (Impl.Settings.copiedItem)
+                duplicateItem(Impl.Settings.copiedItem);
+        }
+        onDeleteRequest: {
+            if (itemView.count > 1)
+                removeDialog.open();
+        }
+        onDeselectRequest: itemView.currentTarget = null
     }
-    function requestDeleteItem() {
-        if (itemView.count > 1)
-            removeDialog.open();
-    }
+
     Item {
         id: defaultIteractionParent
         width: 1
@@ -118,7 +120,11 @@ NVG.Window {
                 onClicked: {
                     editor.active = true;
                     editor.item.targetItem = itemView.currentTarget;
-                    editor.item.itemSettings = duplicateSettingsMap(currentItem, itemView.model);
+                    editor.item.targetData = itemView.currentTarget.defaultData;
+                    editor.item.targetText = itemView.currentTarget.defaultText;
+                    const settings = Impl.Settings.duplicateMap(currentItem, itemView.model);
+                    editor.item.targetSettings = settings;
+                    editor.item.craftSettings = NVG.Settings.makeMap(settings, "craft");
                     editor.item.show();
                 }
             }
@@ -126,14 +132,7 @@ NVG.Window {
             ToolButton {
                 enabled: currentItem
                 icon.name: "regular:\uf24d"
-                onClicked: {
-                    const settings = duplicateSettingsMap(currentItem, itemView.model);
-                    settings.alignment = undefined;
-                    settings.horizon = undefined;
-                    settings.vertical = undefined;
-                    itemView.model.append(settings);
-                    itemView.currentTarget = itemView.targetAt(itemView.count - 1);
-                }
+                onClicked: toolMenu.popup()
             }
             //垃圾桶
             ToolButton {
@@ -160,7 +159,7 @@ NVG.Window {
             height:36
             //显示按钮
             ToolButton {
-                icon.name: itemView.currentTarget.widgetVisibilityAction ? "regular:\uf06e" : "regular:\uf070"
+                icon.name: (itemView.currentTarget.widgetVisibilityAction ?? false) ? "regular:\uf06e" : "regular:\uf070"
                 enabled: currentItem
                 onClicked: itemView.currentTarget.visible = !itemView.currentTarget.toggleItem()
             }
@@ -568,25 +567,45 @@ NVG.Window {
                 }
             }
         }
+        Menu {
+            id: toolMenu
+
+            MenuItem {
+                text: qsTr("Clone Item")
+                enabled: currentItem
+                onTriggered: duplicateItem(currentItem)
+            }
+
+            MenuItem {
+                text: qsTr("Copy Item")
+                enabled: currentItem
+                onTriggered: Impl.Settings.copyItem(currentItem)
+            }
+
+            MenuItem {
+                text: qsTr("Paste Item")
+                enabled: Impl.Settings.copiedItem
+                onTriggered: duplicateItem(Impl.Settings.copiedItem)
+            }
+        }
     } 
     Loader {
         id: editor
         active: false
         sourceComponent: CraftDialog {
-            builtinElements: Utils.elements
-            builtinInteractions: Utils.partInteractions
             onAccepted: {
                 const oldSettings = dialog.currentItem;
-                itemView.model.set(itemView.currentTarget.index, itemSettings);
-                itemSettings = null;
+                itemView.model.set(itemView.currentTarget.index, targetSettings);
+                targetSettings = null;
                 try { // NOTE: old settings not always destructable
                     oldSettings.destroy();
                 } catch (err) {}
             }
+
             onClosed: {
-                if (itemSettings) {
-                    const oldSettings = itemSettings;
-                    itemSettings = null; // clear before destroy
+                if (targetSettings) {
+                    const oldSettings = targetSettings;
+                    targetSettings = null; // clear before destroy
                     oldSettings.destroy();
                 }
             }

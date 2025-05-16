@@ -61,7 +61,7 @@ DataSourceElement {
                 editor.item.targetText = thiz.labelText;
                 const settings = Impl.Settings.duplicateMap(craftElement.settings, elementView.model);
                 editor.item.targetSettings = settings;
-                editor.item.craftSettings = widget.tempCraftSettings;
+                if(widget !== undefined) editor.item.craftSettings = widget.tempCraftSettings;
                 editor.item.show();
             }
         }

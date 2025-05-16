@@ -11,6 +11,7 @@ import "."
 import ".."
 import "LauncherSettings"
 import "../utils.js" as Utils
+import "../impl" as Impl
 
 NVG.Window {
     id: eXLDialog
@@ -47,46 +48,47 @@ NVG.Window {
         id: editor
         active: false
         sourceComponent: CraftDialog {
-            builtinElements: Utils.elements
-            builtinInteractions: Utils.partInteractions
             onAccepted: {
-                const oldSettings = dialog.currentItem;
-                eXLItemView.model.set(eXLItemView.currentTarget.index, itemSettings);
-                itemSettings = null;
+                const oldSettings = eXLDialog.currentItem;
+                eXLItemView.model.set(eXLItemView.currentTarget.index, targetSettings);
+                targetSettings = null;
                 try { // NOTE: old settings not always destructable
                     oldSettings.destroy();
                 } catch (err) {}
             }
             onClosed: {
-                if (itemSettings) {
-                    const oldSettings = itemSettings;
-                    itemSettings = null; // clear before destroy
+                if (targetSettings) {
+                    const oldSettings = targetSettings;
+                    targetSettings = null; // clear before destroy
                     oldSettings.destroy();
                 }
             }
         }
     }
-    function duplicateSettingsMap(src, parent) {
-        const dst = NVG.Settings.createMap(parent);
-        src.keys().forEach(function (key) {
-            const prop = src[key];
-            if (prop instanceof NVG.SettingsMap) {
-                dst[key] = duplicateSettingsMap(prop, dst);
-            } else if (prop instanceof NVG.SettingsList) {
-                dst[key] = duplicateSettingsList(prop, dst);
-            } else {
-                // NOTE: shallow copy should be safe
-                // because we NEVER modify nested objects
-                dst[key] = prop;
-            }
-        });
-        return dst;
+    function duplicateItem(item) {
+        const settings = Impl.Settings.duplicateMap(item, eXLItemView.model);
+        settings.alignment = undefined;
+        settings.horizon = undefined;
+        settings.vertical = undefined;
+        eXLItemView.model.append(settings);
+        eXLItemView.currentTarget = eXLItemView.targetAt(eXLItemView.count - 1);
     }
-    function duplicateSettingsList(src, parent) {
-        const dst = NVG.Settings.createList(parent);
-        for (let i = 0; i < src.count; ++i)
-            dst.append(duplicateSettingsMap(src.get(i), dst));
-        return dst;
+    Connections {
+        target: eXLItemView
+
+        onCopyRequest: {
+            if (currentItem)
+                Impl.Settings.copyItem(currentItem);
+        }
+        onPasteRequest: {
+            if (Impl.Settings.copiedItem)
+                duplicateItem(Impl.Settings.copiedItem);
+        }
+        onDeleteRequest: {
+            if (eXLItemView.count > 1)
+                removeDialog.open();
+        }
+        onDeselectRequest: eXLItemView.currentTarget = null
     }
     property var easingModel : [qsTr("Linear"),//0
                                 qsTr("InQuad"),qsTr("OutQuad"),qsTr("InOutQuad"),qsTr("OutInQuad"),//1-4
@@ -111,14 +113,7 @@ NVG.Window {
             ToolButton {
                 enabled: currentItem
                 icon.name: "regular:\uf24d"
-                onClicked: {
-                    const settings = duplicateSettingsMap(currentItem, eXLItemView.model);
-                    settings.alignment = undefined;
-                    settings.horizon = undefined;
-                    settings.vertical = undefined;
-                    eXLItemView.model.append(settings);
-                    eXLItemView.currentTarget = eXLItemView.targetAt(eXLItemView.count - 1);
-                }
+                onClicked: toolMenu.popup()
             }
             //垃圾桶
             ToolButton {
@@ -347,6 +342,27 @@ NVG.Window {
                         }
                     }
                 }
+            }
+        }
+        Menu {
+            id: toolMenu
+
+            MenuItem {
+                text: qsTr("Clone Item")
+                enabled: currentItem
+                onTriggered: duplicateItem(currentItem)
+            }
+
+            MenuItem {
+                text: qsTr("Copy Item")
+                enabled: currentItem
+                onTriggered: Impl.Settings.copyItem(currentItem)
+            }
+
+            MenuItem {
+                text: qsTr("Paste Item")
+                enabled: Impl.Settings.copiedItem
+                onTriggered: duplicateItem(Impl.Settings.copiedItem)
             }
         }
     }

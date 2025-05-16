@@ -15,7 +15,7 @@ const names = [
     "Asuna","Egil","Kayaba","Kirito","Klein","Leafa","Rizbet","Sachi","Shinon","Silica","Sterben","Yui","Yuuki"
 ]
 
-const elements = [
+const commonElements = [
 
 { source: "icon", label: qsTr("Icon"), icon: "regular:\uf61f", component: Qt.createComponent("elements/IconElement.qml") },
 { source: "image", label: qsTr("Image"), icon: "regular:\uf03e", component: Qt.createComponent("elements/ImageElement.qml") },
@@ -29,6 +29,17 @@ const elements = [
 { source: "line-chart", label: qsTr("Line Chart"), icon: "regular:\uf5f8", component: Qt.createComponent("elements/LineChartElement.qml") },
 { source: "histogram", label: qsTr("Histogram"), icon: "regular:\uf68f", component: Qt.createComponent("elements/HistogramElement.qml") }
 
+];
+
+const specialElements = [
+{ source: "fusion", label: qsTr("Fusion"), icon: "regular:\uf61f", component: Qt.createComponent("elements/FusionElement.qml") },
+];
+
+const elements = commonElements.concat(specialElements);
+
+const filters = [
+{ source: "basic", label: qsTr("Basic"), url: Qt.resolvedUrl("filters/BasicFilter.qml") },
+{ source: "mask", label: qsTr("Mask"), url: Qt.resolvedUrl("filters/MaskFilter.qml") }
 ];
 
 const widgetInteractions = [

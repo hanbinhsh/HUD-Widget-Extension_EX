@@ -22,6 +22,7 @@ Item{
     property real showAnimationY: 0
     property real moveAnimationX: 0
     property real moveAnimationY: 0
+    
     x: {
         if(settings.enableShowAnimation){
             return (settings.viewBGX ?? 0) + showAnimationX + moveAnimationX

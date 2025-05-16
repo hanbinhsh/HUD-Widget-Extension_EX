@@ -7,25 +7,31 @@ import NERvGear.Private 1.0 as NVG
 import NERvGear.Preferences 1.0 as P
 import NERvGear.Controls 1.0
 import "settings"
+
+import "impl" as Impl
+import "utils.js" as Utils
 // 二级菜单
 NVG.Window {
     id: dialog
     readonly property var currentElement: elementView.currentTarget?.settings ?? null
-    readonly property QtObject craftSettings: itemSettings ? NVG.Settings.makeMap(itemSettings, "craft") : null
     readonly property bool darkMode: craftSettings?.dark ?? true
-    readonly property bool resizableWidth: !(itemSettings?.alignment & Qt.AlignLeft) ||
-                                           !(itemSettings?.alignment & Qt.AlignRight)
-    readonly property bool resizableHeight: !(itemSettings?.alignment & Qt.AlignTop) ||
-                                            !(itemSettings?.alignment & Qt.AlignBottom)
+    readonly property bool resizableWidth: !(targetSettings?.alignment & Qt.AlignLeft) ||
+                                           !(targetSettings?.alignment & Qt.AlignRight)
+    readonly property bool resizableHeight: !(targetSettings?.alignment & Qt.AlignTop) ||
+                                            !(targetSettings?.alignment & Qt.AlignBottom)
+
     property QtObject targetItem
-    property QtObject itemSettings
-    property var builtinElements: []
-    property var builtinInteractions: []
+    property string targetText
+    property QtObject targetData
+    property QtObject targetSettings
+    property QtObject craftSettings
+    property bool fuseMode
+
     property bool forceClose
     signal accepted
     signal closed
     //编辑界面内顶上的物品编辑文字
-    title: qsTr("Item Editor")
+    title: fuseMode ? qsTr("HUD Fuse") : qsTr("HUD Ultrahand")
     minimumWidth: 760
     minimumHeight: 360
     width: minimumWidth
@@ -39,18 +45,32 @@ NVG.Window {
         elementView.currentTarget = elementView.targetAt(elementView.count - 1);
     }
     function duplicateElement(element) {
-        const settings = duplicateSettingsMap(element, elementView.model);
+        const settings = Impl.Settings.duplicateMap(element, elementView.model);
         settings.alignment = undefined;
         settings.horizon = undefined;
         settings.vertical = undefined;
         elementView.model.append(settings);
         elementView.currentTarget = elementView.targetAt(elementView.count - 1);
     }
+    function pasteElement(element) {
+        if (fuseMode && element.content === "fusion") { // limit fusion depth
+            const list = element.elements;
+            if (list) {
+                for (let i = 0; i < list.count; ++i) {
+                    const settings = Impl.Settings.duplicateMap(list.get(i), elementView.model);
+                    // keep element's layout
+                    elementView.model.append(settings);
+                }
+                elementView.currentTarget = elementView.targetAt(elementView.count - 1);
+            }
+        } else {
+            duplicateElement(element);
+        }
+    }
     onClosing: {
         if (forceClose)
             return;
-
-        if (itemSettings && NVG.Settings.isModified(itemSettings)) {
+        if (targetSettings && NVG.Settings.isModified(targetSettings)) {
             close.accepted = false;
             discardDialog.open();
         }
@@ -62,7 +82,7 @@ NVG.Window {
             widthInput.placeholderText = targetItem.width;
             heightInput.placeholderText = targetItem.height;
             forceClose = false;
-            NVG.Settings.setModified(itemSettings, false);
+            NVG.Settings.setModified(targetSettings, false);
         } else {
             closed();
         }
@@ -100,13 +120,14 @@ NVG.Window {
             standardButtons: Dialog.Save
             onAccepted: {
                 if (resizableWidth && targetItem.width !== elementView.width)
-                    itemSettings.width = elementView.width;
+                    targetSettings.width = elementView.width;
                 if (resizableHeight && targetItem.height !== elementView.height)
-                    itemSettings.height = elementView.height;
+                    targetSettings.height = elementView.height;
                 dialog.accepted();
                 dialog.close();
             }
         }
+
         ScrollView {
             id: scrollView
             anchors.left: parent.left
@@ -119,17 +140,8 @@ NVG.Window {
                 id: bgArea
                 width: Math.max(scrollView.width, elementView.width + 32)
                 height: Math.max(scrollView.height, elementView.height + 32)
+                hoverEnabled: true
                 onClicked: elementView.currentTarget = null
-                ColorBackgroundSource {
-                    id: bgSource
-                    anchors.fill: elementView
-                    z: -99.5
-                    visible: craftSettings?.background ?? true
-                    //编辑元素元素大小内的颜色
-                    color: itemSettings?.color ?? ctx_widget.defaultBackgroundColor
-                    configuration: itemSettings?.background ?? ctx_widget.defaultBackground
-                    defaultBackground: pDefaultBackground.defaultBackground
-                }
                 CraftView {
                     id: elementView
                     anchors.centerIn: parent
@@ -137,17 +149,50 @@ NVG.Window {
                     gridGuide: craftSettings?.guide ?? true
                     gridSize: craftSettings?.grid ?? 10
                     gridSnap: craftSettings?.snap ?? true
-                    model: itemSettings ? NVG.Settings.makeList(itemSettings, "elements") : null
+                    model: targetSettings ? NVG.Settings.makeList(targetSettings, "elements") : null
                     delegate: CraftElement {
                         view: elementView
-                        itemSettings: dialog.itemSettings
-                        itemData: targetItem.dataSource
                         itemBackground: bgSource
                         settings: modelData
                         index: model.index
+                        itemSettings: targetSettings
+                        itemArea: bgArea
+                        itemData: targetData
+                        defaultData: targetData
+                        defaultText: targetText
+                        superArea: bgArea
+                        interactionArea: interactionIndependent ? this : bgArea // override
+                        interactionSource: modelData.interaction ?? ""
+                        interactionSettingsBase: modelData
+                        environment: Utils.elementEnvironment(this, targetItem.environment)
+                        visible: true // override
+                        contentEnabled: false
+                    }
+                    onCopyRequest: {
+                        if (currentElement)
+                            Impl.Settings.copyElement(currentElement);
+                    }
+                    onPasteRequest: {
+                        if (Impl.Settings.copiedElement)
+                            pasteElement(Impl.Settings.copiedElement);
+                    }
+                    onDeleteRequest: {
+                        if (elementView.currentTarget)
+                            elementView.model.remove(elementView.currentTarget.index);
                     }
                     onDeselectRequest: elementView.currentTarget = null
-                    onDeleteRequest: elementView.model.remove(elementView.currentTarget.index)
+                    ColorBackgroundSource {
+                        id: bgSource
+                        anchors.fill: elementView
+                        z: -99.5
+                        visible: (!fuseMode && craftSettings?.background) ?? true
+                        hovered: bgArea.containsMouse
+                        pressed: bgArea.pressed
+                        //编辑元素元素大小内的颜色
+                        color: targetSettings?.color ?? ctx_widget.defaultBackgroundColor
+                        configuration: targetSettings?.background ?? ctx_widget.defaultBackground
+                        defaultBackground: pDefaultBackground.defaultBackground
+                    }
                 }
                 Rectangle {
                     anchors.fill: elementView
@@ -223,9 +268,8 @@ NVG.Window {
             //编辑元素的复制
             ToolButton {
                 anchors.bottom: parent.bottom
-                enabled: elementView.currentTarget
                 icon.name: "regular:\uf24d"
-                onClicked: duplicateElement(currentElement)
+                onClicked: toolElementMenu.popup()
             }
             //编辑元素的添加元素
             RoundButton {
@@ -240,13 +284,24 @@ NVG.Window {
         Menu {
             id: addElementMenu
             Repeater {
-                model: builtinElements
+                model: Utils.commonElements
                 delegate: MenuItem {
                     text: modelData.label
                     icon.name: modelData.icon
                     onClicked: addElement(modelData.source)
                 }
             }
+            MenuSeparator {}
+            Repeater {
+                model: Utils.specialElements
+                delegate: MenuItem {
+                    enabled: !fuseMode
+                    text: modelData.label
+                    icon.name: modelData.icon
+                    onClicked: addElement(modelData.source)
+                }
+            }
+            MenuSeparator {}
             //更多元素选项
             Menu {
                 id: moreElementMenu
@@ -270,6 +325,27 @@ NVG.Window {
                 }
             }
         }
+        Menu {
+            id: toolElementMenu
+
+            MenuItem {
+                text: qsTr("Clone Element")
+                enabled: currentElement
+                onTriggered: duplicateElement(currentElement)
+            }
+
+            MenuItem {
+                text: qsTr("Copy Element")
+                enabled: currentElement
+                onTriggered: Impl.Settings.copyElement(currentElement)
+            }
+
+            MenuItem {
+                text: qsTr("Paste Element")
+                enabled: Impl.Settings.copiedElement
+                onTriggered: pasteElement(Impl.Settings.copiedElement)
+            }
+        }
         Pane {
             id: settingsPane
             anchors.top: parent.top
@@ -289,7 +365,7 @@ NVG.Window {
                     P.DialogPreference {
                         Layout.fillWidth: true
                         live: true
-                        label: qsTr("Item Settings")
+                        label: fuseMode ? qsTr("Fusion Settings") : qsTr("Item Settings")
                         icon.name: "regular:\uf3f2"
                         //项目设置内的大小
                         P.ItemPreference {
@@ -324,7 +400,7 @@ NVG.Window {
                         }
                         //项目设置内的背景
                         P.ObjectPreferenceGroup {
-                            defaultValue: itemSettings
+                            defaultValue: targetSettings
                             syncProperties: true
                             P.BackgroundPreference {
                                 name: "background"

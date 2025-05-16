@@ -16,6 +16,8 @@ Item {
 
     property bool interactive: false
 
+    signal copyRequest
+    signal pasteRequest
     signal deleteRequest
     signal deselectRequest
 
@@ -53,6 +55,18 @@ Item {
 
         Keys.onEscapePressed: deselectRequest()
         Keys.onDeletePressed: deleteRequest()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+C"
+        autoRepeat: false
+        onActivated: copyRequest()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+V"
+        autoRepeat: false
+        onActivated: pasteRequest()
     }
 
     Item {

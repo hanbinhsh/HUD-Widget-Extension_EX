@@ -3,8 +3,6 @@ import QtQuick 2.12
 import NERvGear 1.0 as NVG
 import NERvGear.Preferences 1.0
 
-import "utils.js" as Utils
-
 SelectPreference {
     id: thiz
 

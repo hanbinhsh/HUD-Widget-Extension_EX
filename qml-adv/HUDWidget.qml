@@ -11,6 +11,7 @@ import "utils.js" as Utils
 T.Widget {
     id: widget
 
+    readonly property NVG.SettingsMap tempCraftSettings: NVG.Settings.createMap(widget)
     readonly property QtObject craftSettings: NVG.Settings.makeMap(settings, "craft")
     readonly property NVG.SettingsMap defaultSettings: NVG.Settings.makeMap(settings, "defaults")
 

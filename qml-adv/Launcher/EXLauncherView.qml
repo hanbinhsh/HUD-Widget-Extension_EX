@@ -190,6 +190,22 @@ NVG.View {
         anchors.fill: parent
         readonly property NVG.SettingsMap settings: eXLSettings
         model: NVG.Settings.makeList(eXLSettings, "items")
+        signal copyRequest
+        signal pasteRequest
+        signal deleteRequest
+        signal deselectRequest
+        Shortcut {
+            sequence: "Ctrl+C"
+            autoRepeat: false
+            onActivated: copyRequest()
+        }
+
+        Shortcut {
+            sequence: "Ctrl+V"
+            autoRepeat: false
+            onActivated: pasteRequest()
+        }
+
         delegate: LauncherItemTemplate{
             id: thiz
             index: model.index
