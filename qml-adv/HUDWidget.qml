@@ -611,6 +611,8 @@ T.Widget {
                         actionSource.trigger(thiz);
                     if(settings.showEXLauncher)
                         LC.LauncherCore.toggleLauncherView()
+                    if(settings.showOriMenu)
+                        LC.LauncherCore.showOriMenu()
                 }
                 if(settings.moveOnClick && !isAnimationRunning){
                     isAnimationRunning = true // 标记动画已经开始

@@ -530,7 +530,6 @@ Flickable {
                 defaultValue: 3
                 visible: dataAnimation.value&&dataAnimation_move.value
             }
-            P.Separator{}
             //数据控制旋转
             P.SwitchPreference {
                 id: dataAnimation_spin

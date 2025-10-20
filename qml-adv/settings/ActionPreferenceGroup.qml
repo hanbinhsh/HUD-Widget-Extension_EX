@@ -44,6 +44,12 @@ Flickable {
                 label: " --- " + qsTr("Click To Show EXLauncher")
                 visible: enableAction.value
             }
+            //显示菜单
+            P.SwitchPreference {
+                name: "showOriMenu"
+                label: " --- " + qsTr("Click To Show Menu")
+                visible: enableAction.value
+            }
             // TODO 悬停动作 （移动，缩放）
             //中心
             P.SpinPreference {

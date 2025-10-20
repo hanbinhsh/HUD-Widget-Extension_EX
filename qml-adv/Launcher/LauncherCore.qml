@@ -25,4 +25,6 @@ QtObject {
     function showLauncherViewItem(i) {launcherView.hideItem(i)}
     // 开关设置
     function toggleLauncherSetting() {launcherView.toggleSetting()}
+
+    function showOriMenu() {NVG.LauncherCompositor.visible = true;}
 }

@@ -159,7 +159,7 @@ NVG.Window {
             height:36
             //显示按钮
             ToolButton {
-                icon.name: (itemView.currentTarget.widgetVisibilityAction ?? false) ? "regular:\uf06e" : "regular:\uf070"
+                icon.name: (itemView.currentTarget?.widgetVisibilityAction ?? false) ? "regular:\uf06e" : "regular:\uf070"
                 enabled: currentItem
                 onClicked: itemView.currentTarget.visible = !itemView.currentTarget.toggleItem()
             }
