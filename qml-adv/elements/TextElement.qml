@@ -53,6 +53,7 @@ DataSourceElement {
             name: "data"
             label: qsTr("Data")
             visible: pMode.value
+            environment: thiz.environment
         }
 
         P.SelectPreference {
@@ -182,16 +183,22 @@ DataSourceElement {
         lineHeight: (thiz.settings.lineHeight ?? 100) / 100
         fontSizeMode: thiz.settings.sizeMode ?? Text.FixedSize
         minimumPixelSize: thiz.settings.minimumSize ?? 14
-        wrapMode: Text.Wrap
         elide: Text.ElideRight
         // BUG: text area tracks MouseArea
         enabled: false
 
+        wrapMode: { // disable text wrap to get correct multiline implicit width
+            const align = craftElement.settings.alignment;
+            const explicitWidth = (align & Qt.AlignLeft && align & Qt.AlignRight) ||
+                                  (craftElement.settings.width !== undefined);
+            return explicitWidth ? Text.Wrap : Text.NoWrap;
+        }
+
         color: {
-            if (thiz.itemPressed && pressedColor.a)
+            if (thiz.pressed && pressedColor.a)
                 return pressedColor;
 
-            if (thiz.itemHovered && hoveredColor.a)
+            if (thiz.hovered && hoveredColor.a)
                 return hoveredColor;
 
             return normalColor;
@@ -221,7 +228,7 @@ DataSourceElement {
             if (thiz.settings.mode)
                 return displayText(output.result, displayUnit);
 
-            return thiz.settings.text || thiz.elementLabel || thiz.itemLabel;
+            return thiz.settings.text || thiz.elementLabel || thiz.defaultLabel;
         }
 
         textFormat: {
