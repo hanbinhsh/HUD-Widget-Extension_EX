@@ -52,6 +52,15 @@
                 "zh_TW": "雷达图"
             },
             "entry": "qml-adv/elements/RadarMapElement.qml"
+        },{
+            "location": "/element/liquid-wave",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Liquid Wave Sphere",
+                "zh": "波浪进度球",
+                "zh_TW": "波浪进度球"
+            },
+            "entry": "qml-adv/elements/LiquidWaveElement.qml"
         }, {
             "location": "/element/text-advanced",
             "catalog": "com.gpbeta.hud-element",
