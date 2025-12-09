@@ -53,6 +53,15 @@
             },
             "entry": "qml-adv/elements/TextElementAdvanced.qml"
         }, {
+            "location": "/element/web-element",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Web Element",
+                "zh": "网页挂件",
+                "zh_TW": "网页挂件"
+            },
+            "entry": "qml-adv/elements/WebElement.qml"
+        },{
             "location": "/data",
             "catalog": "data",
             "title": {
