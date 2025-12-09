@@ -330,8 +330,8 @@ T.Widget {
                     case "normal": return widget.NVG.View.hovered;
                     case "hovered": return !widget.NVG.View.hovered;
                     case "data": return !Boolean(dataOutput.result);
-                    case "data&hovered": return !Boolean(dataOutput.result)&&widget.NVG.View.hovered;//新增
-                    case "data&normal": return !Boolean(dataOutput.result)&&!widget.NVG.View.hovered;//新增
+                    case "data&normal": return !Boolean(dataOutput.result) || widget.NVG.View.hovered;//新增
+                    case "data&hovered": return !Boolean(dataOutput.result) || !widget.NVG.View.hovered;//新增
                     default: break;
                 }
                 return false;
