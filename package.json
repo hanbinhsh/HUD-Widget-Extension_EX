@@ -44,6 +44,15 @@
             },
             "entry": "qml-adv/elements/ImageElementAdvanced.qml"
         }, {
+            "location": "/element/radar-map",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Radar Map",
+                "zh": "雷达图",
+                "zh_TW": "雷达图"
+            },
+            "entry": "qml-adv/elements/RadarMapElement.qml"
+        }, {
             "location": "/element/text-advanced",
             "catalog": "com.gpbeta.hud-element",
             "title": {
