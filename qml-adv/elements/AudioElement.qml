@@ -463,6 +463,7 @@ DataSourceElement {
             // ================= 辅助函数 =================
 
             function getRadiusAt(angle) {
+                const rotRad = thiz.rotationAngle * Math.PI / 180;
                 let t = angle - rotRad;
                 if (shapeMode === 0) return innerRadius; 
                 else if (shapeMode === 1) { 
