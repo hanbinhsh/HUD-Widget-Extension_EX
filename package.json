@@ -52,7 +52,7 @@
                 "zh_TW": "雷达图"
             },
             "entry": "qml-adv/elements/RadarMapElement.qml"
-        },{
+        }, {
             "location": "/element/liquid-wave",
             "catalog": "com.gpbeta.hud-element",
             "title": {
@@ -61,6 +61,15 @@
                 "zh_TW": "波浪进度球"
             },
             "entry": "qml-adv/elements/LiquidWaveElement.qml"
+        }, {
+            "location": "/element/audio-element",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Audio Element",
+                "zh": "音频组件",
+                "zh_TW": "音频组件"
+            },
+            "entry": "qml-adv/elements/AudioElement.qml"
         }, {
             "location": "/element/text-advanced",
             "catalog": "com.gpbeta.hud-element",
