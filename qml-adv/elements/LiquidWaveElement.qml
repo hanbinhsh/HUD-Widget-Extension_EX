@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtGraphicalEffects 1.12 // 如果需要高级滤镜，通常需要这个，这里暂时只用Canvas
+import QtGraphicalEffects 1.12
 
 import NERvGear 1.0 as NVG
 import NERvGear.Preferences 1.0 as P
@@ -12,13 +12,13 @@ DataSourceElement {
 
     dataConfiguration: settings.data ?? undefined
 
-    // --- 核心参数计算 ---
+    // --- 核心尺寸参数 ---
     readonly property int padSize: 4
     readonly property int centerX: width / 2
     readonly property int centerY: height / 2
     readonly property int radius: Math.min(width, height) / 2 - padSize
 
-    // --- 样式属性 (从 settings 读取) ---
+    // --- 样式属性 ---
     readonly property color waveColor: settings.waveColor ?? "#00AAFF"
     readonly property color bgColor: settings.bgColor ?? "#22000000"
     readonly property color strokeColor: settings.strokeColor ?? "#FFFFFF"
@@ -26,50 +26,50 @@ DataSourceElement {
     readonly property bool showText: settings.showText ?? true
     readonly property color textColor: settings.textColor ?? "#FFFFFF"
     
+    // --- 形状控制 ---
+    readonly property bool isPolygon: settings.isPolygon ?? false
+    readonly property int polygonSides: settings.polygonSides ?? 6
+    
     // --- 波浪物理属性 ---
-    // 振幅 (波浪高低)
-    readonly property real waveAmplitude: settings.waveAmplitude ?? 5 // 相对于半径的比例
-    // 频率 (波浪密集度)
+    readonly property real waveAmplitude: settings.waveAmplitude ?? 5 
     readonly property real waveFrequency: settings.waveFrequency ?? 1.5 
-    // 速度
+    // [需求2] 水面速度控制属性
     readonly property real waveSpeed: settings.waveSpeed ?? 10
 
     // --- 数据处理 ---
-    // 假设数据源返回的是 0-100 的数值 (如 CPU, 内存)
     readonly property real rawData: {
         if (!output.result) return 0;
-        // 尝试解析字符串中的第一个数字
         var str = String(output.result).trim();
         var match = str.match(/-?[\d\.]+/);
         return match ? Number(match[0]) : 0;
     }
     
-    // 最大值，用于计算百分比 (0.0 - 1.0)
     readonly property real maxValue: settings.maxValue ?? 100
 
-    // 显示用的平滑数值 (0.0 - 1.0)
     property real currentProgress: 0
-    // 显示用的原始数值 (用于文本显示)
     property real currentRawValue: 0
 
-    title: qsTranslate("utils", "Liquid Sphere")
+    title: qsTranslate("utils", "Liquid Shape")
     implicitWidth: 150
     implicitHeight: 150
 
-    // 数值平滑动画
+    // 数值平滑过渡动画
     Behavior on currentProgress { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
     Behavior on currentRawValue { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
 
     onRawDataChanged: {
         currentRawValue = rawData;
         var p = rawData / maxValue;
-        currentProgress = Math.max(0, Math.min(1, p)); // 限制在 0~1 之间
+        currentProgress = Math.max(0, Math.min(1, p));
     }
 
-    // 监听属性变化重绘
+    // 监听属性变化触发重绘
     onWaveColorChanged: canvas.requestPaint()
     onBgColorChanged: canvas.requestPaint()
     onStrokeColorChanged: canvas.requestPaint()
+    onIsPolygonChanged: canvas.requestPaint()
+    onPolygonSidesChanged: canvas.requestPaint()
+    onWaveSpeedChanged: canvas.requestPaint() // 监听速度变化
     
     // --- 设置面板 ---
     preference: P.ObjectPreferenceGroup {
@@ -91,6 +91,26 @@ DataSourceElement {
             display: P.TextFieldPreference.ExpandLabel
         }
 
+        P.Separator {}
+
+        // --- 形状设置 ---
+        P.SwitchPreference {
+            name: "isPolygon"
+            label: qsTr("Polygon Shape") 
+            defaultValue: false
+        }
+
+        P.SpinPreference {
+            name: "polygonSides"
+            label: qsTr("Sides Count") 
+            defaultValue: 6
+            from: 3
+            to: 12
+            stepSize: 1
+            visible: isPolygon 
+            display: P.TextFieldPreference.ExpandLabel
+        }
+        
         P.Separator {}
 
         NoDefaultColorPreference {
@@ -137,10 +157,10 @@ DataSourceElement {
 
         P.Separator {}
 
-        // 高级波浪设置
+        // --- [需求2] 速度控制选项 ---
         P.SpinPreference {
             name: "waveSpeed"
-            label: qsTr("Wave Speed")
+            label: qsTr("Wave Speed") // 动画速度
             defaultValue: 10
             from: 0
             to: 100
@@ -163,18 +183,16 @@ DataSourceElement {
         return Qt.rgba(c.r, c.g, c.b, a); 
     }
 
-    // --- 动画驱动器 ---
-    // 这是一个高频计时器，用于驱动波浪的相位 (Phase) 变化
     Timer {
         id: waveTimer
-        interval: 16 // 约 60 FPS
+        interval: 16 
         running: true
         repeat: true
         property real phase: 0
         onTriggered: {
-            // 增加相位，实现波浪移动
-            phase += waveSpeed/100;
-            // 防止数值溢出，虽然JS能处理很大数字，但周期性重置是个好习惯
+            // [需求2] 使用 waveSpeed 控制相位变化速度
+            // 除以 100 是为了让 UI 上的 0-100 对应合适的 radian 增量
+            phase += waveSpeed / 100;
             if (phase > Math.PI * 2) {
                 phase -= Math.PI * 2;
             }
@@ -185,7 +203,6 @@ DataSourceElement {
     Canvas {
         id: canvas
         anchors.fill: parent
-        // 开启渲染优化
         renderStrategy: Canvas.Threaded
         renderTarget: Canvas.FramebufferObject
 
@@ -195,106 +212,168 @@ DataSourceElement {
             const h = height;
             
             ctx.clearRect(0, 0, w, h);
-
-            // 1. 绘制圆形外框和背景
-            // 保存状态，以便后续使用 clip
             ctx.save();
-            
-            // 定义圆形路径
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-            ctx.closePath();
 
-            // 剪切：之后的所有绘制都只会显示在圆内
+            // --- [需求1] 奇数边形居中计算 ---
+            
+            // 1. 预计算顶点，找出包围盒，计算垂直偏移量
+            let vertices = [];
+            let visualOffsetY = 0; // 默认偏移为0
+            let minY = 0;
+            let maxY = 0;
+
+            if (thiz.isPolygon) {
+                const sides = Math.max(3, thiz.polygonSides);
+                const step = (2 * Math.PI) / sides;
+                const startAngle = -Math.PI / 2; // 顶点朝上
+
+                let localMinY = 10000;
+                let localMaxY = -10000;
+
+                for (let i = 0; i < sides; i++) {
+                    const angle = startAngle + step * i;
+                    // 计算相对圆心的坐标
+                    const vx = radius * Math.cos(angle);
+                    const vy = radius * Math.sin(angle);
+                    vertices.push({x: vx, y: vy});
+                    
+                    if (vy < localMinY) localMinY = vy;
+                    if (vy > localMaxY) localMaxY = vy;
+                }
+                
+                // 形状的高度
+                const shapeH = localMaxY - localMinY;
+                // 形状的视觉中心点Y坐标 = (min + max) / 2
+                const shapeCenterY = (localMinY + localMaxY) / 2;
+                
+                // 我们希望 shapeCenterY 移动到 0 (控件中心)
+                // 所以我们需要反向偏移
+                visualOffsetY = -shapeCenterY;
+                
+                // 更新 bounds 供波浪计算使用 (这些是相对于 center 的)
+                minY = localMinY;
+                maxY = localMaxY;
+            } else {
+                // 圆形
+                minY = -radius;
+                maxY = radius;
+                visualOffsetY = 0;
+            }
+
+            // 2. 应用偏移
+            // 将绘图原点移动到：控件中心 + 视觉修正偏移
+            ctx.translate(centerX, centerY + visualOffsetY);
+
+            // 3. 绘制路径 & 剪切
+            ctx.beginPath();
+            if (thiz.isPolygon) {
+                if (vertices.length > 0) {
+                    ctx.moveTo(vertices[0].x, vertices[0].y);
+                    for (let i = 1; i < vertices.length; i++) {
+                        ctx.lineTo(vertices[i].x, vertices[i].y);
+                    }
+                }
+            } else {
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            }
+            ctx.closePath();
+            
+            // 剪切：之后绘制的波浪会被限制在多边形/圆形内
             ctx.clip();
 
-            // 绘制背景色
+            // 绘制背景
             ctx.fillStyle = bgColor;
             ctx.fill();
 
-            // 2. 绘制波浪
-            // 我们绘制两层波浪：后层较浅，前层较深
+            // 4. 绘制波浪
+            // 水位高度计算：需要基于形状的实际上下边界(minY, maxY)
+            // progress = 0 -> 水位在 maxY (底部)
+            // progress = 1 -> 水位在 minY (顶部)
+            const fillHeight = maxY - minY;
+            const currentLevelY = maxY - (fillHeight * currentProgress); 
 
-            const amp = radius * waveAmplitude/100; // 振幅像素值
-            const waterLevel = 2 * radius * (1 - currentProgress) + padSize; // 水位高度 (y轴坐标)
-            
-            // [后层波浪]
-            // 相位偏移一点，看起来错落有致
-            drawWave(ctx, waveTimer.phase + 1.5, 0.6, waterLevel, colorAlpha(waveColor, 0.4));
-            
-            // [前层波浪]
-            drawWave(ctx, waveTimer.phase, 1.0, waterLevel, waveColor);
+            // 绘制双层波浪
+            drawWave(ctx, waveTimer.phase + 1.5, 0.6, currentLevelY, colorAlpha(waveColor, 0.4), minY, maxY);
+            drawWave(ctx, waveTimer.phase, 1.0, currentLevelY, waveColor, minY, maxY);
 
-            // 恢复剪切前的状态
-            ctx.restore();
+            // 恢复剪切状态
+            ctx.restore(); // 此时坐标系也恢复了，translate失效
 
-            // 3. 绘制圆形边框 (Stroke)
-            // 边框画在外面，不需要 clip
+            // 5. 绘制边框 (Stroke)
+            // 因为 restore 了，需要重新 translate 再画边框
             if (strokeSize > 0) {
+                ctx.save();
+                ctx.translate(centerX, centerY + visualOffsetY);
+                
                 ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                if (thiz.isPolygon) {
+                    if (vertices.length > 0) {
+                        ctx.moveTo(vertices[0].x, vertices[0].y);
+                        for (let j = 1; j < vertices.length; j++) {
+                            ctx.lineTo(vertices[j].x, vertices[j].y);
+                        }
+                    }
+                } else {
+                    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                }
+                ctx.closePath();
+                
                 ctx.lineWidth = strokeSize;
                 ctx.strokeStyle = strokeColor;
                 ctx.stroke();
+                ctx.restore();
             }
         }
 
-        // 辅助函数：绘制单个正弦波
-        function drawWave(ctx, offset, freqMult, level, color) {
+        // 辅助函数：绘制波浪
+        function drawWave(ctx, offset, freqMult, levelY, color, topLimit, bottomLimit) {
             ctx.fillStyle = color;
             ctx.beginPath();
             
-            // 从左侧开始
-            // x 坐标遍历整个宽度
-            // y = A * sin(kx + offset) + level
-            
-            const startX = centerX - radius;
-            const endX = centerX + radius;
-            
-            // 为了保证波浪充满圆形，我们遍历 x
-            // 步长设为 2~4 像素，平衡性能和画质
+            const startX = -radius; 
+            const endX = radius;
             const step = 2; 
 
-            ctx.moveTo(startX, height); // 左下角起点
+            // 计算振幅 (百分比转像素)
+            const amp = radius * waveAmplitude / 100; 
 
-            const amp = radius * waveAmplitude/100; // 振幅像素值
+            // 起点：左下角 (使用 bottomLimit 确保填满底部)
+            // 为了保险，多画一点范围
+            const safeBottom = bottomLimit + 100;
+            ctx.moveTo(startX, safeBottom);
 
+            // 绘制正弦曲线
             for (let x = startX; x <= endX; x += step) {
-                // 将 x 映射到弧度： (x / width) * 频率
+                // 映射 x 坐标到角度
                 const angle = ((x - startX) / (radius * 2)) * (Math.PI * 2 * waveFrequency * freqMult) + offset;
-                const y = Math.sin(angle) * amp + level;
+                const y = Math.sin(angle) * amp + levelY;
                 ctx.lineTo(x, y);
             }
 
             // 封闭路径：右下 -> 左下
-            ctx.lineTo(endX, height);
-            ctx.lineTo(startX, height);
+            ctx.lineTo(endX, safeBottom);
+            ctx.lineTo(startX, safeBottom);
             ctx.closePath();
             ctx.fill();
         }
     }
 
-    // --- 中心文字 ---
-    // 使用 Item 包裹以便居中，且不被 Canvas 的重绘影响
     Item {
         anchors.fill: parent
         visible: showText
         
         Column {
             anchors.centerIn: parent
-            spacing: -5 // 让百分号稍微紧凑一点
+            spacing: -5 
 
             Text {
                 id: valueText
                 anchors.horizontalCenter: parent.horizontalCenter
-                // 显示整数
                 text: Math.round(currentRawValue)
                 color: textColor
                 font.pixelSize: radius * 0.8
                 font.bold: true
                 font.family: "Segoe UI, Roboto, Helvetica"
-                
-                // 给文字加一点阴影，防止波浪颜色太浅看不清
                 style: Text.Outline
                 styleColor: colorAlpha(bgColor, 0.5)
             }
@@ -311,7 +390,6 @@ DataSourceElement {
         }
     }
 
-    // 数据获取组件
     NVG.DataSourceTextOutput {
         id: output
         source: thiz.dataSource ?? null
