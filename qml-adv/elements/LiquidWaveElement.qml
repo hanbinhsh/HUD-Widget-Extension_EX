@@ -30,10 +30,12 @@ DataSourceElement {
     readonly property bool isPolygon: settings.isPolygon ?? false
     readonly property int polygonSides: settings.polygonSides ?? 6
     
+    // --- [新增] 旋转角度 ---
+    readonly property real rotationAngle: settings.rotationAngle ?? 0
+    
     // --- 波浪物理属性 ---
     readonly property real waveAmplitude: settings.waveAmplitude ?? 5 
     readonly property real waveFrequency: settings.waveFrequency ?? 1.5 
-    // [需求2] 水面速度控制属性
     readonly property real waveSpeed: settings.waveSpeed ?? 10
 
     // --- 数据处理 ---
@@ -69,7 +71,9 @@ DataSourceElement {
     onStrokeColorChanged: canvas.requestPaint()
     onIsPolygonChanged: canvas.requestPaint()
     onPolygonSidesChanged: canvas.requestPaint()
-    onWaveSpeedChanged: canvas.requestPaint() // 监听速度变化
+    onWaveSpeedChanged: canvas.requestPaint()
+    // [新增] 监听旋转
+    onRotationAngleChanged: canvas.requestPaint()
     
     // --- 设置面板 ---
     preference: P.ObjectPreferenceGroup {
@@ -95,6 +99,7 @@ DataSourceElement {
 
         // --- 形状设置 ---
         P.SwitchPreference {
+            id: pIsPolygon
             name: "isPolygon"
             label: qsTr("Polygon Shape") 
             defaultValue: false
@@ -107,8 +112,21 @@ DataSourceElement {
             from: 3
             to: 12
             stepSize: 1
-            visible: isPolygon 
+            visible: pIsPolygon.value 
             display: P.TextFieldPreference.ExpandLabel
+        }
+
+        // --- [新增] 旋转设置 ---
+        P.SliderPreference {
+            name: "rotationAngle"
+            label: qsTr("Rotation")
+            displayValue: value + " °"
+            defaultValue: 0
+            from: -180
+            to: 180
+            stepSize: 1
+            live: true // 实时预览
+            visible: pIsPolygon.value // 只有多边形才需要旋转，圆形转了也看不出来
         }
         
         P.Separator {}
@@ -157,10 +175,9 @@ DataSourceElement {
 
         P.Separator {}
 
-        // --- [需求2] 速度控制选项 ---
         P.SpinPreference {
             name: "waveSpeed"
-            label: qsTr("Wave Speed") // 动画速度
+            label: qsTr("Wave Speed") 
             defaultValue: 10
             from: 0
             to: 100
@@ -190,8 +207,6 @@ DataSourceElement {
         repeat: true
         property real phase: 0
         onTriggered: {
-            // [需求2] 使用 waveSpeed 控制相位变化速度
-            // 除以 100 是为了让 UI 上的 0-100 对应合适的 radian 增量
             phase += waveSpeed / 100;
             if (phase > Math.PI * 2) {
                 phase -= Math.PI * 2;
@@ -214,18 +229,20 @@ DataSourceElement {
             ctx.clearRect(0, 0, w, h);
             ctx.save();
 
-            // --- [需求1] 奇数边形居中计算 ---
-            
-            // 1. 预计算顶点，找出包围盒，计算垂直偏移量
+            // 1. 计算顶点 (应用旋转)
             let vertices = [];
-            let visualOffsetY = 0; // 默认偏移为0
+            let visualOffsetY = 0; 
             let minY = 0;
             let maxY = 0;
 
             if (thiz.isPolygon) {
                 const sides = Math.max(3, thiz.polygonSides);
                 const step = (2 * Math.PI) / sides;
-                const startAngle = -Math.PI / 2; // 顶点朝上
+                
+                // [关键修改] 将用户设置的角度转换为弧度，加到起始角度上
+                // -Math.PI / 2 是为了让多边形默认尖角朝上
+                const rotationRad = thiz.rotationAngle * (Math.PI / 180);
+                const startAngle = -Math.PI / 2 + rotationRad;
 
                 let localMinY = 10000;
                 let localMaxY = -10000;
@@ -241,16 +258,12 @@ DataSourceElement {
                     if (vy > localMaxY) localMaxY = vy;
                 }
                 
-                // 形状的高度
-                const shapeH = localMaxY - localMinY;
-                // 形状的视觉中心点Y坐标 = (min + max) / 2
+                // 自动居中计算
+                // 无论怎么旋转，我们都找出旋转后图形的中心 Y 轴偏移
                 const shapeCenterY = (localMinY + localMaxY) / 2;
-                
-                // 我们希望 shapeCenterY 移动到 0 (控件中心)
-                // 所以我们需要反向偏移
                 visualOffsetY = -shapeCenterY;
                 
-                // 更新 bounds 供波浪计算使用 (这些是相对于 center 的)
+                // 记录边界用于水位计算
                 minY = localMinY;
                 maxY = localMaxY;
             } else {
@@ -260,11 +273,10 @@ DataSourceElement {
                 visualOffsetY = 0;
             }
 
-            // 2. 应用偏移
-            // 将绘图原点移动到：控件中心 + 视觉修正偏移
+            // 2. 将坐标系移到视觉中心
             ctx.translate(centerX, centerY + visualOffsetY);
 
-            // 3. 绘制路径 & 剪切
+            // 3. 绘制剪切路径
             ctx.beginPath();
             if (thiz.isPolygon) {
                 if (vertices.length > 0) {
@@ -278,7 +290,7 @@ DataSourceElement {
             }
             ctx.closePath();
             
-            // 剪切：之后绘制的波浪会被限制在多边形/圆形内
+            // 剪切：之后绘制的内容会被限制在这个旋转后的形状内
             ctx.clip();
 
             // 绘制背景
@@ -286,21 +298,21 @@ DataSourceElement {
             ctx.fill();
 
             // 4. 绘制波浪
-            // 水位高度计算：需要基于形状的实际上下边界(minY, maxY)
-            // progress = 0 -> 水位在 maxY (底部)
-            // progress = 1 -> 水位在 minY (顶部)
+            // 关键点：我们没有使用 ctx.rotate() 旋转画布，只是旋转了顶点。
+            // 所以 drawWave 里的水平线绘制 (lineTo x, y) 依然是相对于屏幕水平的。
+            
             const fillHeight = maxY - minY;
             const currentLevelY = maxY - (fillHeight * currentProgress); 
 
-            // 绘制双层波浪
+            // 注意：safeBottom 必须足够大，因为旋转后的多边形可能最底点并不是 radius
+            // 但其实上面已经算出了 localMaxY (即maxY)，所以用 maxY 即可
             drawWave(ctx, waveTimer.phase + 1.5, 0.6, currentLevelY, colorAlpha(waveColor, 0.4), minY, maxY);
             drawWave(ctx, waveTimer.phase, 1.0, currentLevelY, waveColor, minY, maxY);
 
             // 恢复剪切状态
-            ctx.restore(); // 此时坐标系也恢复了，translate失效
+            ctx.restore(); 
 
-            // 5. 绘制边框 (Stroke)
-            // 因为 restore 了，需要重新 translate 再画边框
+            // 5. 绘制边框
             if (strokeSize > 0) {
                 ctx.save();
                 ctx.translate(centerX, centerY + visualOffsetY);
@@ -325,7 +337,6 @@ DataSourceElement {
             }
         }
 
-        // 辅助函数：绘制波浪
         function drawWave(ctx, offset, freqMult, levelY, color, topLimit, bottomLimit) {
             ctx.fillStyle = color;
             ctx.beginPath();
@@ -334,23 +345,19 @@ DataSourceElement {
             const endX = radius;
             const step = 2; 
 
-            // 计算振幅 (百分比转像素)
             const amp = radius * waveAmplitude / 100; 
 
-            // 起点：左下角 (使用 bottomLimit 确保填满底部)
-            // 为了保险，多画一点范围
-            const safeBottom = bottomLimit + 100;
+            // 使用 maxY 作为底部，多加一点 buffer 防止浮点误差导致的缝隙
+            const safeBottom = bottomLimit + 5; 
+            
             ctx.moveTo(startX, safeBottom);
 
-            // 绘制正弦曲线
             for (let x = startX; x <= endX; x += step) {
-                // 映射 x 坐标到角度
                 const angle = ((x - startX) / (radius * 2)) * (Math.PI * 2 * waveFrequency * freqMult) + offset;
                 const y = Math.sin(angle) * amp + levelY;
                 ctx.lineTo(x, y);
             }
 
-            // 封闭路径：右下 -> 左下
             ctx.lineTo(endX, safeBottom);
             ctx.lineTo(startX, safeBottom);
             ctx.closePath();
