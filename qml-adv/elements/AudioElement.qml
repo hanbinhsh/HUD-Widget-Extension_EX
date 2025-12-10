@@ -26,7 +26,7 @@ DataSourceElement {
     // --- 采样点数量 ---
     readonly property int barCount: settings.barCount ?? 64
 
-    // --- [新增] 双通道立体声开关 ---
+    // --- 立体声开关 ---
     readonly property bool stereoMode: settings.stereoMode ?? false
 
     // --- 形状模式 ---
@@ -37,6 +37,12 @@ DataSourceElement {
     // 0=Mirror(左右镜像), 1=Radial(中心环绕)
     readonly property int symmetryMode: settings.symmetryMode ?? 0
 
+    // --- 绘图模式 ---
+    // 0=Bars, 1=Lines, 2=Both
+    readonly property int drawMode: settings.drawMode ?? 0
+    // --- 平滑曲线开关 ---
+    readonly property bool smoothLine: settings.smoothLine ?? true
+
     // 参数
     readonly property int polygonSides: settings.polygonSides ?? 6
     readonly property real paramN: settings.paramN ?? 2.0 
@@ -44,6 +50,7 @@ DataSourceElement {
     property string customFormula: settings.customFormula ?? "Math.abs(Math.cos(3*t))"
     property var _compiledFunc: null 
     readonly property real rotationAngle: settings.rotationAngle ?? 0
+    // [关键] 跳动模式: 0=Outer, 1=Inner, 2=Both
     readonly property int jumpMode: settings.jumpMode ?? 0
 
     // --- 静默线条 ---
@@ -59,11 +66,9 @@ DataSourceElement {
     readonly property real sensitivity: settings.sensitivity ?? 100 
     readonly property real decay: settings.decay ?? 0.05 
 
-    // --- [修改] 数据存储分开左右通道 ---
     property var displayDataL: new Array(barCount).fill(0)
     property var displayDataR: new Array(barCount).fill(0)
 
-    // 重置数组
     onBarCountChanged: {
         displayDataL = new Array(barCount).fill(0);
         displayDataR = new Array(barCount).fill(0);
@@ -107,11 +112,26 @@ DataSourceElement {
             display: P.TextFieldPreference.ExpandLabel
         }
         
-        // --- [新增] 立体声开关 ---
         P.SwitchPreference {
             name: "stereoMode"
             label: qsTr("Dual Channel (Stereo)")
             defaultValue: false
+        }
+
+        P.Separator {}
+
+        P.SelectPreference {
+            name: "drawMode"
+            label: qsTr("Draw Style")
+            defaultValue: 0
+            model: [ qsTr("Bars"), qsTr("Lines"), qsTr("Bars + Lines") ]
+        }
+
+        P.SwitchPreference {
+            name: "smoothLine"
+            label: qsTr("Smooth Curve")
+            defaultValue: true
+            visible: drawMode !== 0
         }
 
         P.Separator {}
@@ -146,10 +166,10 @@ DataSourceElement {
             defaultValue: 2.0
             from: 1.0
             to: 10.0
-            stepSize: 0.1
+            stepSize: 0.5
             visible: shapeMode === 2
             live: true
-            displayValue: value.toFixed(1)
+            displayValue: (value*2).toFixed(1)
         }
         P.SliderPreference {
             name: "paramD"
@@ -244,10 +264,10 @@ DataSourceElement {
         
         P.SliderPreference {
             name: "decay"
-            label: qsTr("Smoothness") 
+            label: qsTr("Decay") 
             defaultValue: 0.05
             from: 0.01
-            to: 0.3
+            to: 0.5
             stepSize: 0.01
             live: true
             displayValue: Math.round(value * 100)
@@ -265,8 +285,9 @@ DataSourceElement {
     onShowIdleLineChanged: canvas.requestPaint()
     onIdleLineWidthChanged: canvas.requestPaint()
     onIdleLineColorChanged: canvas.requestPaint()
-    // [新增] 监听立体声模式
     onStereoModeChanged: canvas.requestPaint()
+    onDrawModeChanged: canvas.requestPaint()
+    onSmoothLineChanged: canvas.requestPaint()
 
     Component.onCompleted: compileCustomFunc()
 
@@ -288,14 +309,12 @@ DataSourceElement {
         onAudioDataUpdated: thiz.updateSpectrum(audioData)
     }
 
-    // --- 数据更新逻辑 (分离左右通道) ---
     function updateSpectrum(audioData) {
         if (!audioData) return;
         
         let arrL = thiz.displayDataL;
         let arrR = thiz.displayDataR;
 
-        // 保护：数组长度重置
         if (arrL.length !== thiz.barCount) {
             arrL = new Array(thiz.barCount).fill(0);
             arrR = new Array(thiz.barCount).fill(0);
@@ -306,51 +325,28 @@ DataSourceElement {
         let needsRepaint = false;
         let multiplier = 0.01 * sensitivity; 
         
-        // 128个数据点，0-63是左声道，64-127是右声道
-        const fftSize = 128;
-        const channelSize = 64;
+        const validDataLimit = 64; 
 
         for (let i = 0; i < thiz.barCount; i++) {
-            // 映射索引：将 i 映射到 0~63
-            let srcIndex = Math.floor(i * (channelSize / thiz.barCount));
-            if (srcIndex >= channelSize) srcIndex = channelSize - 1;
+            let srcIndex = Math.floor(i * (validDataLimit / thiz.barCount));
+            if (srcIndex >= validDataLimit) srcIndex = validDataLimit - 1;
 
-            // 获取原始数据
-            let rawL = (audioData[srcIndex] || 0) * multiplier;
-            let rawR = (audioData[srcIndex + channelSize] || 0) * multiplier;
+            let inputL = (audioData[srcIndex] || 0) * multiplier;
+            let inputR = (audioData[srcIndex + 64] || 0) * multiplier;
 
-            // 如果关闭立体声，取平均值
             if (!stereoMode) {
-                let avg = (rawL + rawR) / 2;
-                rawL = avg;
-                rawR = avg;
+                let avg = (inputL + inputR) / 2;
+                inputL = avg;
+                inputR = avg;
             }
 
-            // --- 处理左通道衰减 ---
             let oldL = arrL[i];
-            let newL = oldL;
-            if (rawL > oldL) newL = rawL;
-            else {
-                newL = oldL - (oldL * decay) - 0.5;
-                if (newL < 0) newL = 0;
-            }
-            if (Math.abs(newL - oldL) > 0.01) {
-                arrL[i] = newL;
-                needsRepaint = true;
-            }
+            let newL = (inputL > oldL) ? inputL : Math.max(0, oldL - (oldL * decay) - 0.5);
+            if (Math.abs(newL - oldL) > 0.01) { arrL[i] = newL; needsRepaint = true; }
 
-            // --- 处理右通道衰减 ---
             let oldR = arrR[i];
-            let newR = oldR;
-            if (rawR > oldR) newR = rawR;
-            else {
-                newR = oldR - (oldR * decay) - 0.5;
-                if (newR < 0) newR = 0;
-            }
-            if (Math.abs(newR - oldR) > 0.01) {
-                arrR[i] = newR;
-                needsRepaint = true;
-            }
+            let newR = (inputR > oldR) ? inputR : Math.max(0, oldR - (oldR * decay) - 0.5);
+            if (Math.abs(newR - oldR) > 0.01) { arrR[i] = newR; needsRepaint = true; }
         }
 
         if (needsRepaint) canvas.requestPaint();
@@ -371,12 +367,10 @@ DataSourceElement {
             ctx.save();
             ctx.translate(centerX, centerY);
 
-            // 1. 底座
             if (showIdleLine) {
                 drawBaseShape(ctx);
             }
 
-            // 2. 渐变
             var gradient = ctx.createRadialGradient(0, 0, innerRadius * 0.5, 0, 0, maxRadius);
             gradient.addColorStop(0, barColorStart);
             gradient.addColorStop(1, barColorEnd);
@@ -386,11 +380,16 @@ DataSourceElement {
             ctx.lineCap = roundCap ? "round" : "butt";
             ctx.lineWidth = barWidth;
 
-            // 3. 绘制频谱
             const totalBars = barCount; 
             const rotRad = thiz.rotationAngle * Math.PI / 180;
             
-            // === 直线模式 ===
+            // --- [修改] 存储 Start 和 End 两组坐标 ---
+            var points1_start = []; 
+            var points1_end = [];
+            var points2_start = [];
+            var points2_end = [];
+
+            // === 模式A: 直线模式 ===
             if (shapeMode === 1 && polygonSides === 2) {
                 let nx = Math.cos(rotRad);
                 let ny = Math.sin(rotRad);
@@ -400,64 +399,78 @@ DataSourceElement {
                 for (let i = 0; i < totalBars; i++) {
                     const valL = displayDataL[i];
                     const valR = displayDataR[i];
-                    
                     let progress = i / totalBars; 
                     
-                    if (symmetryMode === 0) {
-                        // Mirror Mode: 左边用Left数据，右边用Right数据
-                        // 0 (Low) -> Center, 1 (High) -> Tips
+                    if (symmetryMode === 0) { // Mirror
                         let offset = progress * innerRadius; 
                         
-                        if (valR > 0.1)
-                            drawLinearBar(ctx, px * offset, py * offset, nx, ny, valR); // 正方向 (右)
-                        
-                        if (valL > 0.1)
-                            drawLinearBar(ctx, -px * offset, -py * offset, nx, ny, valL); // 负方向 (左)
+                        let ptR = calcLinearTip(px * offset, py * offset, nx, ny, valR);
+                        points1_start.push(ptR.start);
+                        points1_end.push(ptR.end);
+                        if (drawMode !== 1 && valR > 0.1) drawLinearBar(ctx, ptR.start, ptR.end);
 
-                    } else {
-                        // Radial Mode (直线模式下比较少见，但为了逻辑统一)
-                        // 使用平均值或者混合? 既然没有左右之分，统一用 L+R 的平均 或 只用R
-                        // 这里我们简单处理：混合显示
+                        let ptL = calcLinearTip(-px * offset, -py * offset, nx, ny, valL);
+                        points2_start.push(ptL.start);
+                        points2_end.push(ptL.end);
+                        if (drawMode !== 1 && valL > 0.1) drawLinearBar(ctx, ptL.start, ptL.end);
+
+                    } else { // Radial
                         let offset = -innerRadius + (progress * 2 * innerRadius);
-                        // Radial模式下单行显示，取一个代表值 (Right channel)
-                        if (valR > 0.1)
-                            drawLinearBar(ctx, px * offset, py * offset, nx, ny, valR);
+                        let pt = calcLinearTip(px * offset, py * offset, nx, ny, valR);
+                        points1_start.push(pt.start);
+                        points1_end.push(pt.end);
+                        if (drawMode !== 1 && valR > 0.1) drawLinearBar(ctx, pt.start, pt.end);
                     }
                 }
             } 
-            // === 极坐标模式 ===
+            // === 模式B: 极坐标模式 ===
             else {
                 for (let i = 0; i < totalBars; i++) {
                     const valL = displayDataL[i];
                     const valR = displayDataR[i];
 
-                    if (symmetryMode === 0) {
-                        // --- Mirror Mode ---
-                        // 左半圆用 Left 数据，右半圆用 Right 数据
+                    if (symmetryMode === 0) { // Mirror Mode
                         const stepAngle = Math.PI / totalBars; 
-                        const angleRight = -Math.PI / 2 + (i * stepAngle); // 0 ~ 180 (Right Side)
-                        const angleLeft = -Math.PI / 2 - (i * stepAngle);  // 0 ~ -180 (Left Side)
+                        const angleRight = -Math.PI / 2 + (i * stepAngle); 
+                        const angleLeft = -Math.PI / 2 - (i * stepAngle);
                         
-                        if (valR > 0.1) drawPolarBar(ctx, angleRight, valR);
-                        if (valL > 0.1) drawPolarBar(ctx, angleLeft, valL);
+                        let ptR = calcPolarTip(angleRight, valR);
+                        points1_start.push(ptR.start);
+                        points1_end.push(ptR.end);
+                        if (drawMode !== 1 && valR > 0.1) drawBarByPoints(ctx, ptR.start, ptR.end);
 
-                    } else {
-                        // --- Radial Mode (360°) ---
-                        // 单圈模式，此时没有明确的左右之分，通常用混合数据
-                        // 但既然我们分离了数据，Radial 模式我们使用 Right Channel 绘制全圈 (或者 Left)
-                        // 为了避免混淆，在 Radial 下我们只展示 displayDataR (如果是单声道的 Mix 也是一样的)
-                        // 如果立体声打开，Radial模式下看起来可能只会显示右声道数据
-                        // 或者：0-180度显示右，180-360度显示左？(这样会有接缝)
-                        // 简单起见，Radial 模式使用 displayDataR (如果没开双通道，它是 L+R 平均)
-                        
+                        let ptL = calcPolarTip(angleLeft, valL);
+                        points2_start.push(ptL.start);
+                        points2_end.push(ptL.end);
+                        if (drawMode !== 1 && valL > 0.1) drawBarByPoints(ctx, ptL.start, ptL.end);
+
+                    } else { // Radial Mode
                         const stepAngle = (2 * Math.PI) / totalBars; 
                         const angle = -Math.PI / 2 + (i * stepAngle);
                         
-                        if (valR > 0.1) drawPolarBar(ctx, angle, valR);
+                        let pt = calcPolarTip(angle, valR);
+                        points1_start.push(pt.start);
+                        points1_end.push(pt.end);
+                        if (drawMode !== 1 && valR > 0.1) drawBarByPoints(ctx, pt.start, pt.end);
                     }
                 }
             }
             
+            // --- [修改] 绘制折线 ---
+            if (drawMode !== 0) {
+                let isClosed = (symmetryMode === 1 && !(shapeMode === 1 && polygonSides === 2));
+                
+                // 1. 始终绘制 End 线 (Outer Tip / Normal Tip)
+                drawPolyline(ctx, points1_end, isClosed);
+                if (points2_end.length > 0) drawPolyline(ctx, points2_end, isClosed);
+
+                // 2. 如果是 Both 模式，还要绘制 Start 线 (Inner Tip)
+                if (jumpMode === 2) {
+                    drawPolyline(ctx, points1_start, isClosed);
+                    if (points2_start.length > 0) drawPolyline(ctx, points2_start, isClosed);
+                }
+            }
+
             ctx.restore();
 
             // ================= 辅助函数 =================
@@ -517,43 +530,90 @@ DataSourceElement {
                 ctx.stroke();
             }
 
-            function drawPolarBar(ctx, angle, length) {
+            function calcPolarTip(angle, length) {
                 const startR = getRadiusAt(angle);
                 const coords = calculateJumpCoords(startR, length);
-                ctx.beginPath();
-                ctx.moveTo(Math.cos(angle) * coords.start, Math.sin(angle) * coords.start);
-                ctx.lineTo(Math.cos(angle) * coords.end, Math.sin(angle) * coords.end);
-                ctx.stroke();
+                return {
+                    start: { x: Math.cos(angle) * coords.start, y: Math.sin(angle) * coords.start },
+                    end:   { x: Math.cos(angle) * coords.end,   y: Math.sin(angle) * coords.end }
+                };
             }
 
-            function drawLinearBar(ctx, originX, originY, nx, ny, length) {
+            function calcLinearTip(originX, originY, nx, ny, length) {
                 let startScale = 0;
                 let endScale = 0;
                 if (jumpMode === 0) { startScale = 0; endScale = -length; }
                 else if (jumpMode === 1) { startScale = 0; endScale = length; }
                 else { startScale = -length / 2; endScale = length / 2; }
-                const x1 = originX + nx * startScale;
-                const y1 = originY + ny * startScale;
-                const x2 = originX + nx * endScale;
-                const y2 = originY + ny * endScale;
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
+                
+                return {
+                    start: { x: originX + nx * startScale, y: originY + ny * startScale },
+                    end:   { x: originX + nx * endScale,   y: originY + ny * endScale }
+                };
             }
 
             function calculateJumpCoords(baseRadius, length) {
                 let rStart = 0, rEnd = 0;
-                if (jumpMode === 0) { 
-                    rStart = baseRadius; rEnd = baseRadius + length; 
+                if (jumpMode === 0) { // Outer
+                    rStart = baseRadius; 
+                    rEnd = baseRadius + length; 
                     if (rEnd > maxRadius) rEnd = maxRadius;
-                } else if (jumpMode === 1) { 
-                    rStart = baseRadius; rEnd = Math.max(0, baseRadius - length);
-                } else { 
+                } else if (jumpMode === 1) { // Inner
+                    rStart = baseRadius; 
+                    rEnd = Math.max(0, baseRadius - length);
+                } else { // Both
                     rStart = Math.max(0, baseRadius - length/2); 
                     rEnd = Math.min(maxRadius, baseRadius + length/2);
                 }
                 return { start: rStart, end: rEnd };
+            }
+
+            function drawBarByPoints(ctx, p1, p2) {
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+
+            function drawPolyline(ctx, points, closed) {
+                if (points.length < 2) return;
+                ctx.beginPath();
+                if (!smoothLine) {
+                    ctx.moveTo(points[0].x, points[0].y);
+                    for (let i = 1; i < points.length; i++) {
+                        ctx.lineTo(points[i].x, points[i].y);
+                    }
+                    if (closed) ctx.closePath();
+                } else {
+                    if (closed) {
+                        let last = points[points.length - 1];
+                        let first = points[0];
+                        let midX = (last.x + first.x) / 2;
+                        let midY = (last.y + first.y) / 2;
+                        ctx.moveTo(midX, midY);
+                        for (let i = 0; i < points.length; i++) {
+                            let curr = points[i];
+                            let next = points[(i + 1) % points.length];
+                            let nextMidX = (curr.x + next.x) / 2;
+                            let nextMidY = (curr.y + next.y) / 2;
+                            ctx.quadraticCurveTo(curr.x, curr.y, nextMidX, nextMidY);
+                        }
+                    } else {
+                        ctx.moveTo(points[0].x, points[0].y);
+                        for (let i = 0; i < points.length - 1; i++) {
+                            let curr = points[i];
+                            let next = points[i+1];
+                            let midX = (curr.x + next.x) / 2;
+                            let midY = (curr.y + next.y) / 2;
+                            if (i === 0) ctx.lineTo(midX, midY); 
+                            else ctx.quadraticCurveTo(curr.x, curr.y, midX, midY);
+                        }
+                        let last = points[points.length - 1];
+                        let prev = points[points.length - 2];
+                        ctx.quadraticCurveTo(prev.x, prev.y, last.x, last.y);
+                    }
+                }
+                ctx.stroke();
             }
         }
     }
