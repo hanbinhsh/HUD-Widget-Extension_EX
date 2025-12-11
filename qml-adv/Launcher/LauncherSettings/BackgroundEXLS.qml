@@ -7,6 +7,8 @@ import NERvGear.Preferences 1.0 as P
 
 import QtQuick.Window 2.2
 
+import "../.."
+
 Flickable {
     property var current_default: eXLauncherView.eXLSettings
     anchors.fill: parent
@@ -116,72 +118,84 @@ Flickable {
                 label: qsTr("Hide Original")
             }
             P.Separator{}
-            P.SwitchPreference {
-                id: colorOverlay
-                name: "colorOverlay"
-                label: qsTr("Color Overlay")
-            }
-            P.ColorPreference {
-                name: "overlayColor"
-                label: " --- " + qsTr("Color")
-                defaultValue: "transparent"
-                visible: colorOverlay.value
-            }
-            P.SpinPreference {
-                name: "overlayColorZ"
-                label: " --- " + qsTr("Overlay Z")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                defaultValue: 0
-                from: -9999
-                to: 9999
-                stepSize: 1
-                visible: colorOverlay.value
-            }
-            P.SpinPreference {
-                name: "overlayColorOpacity"
-                label: " --- " + qsTr("Overlay Opacity")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                defaultValue: 100
-                from: 0
-                to: 100
-                stepSize: 5
-                visible: colorOverlay.value
+            P.ObjectPreferenceGroup {
+                defaultValue: current_default
+                syncProperties: true
+                width: parent.width
+                data: PreferenceGroupIndicator { anchors.topMargin: colorOverlay.height; visible: colorOverlay.value; color: "#4a4a4a" }
+                P.SwitchPreference {
+                    id: colorOverlay
+                    name: "colorOverlay"
+                    label: qsTr("Color Overlay")
+                }
+                P.ColorPreference {
+                    name: "overlayColor"
+                    label: qsTr("Color")
+                    defaultValue: "transparent"
+                    visible: colorOverlay.value
+                }
+                P.SpinPreference {
+                    name: "overlayColorZ"
+                    label: qsTr("Overlay Z")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    defaultValue: 0
+                    from: -9999
+                    to: 9999
+                    stepSize: 1
+                    visible: colorOverlay.value
+                }
+                P.SpinPreference {
+                    name: "overlayColorOpacity"
+                    label: qsTr("Overlay Opacity")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    defaultValue: 100
+                    from: 0
+                    to: 100
+                    stepSize: 5
+                    visible: colorOverlay.value
+                }
             }
             P.Separator{}
-            P.SwitchPreference {
-                id: enableEXLADV
-                name: "enableEXLADV"
-                label: qsTr("Enable ADV")
-            }
-            P.ColorPreference {
-                name: "eXLADVColor"
-                label: " --- " + qsTr("Color")
-                defaultValue: "white"
-                visible: enableEXLADV.value
-            }
-            P.SpinPreference {
-                name: "eXLADVZ"
-                label: " --- " + qsTr("Z")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: enableEXLADV.value
-                defaultValue: -1
-                from: -999
-                to: 999
-                stepSize: 1
-            }
-            P.SpinPreference {
-                name: "eXLADVDecrease"
-                label: " --- " + qsTr("Decrease")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: enableEXLADV.value
-                defaultValue: 1000
-                from: 100
-                to: 100000
-                stepSize: 100
+            P.ObjectPreferenceGroup {
+                defaultValue: current_default
+                syncProperties: true
+                width: parent.width
+                data: PreferenceGroupIndicator { anchors.topMargin: enableEXLADV.height; visible: enableEXLADV.value; color: "#4a4a4a" }
+                P.SwitchPreference {
+                    id: enableEXLADV
+                    name: "enableEXLADV"
+                    label: qsTr("Enable ADV")
+                }
+                P.ColorPreference {
+                    name: "eXLADVColor"
+                    label: qsTr("Color")
+                    defaultValue: "white"
+                    visible: enableEXLADV.value
+                }
+                P.SpinPreference {
+                    name: "eXLADVZ"
+                    label: qsTr("Z")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    visible: enableEXLADV.value
+                    defaultValue: -1
+                    from: -999
+                    to: 999
+                    stepSize: 1
+                }
+                P.SpinPreference {
+                    name: "eXLADVDecrease"
+                    label: qsTr("Decrease")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    visible: enableEXLADV.value
+                    defaultValue: 1000
+                    from: 100
+                    to: 100000
+                    stepSize: 100
+                }
             }
         }
     }

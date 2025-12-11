@@ -27,6 +27,7 @@ Flickable {
             enabled: item
             width: parent.width
             defaultValue: item
+            data: PreferenceGroupIndicator { anchors.topMargin: usedisplayMask.height; visible: usedisplayMask.value }
             //必须资源
             //显示时的遮罩
             P.SwitchPreference {

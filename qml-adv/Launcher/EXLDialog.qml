@@ -314,6 +314,7 @@ NVG.Window {
                         label: qsTr("Hide with Launcher")
                         defaultValue: true
                     }
+                    P.Separator{}
                     Page {
                         id: advancedElemPage
                         width: parent.width

@@ -25,6 +25,7 @@ Flickable {
             enabled: item
             defaultValue: item
             width: parent.width
+            data: PreferenceGroupIndicator { anchors.topMargin: enableADV.height; visible: enableADV.value }
             //必须资源
             P.SwitchPreference {
                 id: enableADV
@@ -85,59 +86,66 @@ Flickable {
                 visible: enableADV.value
             }
             // 高斯模糊
-            P.SwitchPreference {
-                id: useADVGaussian
-                name: "useADVGaussian"
-                label: qsTr("Gaussian Blur")
-                visible: enableADV.value
-            }
-            //半径
-            P.SpinPreference {
-                name: "aDVGaussianBlurRadius"
-                label: " --- " + qsTr("Radius")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: useADVGaussian.value&&enableADV.value
-                defaultValue: 5
-                from: 0
-                to: 500
-                stepSize: 1
-            }
-            //偏差值
-            P.SpinPreference {
-                name: "aDVGaussianBlurDeviation"
-                label: " --- " + qsTr("Deviation")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: useADVGaussian.value&&enableADV.value
-                defaultValue: 3
-                from: 0
-                to: 1000
-                stepSize: 1
-            }
-            //样本数
-            P.SpinPreference {
-                name: "aDVGaussianBlurSamples"
-                label: " --- " + qsTr("Samples")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
-                visible: useADVGaussian.value&&enableADV.value
-                defaultValue: 5
-                from: 0
-                to: 100
-                stepSize: 1
-            }
-            //透明边框
-            P.SwitchPreference {
-                name: "aDVDropShadowTransparentBorder"
-                label: " --- " + qsTr("Transparent Border")
-                visible: useADVGaussian.value&&enableADV.value
-            }
-            //缓存
-            P.SwitchPreference {
-                name: "aDVGaussianBlurCached"
-                label: " --- " + qsTr("Cached")
-                visible: useADVGaussian.value&&enableADV.value
+            P.ObjectPreferenceGroup {
+                syncProperties: true
+                enabled: item
+                defaultValue: item
+                width: parent.width
+                data: PreferenceGroupIndicator { anchors.topMargin: useADVGaussian.height; visible: useADVGaussian.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                P.SwitchPreference {
+                    id: useADVGaussian
+                    name: "useADVGaussian"
+                    label: qsTr("Gaussian Blur")
+                    visible: enableADV.value
+                }
+                //半径
+                P.SpinPreference {
+                    name: "aDVGaussianBlurRadius"
+                    label: qsTr("Radius")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    visible: useADVGaussian.value&&enableADV.value
+                    defaultValue: 5
+                    from: 0
+                    to: 500
+                    stepSize: 1
+                }
+                //偏差值
+                P.SpinPreference {
+                    name: "aDVGaussianBlurDeviation"
+                    label: qsTr("Deviation")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    visible: useADVGaussian.value&&enableADV.value
+                    defaultValue: 3
+                    from: 0
+                    to: 1000
+                    stepSize: 1
+                }
+                //样本数
+                P.SpinPreference {
+                    name: "aDVGaussianBlurSamples"
+                    label: qsTr("Samples")
+                    editable: true
+                    display: P.TextFieldPreference.ExpandLabel
+                    visible: useADVGaussian.value&&enableADV.value
+                    defaultValue: 5
+                    from: 0
+                    to: 100
+                    stepSize: 1
+                }
+                //透明边框
+                P.SwitchPreference {
+                    name: "aDVDropShadowTransparentBorder"
+                    label: qsTr("Transparent Border")
+                    visible: useADVGaussian.value&&enableADV.value
+                }
+                //缓存
+                P.SwitchPreference {
+                    name: "aDVGaussianBlurCached"
+                    label: qsTr("Cached")
+                    visible: useADVGaussian.value&&enableADV.value
+                }
             }
         }
     }

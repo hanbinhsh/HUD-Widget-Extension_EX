@@ -5,7 +5,7 @@ import NERvGear 1.0 as NVG
 import NERvGear.Controls 1.0
 import NERvGear.Preferences 1.0 as P
 
-import QtQuick.Window 2.2
+import "../.."
 
 Flickable {
     property var current_default: eXLauncherView.eXLSettings
@@ -64,7 +64,7 @@ Flickable {
                             name: "viewW"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
-                            defaultValue: Screen.width
+                            defaultValue: 2048
                             from: -99999
                             to: 99999
                             stepSize: 5
@@ -73,7 +73,7 @@ Flickable {
                             name: "viewH"
                             editable: true
                             display: P.TextFieldPreference.ExpandLabel
-                            defaultValue: Screen.height
+                            defaultValue: 1152
                             from: -99999
                             to: 99999
                             stepSize: 5
@@ -106,17 +106,23 @@ Flickable {
                 label: qsTr("Background Color")
                 defaultValue: "#777777"
             }
-            P.SwitchPreference {
-                id: aDVConnection
-                name: "aDVConnection"
-                label: qsTr("ADV Connection")
-            }
-            P.SelectPreference {
-                name: "eXLADVSample"//全局
-                label: " --- " + qsTr("Sample")
-                model: [ qsTr("128"), qsTr("64"), qsTr("32"), qsTr("16"), qsTr("8"), qsTr("4") ]
-                defaultValue: 0
-                visible: aDVConnection.value
+            P.ObjectPreferenceGroup {
+                defaultValue: current_default
+                syncProperties: true
+                width: parent.width
+                data: PreferenceGroupIndicator { anchors.topMargin: aDVConnection.height; visible: aDVConnection.value; color: "#4a4a4a" }
+                P.SwitchPreference {
+                    id: aDVConnection
+                    name: "aDVConnection"
+                    label: qsTr("ADV Connection")
+                }
+                P.SelectPreference {
+                    name: "eXLADVSample"//全局
+                    label: qsTr("Sample")
+                    model: [ qsTr("128"), qsTr("64"), qsTr("32"), qsTr("16"), qsTr("8"), qsTr("4") ]
+                    defaultValue: 0
+                    visible: aDVConnection.value
+                }
             }
         }
     }
