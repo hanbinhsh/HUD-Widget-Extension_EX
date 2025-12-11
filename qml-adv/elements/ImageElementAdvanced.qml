@@ -47,12 +47,22 @@ DataSourceElement {
     property real cycleOpacity: (settings.cycleOpacity ?? 100) / 100
     property int  cycleTime: settings.cycleTime ?? 500
     property int  pauseColorAnimationTime: settings.pauseColorAnimationTime ?? 0
+    property int  cycleColorFrom: settings.cycleColorFrom ?? 0
+    property int  cycleColorTo: settings.cycleColorTo ?? 15
 
     onCycleTimeChanged: {
         colorAnimPhaseAnimation.restart();
         idxxAnimation.restart();
     }
     onPauseColorAnimationTimeChanged: {
+        colorAnimPhaseAnimation.restart();
+        idxxAnimation.restart();
+    }
+    onCycleColorFromChanged: {
+        colorAnimPhaseAnimation.restart();
+        idxxAnimation.restart();
+    }
+    onCycleColorToChanged: {
         colorAnimPhaseAnimation.restart();
         idxxAnimation.restart();
     }
@@ -85,10 +95,12 @@ DataSourceElement {
                                 { position: 0.800, color: getColor(3) },{ position: 0.867, color: getColor(2) },
                                 { position: 0.933, color: getColor(1) },{ position: 1.000, color: getColor(0) }]
     // 高级颜色3组件
+    property var defaultFillStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
+    property var fillStops: settings.fillStops ?? defaultFillStops
     property real colorAnimPhase: 0.0
     SequentialAnimation {
         id: colorAnimPhaseAnimation
-        running: (settings.cycleColor === 3) && (settings.fillStops.length > 0) && (settings.enableColorAnimation ?? false)
+        running: (settings.cycleColor === 3) && (fillStops.length > 0) && (settings.enableColorAnimation ?? false)
         loops:Animation.Infinite
         PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
         NumberAnimation {
@@ -103,15 +115,15 @@ DataSourceElement {
         if (linearG.visible) linearG.gradient = generateGradient();
     }
     function generateGradient() {
-        if (settings.cycleColor !== 3 || !settings.fillStops || settings.fillStops.length === 0) {
+        if (settings.cycleColor !== 3 || !fillStops || fillStops.length === 0) {
             return makeGradient(defaultStops);
         }
         if (!settings.enableColorAnimation) {
-            return makeGradient(settings.fillStops);
+            return makeGradient(fillStops);
         }
         var baseStops = [];
-        for (var i = 0; i < settings.fillStops.length; i++) {
-            var item = settings.fillStops[i];
+        for (var i = 0; i < fillStops.length; i++) {
+            var item = fillStops[i];
             if (item) {
                 baseStops.push({
                     pos: Number(item.position),
@@ -228,203 +240,218 @@ DataSourceElement {
                                 label: qsTr("Show original image")
                                 defaultValue: true
                             }
+                            P.Separator{}
                         //打开幻灯片模式
-                            P.SwitchPreference {
-                                id: enableGalleryMode
-                                name: "enableGalleryMode"
-                                label: qsTr("Enable Gallery Mode")
-                                defaultValue: false
-                            }
-                            //图片目录
-                            P.FolderPreference {
-                                name: "imageFolder"
-                                label: " --- " + qsTr("Image Folder")
-                                visible: enableGalleryMode.value
-                            }
-                            // TODO 填充模式
-                            P.SelectPreference {
-                                name: "galleryImageFillMode"
-                                label: qsTr("Gallery Image Fill Mode")
-                                model: [ qsTr("Crop"), qsTr("Fit") ]
-                                defaultValue: 0
-                                visible: enableGalleryMode.value
-                            }
-                            //背景颜色
-                            P.ColorPreference {
-                                name: "fillColor"
-                                label: " --- " + qsTr("Background Color")
-                                defaultValue: "transparent"
-                                visible: enableGalleryMode.value
-                            }
-                            //相框
-                            P.BackgroundPreference {
-                                name: "frame"
-                                label: " --- " + qsTr("Frame")
-                                preferableFilter: NVG.ResourceFilter {
-                                    packagePattern: /com.gpbeta.media/
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableGalleryMode.height; visible: enableGalleryMode.value }
+                                P.SwitchPreference {
+                                    id: enableGalleryMode
+                                    name: "enableGalleryMode"
+                                    label: qsTr("Enable Gallery Mode")
+                                    defaultValue: false
                                 }
-                                visible: enableGalleryMode.value
-                            }
-                            //相框在图片前
-                            P.SwitchPreference {
-                                name: "framePosition"
-                                label: " --- " + qsTr("Frame Above Image")
-                                defaultValue: true
-                                visible: enableGalleryMode.value
-                            }
-                            //随机播放
-                            P.SwitchPreference {
-                                name: "shuffle"
-                                label: " --- " + qsTr("Shuffle Playback")
-                                defaultValue: false
-                                onPreferenceEdited: Qt.callLater(thiz.imageUrlsChanged)
-                                visible: enableGalleryMode.value
-                            }
-                            //动画
-                            P.SelectPreference {
-                                name: "transition"
-                                label: " --- " + qsTr("Transition Animation")
-                                defaultValue: 0
-                                textRole: "label"
-                                model: {
-                                    const array = [ { label: qsTr("Random"), source: "random" } ];
-                                    for (const entry in Shared.gl_transitions) // label removes ".glsl"
-                                        array.push({ label: entry.slice(0, -5), source: entry });
-                                    return array;
+                                //图片目录
+                                P.FolderPreference {
+                                    name: "imageFolder"
+                                    label: qsTr("Image Folder")
+                                    visible: enableGalleryMode.value
                                 }
-                                load: function (newValue) {
-                                    if (newValue === undefined) {
-                                        value = defaultValue;
-                                        return;
+                                // TODO 填充模式
+                                P.SelectPreference {
+                                    name: "galleryImageFillMode"
+                                    label: qsTr("Gallery Image Fill Mode")
+                                    model: [ qsTr("Crop"), qsTr("Fit") ]
+                                    defaultValue: 0
+                                    visible: enableGalleryMode.value
+                                }
+                                //背景颜色
+                                P.ColorPreference {
+                                    name: "fillColor"
+                                    label: qsTr("Background Color")
+                                    defaultValue: "transparent"
+                                    visible: enableGalleryMode.value
+                                }
+                                //相框
+                                P.BackgroundPreference {
+                                    name: "frame"
+                                    label: qsTr("Frame")
+                                    preferableFilter: NVG.ResourceFilter {
+                                        packagePattern: /com.gpbeta.media/
                                     }
-
-                                    let index = defaultValue;
-                                    for (let i = 0; i < model.length; ++i) {
-                                        const item = model[i];
-                                        if (item.source === newValue) {
-                                            index = i;
-                                            break;
+                                    visible: enableGalleryMode.value
+                                }
+                                //相框在图片前
+                                P.SwitchPreference {
+                                    name: "framePosition"
+                                    label: qsTr("Frame Above Image")
+                                    defaultValue: true
+                                    visible: enableGalleryMode.value
+                                }
+                                //随机播放
+                                P.SwitchPreference {
+                                    name: "shuffle"
+                                    label: qsTr("Shuffle Playback")
+                                    defaultValue: false
+                                    onPreferenceEdited: Qt.callLater(thiz.imageUrlsChanged)
+                                    visible: enableGalleryMode.value
+                                }
+                                //动画
+                                P.SelectPreference {
+                                    name: "transition"
+                                    label: qsTr("Transition Animation")
+                                    defaultValue: 0
+                                    textRole: "label"
+                                    model: {
+                                        const array = [ { label: qsTr("Random"), source: "random" } ];
+                                        for (const entry in Shared.gl_transitions) // label removes ".glsl"
+                                            array.push({ label: entry.slice(0, -5), source: entry });
+                                        return array;
+                                    }
+                                    load: function (newValue) {
+                                        if (newValue === undefined) {
+                                            value = defaultValue;
+                                            return;
                                         }
+                                        let index = defaultValue;
+                                        for (let i = 0; i < model.length; ++i) {
+                                            const item = model[i];
+                                            if (item.source === newValue) {
+                                                index = i;
+                                                break;
+                                            }
+                                        }
+                                        value = index;
                                     }
-                                    value = index;
-                                }
-                                save: function () {
-                                    return model[value].source;
-                                }
-                                onPreferenceEdited: Qt.callLater(aniTransition.restart)
-                                visible: enableGalleryMode.value
-                            }
-                            //动画速度
-                            P.SliderPreference {
-                                name: "animateTime"
-                                label: " --- " + qsTr("Animation Speed")
-                                displayValue: value
-                                defaultValue: 500
-                                from: 0
-                                to: 9999
-                                stepSize: 1
-                                live: true
-                                onPreferenceEdited: Qt.callLater(aniTransition.restart)
-                                visible: enableGalleryMode.value
-                            }
-                            P.SwitchPreference {
-                                id: enableAutoPaly
-                                name: "enableAutoPaly"
-                                label: " --- " + qsTr("Enable Auto Paly")
-                                defaultValue: false
-                                visible: enableGalleryMode.value
-                            }
-                            //持续时间
-                            P.SelectPreference {
-                                name: "stillTime"
-                                label: " --- --- " + qsTr("Change Image Every")
-                                model: [
-                                    "10 " + qsTr("Millisecond"),
-                                    "50 " + qsTr("Millisecond"),
-                                    "100 " + qsTr("Millisecond"),
-                                    "500 " + qsTr("Millisecond"),
-                                    "1 " + qsTr("Second"),
-                                    "5 " + qsTr("Seconds"),
-                                    "15 " + qsTr("Seconds"),
-                                    "30 " + qsTr("Seconds"),
-                                    "1 " + qsTr("Minute"),
-                                    "5 " + qsTr("Minutes"),
-                                    "15 " + qsTr("Minutes"),
-                                    "30 " + qsTr("Minutes"),
-                                    "1 " + qsTr("Hour")
-                                ]
-                                defaultValue: 5
-                                load: function (newValue) {
-                                    if (newValue === undefined) {
-                                        value = defaultValue;
-                                        return;
+                                    save: function () {
+                                        return model[value].source;
                                     }
-                                    // remap times
-                                    if (newValue <= 10)
-                                        value = 0;
-                                    else if (newValue <= 50)
-                                        value = 1;
-                                    else if (newValue <= 100)
-                                        value = 2;
-                                    else if (newValue <= 500)
-                                        value = 3;
-                                    else if (newValue <= 1000)
-                                        value = 4;
-                                    else if (newValue <= 1000 * 5)
-                                        value = 5;
-                                    else if (newValue <= 1000 * 15)
-                                        value = 6;
-                                    else if (newValue <= 1000 * 30)
-                                        value = 7;
-                                    else if (newValue <= 60000)
-                                        value = 8;
-                                    else if (newValue <= 60000 * 5)
-                                        value = 9;
-                                    else if (newValue <= 60000 * 15)
-                                        value = 10;
-                                    else if (newValue <= 60000 * 30)
-                                        value = 11;
-                                    else
-                                        value = 12;
+                                    onPreferenceEdited: Qt.callLater(aniTransition.restart)
+                                    visible: enableGalleryMode.value
                                 }
-                                save: function () {
-                                    switch (value) {
-                                    case 0: return 10;
-                                    case 1: return 50;
-                                    case 2: return 100;
-                                    case 3: return 500;
-                                    case 4: return 1000;
-                                    case 5: return 1000 * 5;
-                                    case 6: return 1000 * 15;
-                                    case 7: return 1000 * 30;
-                                    case 8: return 60000;
-                                    case 9: return 60000 * 5;
-                                    case 10: return 60000 * 15;
-                                    case 11: return 60000 * 30;
-                                    case 12: return 60000 * 60;
-                                    default: break;
+                                //动画速度
+                                P.SliderPreference {
+                                    name: "animateTime"
+                                    label: qsTr("Animation Speed")
+                                    displayValue: value
+                                    defaultValue: 500
+                                    from: 0
+                                    to: 9999
+                                    stepSize: 1
+                                    live: true
+                                    onPreferenceEdited: Qt.callLater(aniTransition.restart)
+                                    visible: enableGalleryMode.value
+                                }
+                                P.ObjectPreferenceGroup {
+                                    defaultValue: thiz.settings
+                                    syncProperties: true
+                                    enabled: currentItem
+                                    width: parent.width
+                                    data: PreferenceGroupIndicator { anchors.topMargin: enableAutoPaly.height; visible: enableAutoPaly.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                                    P.SwitchPreference {
+                                        id: enableAutoPaly
+                                        name: "enableAutoPaly"
+                                        label: qsTr("Enable Auto Paly")
+                                        defaultValue: false
+                                        visible: enableGalleryMode.value
+                                    }
+                                    //持续时间
+                                    P.SelectPreference {
+                                        name: "stillTime"
+                                        label: qsTr("Change Image Every")
+                                        model: [
+                                            "10 " + qsTr("Millisecond"),
+                                            "50 " + qsTr("Millisecond"),
+                                            "100 " + qsTr("Millisecond"),
+                                            "500 " + qsTr("Millisecond"),
+                                            "1 " + qsTr("Second"),
+                                            "5 " + qsTr("Seconds"),
+                                            "15 " + qsTr("Seconds"),
+                                            "30 " + qsTr("Seconds"),
+                                            "1 " + qsTr("Minute"),
+                                            "5 " + qsTr("Minutes"),
+                                            "15 " + qsTr("Minutes"),
+                                            "30 " + qsTr("Minutes"),
+                                            "1 " + qsTr("Hour")
+                                        ]
+                                        defaultValue: 5
+                                        load: function (newValue) {
+                                            if (newValue === undefined) {
+                                                value = defaultValue;
+                                                return;
+                                            }
+                                            // remap times
+                                            if (newValue <= 10)
+                                                value = 0;
+                                            else if (newValue <= 50)
+                                                value = 1;
+                                            else if (newValue <= 100)
+                                                value = 2;
+                                            else if (newValue <= 500)
+                                                value = 3;
+                                            else if (newValue <= 1000)
+                                                value = 4;
+                                            else if (newValue <= 1000 * 5)
+                                                value = 5;
+                                            else if (newValue <= 1000 * 15)
+                                                value = 6;
+                                            else if (newValue <= 1000 * 30)
+                                                value = 7;
+                                            else if (newValue <= 60000)
+                                                value = 8;
+                                            else if (newValue <= 60000 * 5)
+                                                value = 9;
+                                            else if (newValue <= 60000 * 15)
+                                                value = 10;
+                                            else if (newValue <= 60000 * 30)
+                                                value = 11;
+                                            else
+                                                value = 12;
+                                        }
+                                        save: function () {
+                                            switch (value) {
+                                            case 0: return 10;
+                                            case 1: return 50;
+                                            case 2: return 100;
+                                            case 3: return 500;
+                                            case 4: return 1000;
+                                            case 5: return 1000 * 5;
+                                            case 6: return 1000 * 15;
+                                            case 7: return 1000 * 30;
+                                            case 8: return 60000;
+                                            case 9: return 60000 * 5;
+                                            case 10: return 60000 * 15;
+                                            case 11: return 60000 * 30;
+                                            case 12: return 60000 * 60;
+                                            default: break;
+                                            }
+                                        }
+                                        onPreferenceEdited: Qt.callLater(aniTransition.restart)
+                                        visible: enableGalleryMode.value&&enableAutoPaly.value
                                     }
                                 }
-                                onPreferenceEdited: Qt.callLater(aniTransition.restart)
-                                visible: enableGalleryMode.value&&enableAutoPaly.value
-                            }
-                            //点击事件 播放/暂停 播放 停止 下一张 上一张 刷新图库 无事发生
-                            P.SelectPreference {
-                                name: "onClick"
-                                label: " --- " + qsTr("On Click")
-                                model: [
-                                    qsTr("Play / Pause"),
-                                    qsTr("Play"),
-                                    qsTr("Stop"),
-                                    qsTr("Next Image"),
-                                    qsTr("Previous Image"),
-                                    qsTr("Refresh Gallery"),
-                                    qsTr("None"),
-                                ]
-                                defaultValue: 0
-                                visible: enableGalleryMode.value&&(!settings.action||!enableAction.value)
+                                //点击事件 播放/暂停 播放 停止 下一张 上一张 刷新图库 无事发生
+                                P.SelectPreference {
+                                    name: "onClick"
+                                    label: qsTr("On Click")
+                                    model: [
+                                        qsTr("Play / Pause"),
+                                        qsTr("Play"),
+                                        qsTr("Stop"),
+                                        qsTr("Next Image"),
+                                        qsTr("Previous Image"),
+                                        qsTr("Refresh Gallery"),
+                                        qsTr("None"),
+                                    ]
+                                    defaultValue: 0
+                                    visible: enableGalleryMode.value&&(!settings.action||!enableAction.value)
+                                }
                             }
                         //图片设置
+                            P.Separator{}
                             P.ImagePreference {
                                 name: "normal"
                                 label: qsTr("Normal")
@@ -440,6 +467,7 @@ DataSourceElement {
                                 label: qsTr("Pressed")
                                 visible: !pMode.value
                             }
+                            P.Separator{}
                         //填充模式
                             P.SelectPreference {
                                 name: "fill"
@@ -457,6 +485,18 @@ DataSourceElement {
                                 name: "antialias"
                                 label: qsTr("Smooth Edges")
                             }
+                            //圆角
+                            P.SliderPreference {
+                                name: "radius"
+                                label: qsTr("Border Radius")
+                                displayValue: value <= 50 ? (value + " px") : (value - 50 + " %")
+                                defaultValue: 0
+                                from: 0
+                                to: 150
+                                stepSize: 1
+                                live: true
+                            }
+                            P.Separator{}
                             //启用数据
                             P.SwitchPreference {
                                 id: pMode
@@ -493,674 +533,751 @@ DataSourceElement {
                             width: parent.width
                             //必须资源
                         //颜色
-                            P.SwitchPreference {
-                                id: colorOverlay
-                                name: "colorOverlay"
-                                label: qsTr("Color Overlay")
-                                // visible: !(changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                            }
-                            NoDefaultColorPreference {
-                                name: "color"
-                                label: " --- " + qsTr("Color")
-                                defaultValue: "transparent"
-                                visible:colorOverlay.value
-                            }
-                            //悬停
-                            NoDefaultColorPreference {
-                                name: "hoveredColor"
-                                label: " --- " + qsTr("Hovered Color")
-                                defaultValue: "transparent"
-                                visible:colorOverlay.value
-                            }
-                            //按下
-                            NoDefaultColorPreference {
-                                name: "pressedColor"
-                                label: " --- " + qsTr("Pressed Color")
-                                defaultValue: "transparent"
-                                visible:colorOverlay.value
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: colorOverlay.height; visible: colorOverlay.value }
+                                P.SwitchPreference {
+                                    id: colorOverlay
+                                    name: "colorOverlay"
+                                    label: qsTr("Color Overlay")
+                                    // visible: !(changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
+                                }
+                                NoDefaultColorPreference {
+                                    name: "color"
+                                    label: qsTr("Color")
+                                    defaultValue: "transparent"
+                                    visible:colorOverlay.value
+                                }
+                                //悬停
+                                NoDefaultColorPreference {
+                                    name: "hoveredColor"
+                                    label: qsTr("Hovered Color")
+                                    defaultValue: "transparent"
+                                    visible:colorOverlay.value
+                                }
+                                //按下
+                                NoDefaultColorPreference {
+                                    name: "pressedColor"
+                                    label: qsTr("Pressed Color")
+                                    defaultValue: "transparent"
+                                    visible:colorOverlay.value
+                                }
                             }
                         //亮度对比度 -1~1(/100)
-                            //开关
-                            P.SwitchPreference {
-                                id: changeBrightnessContrast
-                                name: "changeBrightnessContrast"
-                                label: qsTr("Brightness Contrast")
-                                //visible: !(colorOverlay.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                            }
-                            P.SliderPreference {
-                                name: "brightness"
-                                label: " --- " + qsTr("Brightness")
-                                visible:changeBrightnessContrast.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: -100
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            P.SliderPreference {
-                                name: "contrast"
-                                label: " --- " + qsTr("Contrast")
-                                visible:changeBrightnessContrast.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: -100
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            P.SwitchPreference {
-                                visible:changeBrightnessContrast.value
-                                name: "brightnessContrastCached"
-                                label: " --- " + qsTr("Cached")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: changeBrightnessContrast.height; visible: changeBrightnessContrast.value }
+                                //开关
+                                P.SwitchPreference {
+                                    id: changeBrightnessContrast
+                                    name: "changeBrightnessContrast"
+                                    label: qsTr("Brightness Contrast")
+                                    //visible: !(colorOverlay.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
+                                }
+                                P.SliderPreference {
+                                    name: "brightness"
+                                    label: qsTr("Brightness")
+                                    visible:changeBrightnessContrast.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: -100
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                P.SliderPreference {
+                                    name: "contrast"
+                                    label: qsTr("Contrast")
+                                    visible:changeBrightnessContrast.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: -100
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                P.SwitchPreference {
+                                    visible:changeBrightnessContrast.value
+                                    name: "brightnessContrastCached"
+                                    label: qsTr("Cached")
+                                }
                             }
                         //着色
-                            P.SwitchPreference {
-                                id: colorize 
-                                name: "colorize"
-                                label: qsTr("Colorize")
-                                //visible: !(colorOverlay.value || changeBrightnessContrast.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                            }
-                            //色调 /100
-                            P.SliderPreference {
-                                name: "colorizeHue"
-                                label: " --- " + qsTr("HUE")
-                                visible:colorize.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            //亮度 /100
-                            P.SliderPreference {
-                                name: "colorizeLightness"
-                                label: " --- " + qsTr("Lightness")
-                                visible:colorize.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: -100
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            //饱和度 /100
-                            P.SliderPreference {
-                                name: "colorizeSaturation"
-                                label: " --- " + qsTr("Saturation")
-                                visible:colorize.value
-                                displayValue: value
-                                defaultValue: 100
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            P.SwitchPreference {
-                                visible:colorize.value
-                                name: "colorizeCached"
-                                label: " --- " + qsTr("Cached")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: colorize.height; visible: colorize.value }
+                                P.SwitchPreference {
+                                    id: colorize 
+                                    name: "colorize"
+                                    label: qsTr("Colorize")
+                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
+                                }
+                                //色调 /100
+                                P.SliderPreference {
+                                    name: "colorizeHue"
+                                    label: qsTr("HUE")
+                                    visible:colorize.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                //亮度 /100
+                                P.SliderPreference {
+                                    name: "colorizeLightness"
+                                    label: qsTr("Lightness")
+                                    visible:colorize.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: -100
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                //饱和度 /100
+                                P.SliderPreference {
+                                    name: "colorizeSaturation"
+                                    label: qsTr("Saturation")
+                                    visible:colorize.value
+                                    displayValue: value
+                                    defaultValue: 100
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                P.SwitchPreference {
+                                    visible:colorize.value
+                                    name: "colorizeCached"
+                                    label: qsTr("Cached")
+                                }
                             }
                         //去饱和
-                            P.SwitchPreference {
-                                id: desaturate 
-                                name: "desaturate"
-                                label: qsTr("Desaturate")
-                                //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                            }
-                            P.SliderPreference {
-                                name: "desaturation"
-                                label: " --- " + qsTr("Desaturation")
-                                visible:desaturate.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            P.SwitchPreference {
-                                visible:desaturate.value
-                                name: "desaturateCached"
-                                label: " --- " + qsTr("Cached")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: desaturate.height; visible: desaturate.value }
+                                P.SwitchPreference {
+                                    id: desaturate 
+                                    name: "desaturate"
+                                    label: qsTr("Desaturate")
+                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
+                                }
+                                P.SliderPreference {
+                                    name: "desaturation"
+                                    label: qsTr("Desaturation")
+                                    visible:desaturate.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                P.SwitchPreference {
+                                    visible:desaturate.value
+                                    name: "desaturateCached"
+                                    label: qsTr("Cached")
+                                }
                             }
                         //伽马调节
-                            P.SwitchPreference {
-                                id: gammaAdjust 
-                                name: "gammaAdjust"
-                                label: qsTr("Gamma Adjust")
-                                //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || hueSaturation.value || levelAdjust.value)
-                            }
-                            P.SliderPreference {
-                                name: "gamma"
-                                label: " --- " + qsTr("Gamma")
-                                visible:gammaAdjust.value
-                                displayValue: value
-                                defaultValue: 1000
-                                from: 0
-                                to: 100000
-                                stepSize: 1
-                                live: true
-                            }
-                            P.SwitchPreference {
-                                visible:gammaAdjust.value
-                                name: "gammaCached"
-                                label: " --- " + qsTr("Cached")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: gammaAdjust.height; visible: gammaAdjust.value }
+                                P.SwitchPreference {
+                                    id: gammaAdjust 
+                                    name: "gammaAdjust"
+                                    label: qsTr("Gamma Adjust")
+                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || hueSaturation.value || levelAdjust.value)
+                                }
+                                P.SliderPreference {
+                                    name: "gamma"
+                                    label: qsTr("Gamma")
+                                    visible:gammaAdjust.value
+                                    displayValue: value
+                                    defaultValue: 1000
+                                    from: 0
+                                    to: 100000
+                                    stepSize: 1
+                                    live: true
+                                }
+                                P.SwitchPreference {
+                                    visible:gammaAdjust.value
+                                    name: "gammaCached"
+                                    label: qsTr("Cached")
+                                }
                             }
                         //色相饱和度
-                            P.SwitchPreference {
-                                id: hueSaturation 
-                                name: "hueSaturation"
-                                label: qsTr("Hue Saturation")
-                                //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || levelAdjust.value)
-                            }
-                            //色调 /100
-                            P.SliderPreference {
-                                name: "hueSaturationHue"
-                                label: " --- " + qsTr("HUE")
-                                visible:hueSaturation.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: -100
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            //亮度 /100
-                            P.SliderPreference {
-                                name: "hueSaturationLightness"
-                                label: " --- " + qsTr("Lightness")
-                                visible:hueSaturation.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: -100
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            //饱和度 /100
-                            P.SliderPreference {
-                                name: "hueSaturationSaturation"
-                                label: " --- " + qsTr("Saturation")
-                                visible:hueSaturation.value
-                                displayValue: value
-                                defaultValue: 0
-                                from: -100
-                                to: 100
-                                stepSize: 1
-                                live: true
-                            }
-                            P.SwitchPreference {
-                                visible:hueSaturation.value
-                                name: "hueSaturationCached"
-                                label: " --- " + qsTr("Cached")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: hueSaturation.height; visible: hueSaturation.value }
+                                P.SwitchPreference {
+                                    id: hueSaturation 
+                                    name: "hueSaturation"
+                                    label: qsTr("Hue Saturation")
+                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || levelAdjust.value)
+                                }
+                                //色调 /100
+                                P.SliderPreference {
+                                    name: "hueSaturationHue"
+                                    label: qsTr("HUE")
+                                    visible:hueSaturation.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: -100
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                //亮度 /100
+                                P.SliderPreference {
+                                    name: "hueSaturationLightness"
+                                    label: qsTr("Lightness")
+                                    visible:hueSaturation.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: -100
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                //饱和度 /100
+                                P.SliderPreference {
+                                    name: "hueSaturationSaturation"
+                                    label: qsTr("Saturation")
+                                    visible:hueSaturation.value
+                                    displayValue: value
+                                    defaultValue: 0
+                                    from: -100
+                                    to: 100
+                                    stepSize: 1
+                                    live: true
+                                }
+                                P.SwitchPreference {
+                                    visible:hueSaturation.value
+                                    name: "hueSaturationCached"
+                                    label: qsTr("Cached")
+                                }
                             }
                         //电平调节
-                            P.SwitchPreference {
-                                id: levelAdjust 
-                                name: "levelAdjust"
-                                label: qsTr("Level Adjust")
-                                //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value)
-                            }
-                            //伽马x
-                            P.SliderPreference {
-                                name: "levelAdjustGammaX"
-                                label: " --- " + qsTr("Gamma X")
-                                visible:levelAdjust.value
-                                displayValue: value/100
-                                defaultValue: 100
-                                from: -10000
-                                to: 10000
-                                stepSize: 1
-                                live: true
-                            }
-                            //伽马y
-                            P.SliderPreference {
-                                name: "levelAdjustGammaY"
-                                label: " --- " + qsTr("Gamma Y")
-                                visible:levelAdjust.value
-                                displayValue: value/100
-                                defaultValue: 100
-                                from: -100000
-                                to: 100000
-                                stepSize: 1
-                                live: true
-                            }
-                            //伽马z
-                            P.SliderPreference {
-                                name: "levelAdjustGammaZ"
-                                label: " --- " + qsTr("Gamma Z")
-                                visible:levelAdjust.value
-                                displayValue: value/100
-                                defaultValue: 100
-                                from: -10000
-                                to: 10000
-                                stepSize: 1
-                                live: true
-                            }
-                            NoDefaultColorPreference {
-                                name: "maximumInputColor"
-                                label: " --- " + qsTr("Max Input Color")
-                                defaultValue: "#ffffffff"
-                                visible:levelAdjust.value
-                            }
-                            NoDefaultColorPreference {
-                                name: "maximumOutputColor"
-                                label: " --- " + qsTr("Max Output Color")
-                                defaultValue: "#ffffffff"
-                                visible:levelAdjust.value
-                            }
-                            NoDefaultColorPreference {
-                                name: "minimumInputColor"
-                                label: " --- " + qsTr("Min Input Color")
-                                defaultValue: "transparent"
-                                visible:levelAdjust.value
-                            }
-                            NoDefaultColorPreference {
-                                name: "minimumOutputColor"
-                                label: " --- " + qsTr("Min Output Color")
-                                defaultValue: "transparent"
-                                visible:levelAdjust.value
-                            }
-                            P.SwitchPreference {
-                                visible:levelAdjust.value
-                                name: "levelAdjustCached"
-                                label: " --- " + qsTr("Cached")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: levelAdjust.height; visible: levelAdjust.value }
+                                //开关
+                                P.SwitchPreference {
+                                    id: levelAdjust 
+                                    name: "levelAdjust"
+                                    label: qsTr("Level Adjust")
+                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value)
+                                }
+                                //伽马x
+                                P.SliderPreference {
+                                    name: "levelAdjustGammaX"
+                                    label: qsTr("Gamma X")
+                                    visible:levelAdjust.value
+                                    displayValue: value/100
+                                    defaultValue: 100
+                                    from: -10000
+                                    to: 10000
+                                    stepSize: 1
+                                    live: true
+                                }
+                                //伽马y
+                                P.SliderPreference {
+                                    name: "levelAdjustGammaY"
+                                    label: qsTr("Gamma Y")
+                                    visible:levelAdjust.value
+                                    displayValue: value/100
+                                    defaultValue: 100
+                                    from: -100000
+                                    to: 100000
+                                    stepSize: 1
+                                    live: true
+                                }
+                                //伽马z
+                                P.SliderPreference {
+                                    name: "levelAdjustGammaZ"
+                                    label: qsTr("Gamma Z")
+                                    visible:levelAdjust.value
+                                    displayValue: value/100
+                                    defaultValue: 100
+                                    from: -10000
+                                    to: 10000
+                                    stepSize: 1
+                                    live: true
+                                }
+                                NoDefaultColorPreference {
+                                    name: "maximumInputColor"
+                                    label: qsTr("Max Input Color")
+                                    defaultValue: "#ffffffff"
+                                    visible:levelAdjust.value
+                                }
+                                NoDefaultColorPreference {
+                                    name: "maximumOutputColor"
+                                    label: qsTr("Max Output Color")
+                                    defaultValue: "#ffffffff"
+                                    visible:levelAdjust.value
+                                }
+                                NoDefaultColorPreference {
+                                    name: "minimumInputColor"
+                                    label: qsTr("Min Input Color")
+                                    defaultValue: "transparent"
+                                    visible:levelAdjust.value
+                                }
+                                NoDefaultColorPreference {
+                                    name: "minimumOutputColor"
+                                    label: qsTr("Min Output Color")
+                                    defaultValue: "transparent"
+                                    visible:levelAdjust.value
+                                }
+                                P.SwitchPreference {
+                                    visible:levelAdjust.value
+                                    name: "levelAdjustCached"
+                                    label: qsTr("Cached")
+                                }
                             }
                         //颜色渐变
-                            //开启颜色渐变
-                            P.SwitchPreference {
-                                id: colorGradient
-                                name: "colorGradient"
-                                label: qsTr("Color Gradient")
-                            }
-                            //渐变方向
-                            P.SelectPreference {
-                                id:animationDirect
-                                name: "animationDirect"
-                                label: " --- " + qsTr("Animation Direct")
-                                //defaultValue: 0
-                                //TODO 去掉defaultvalue后需要重新选择才能显示动画?
-                                //从左到右,从下到上,从左上到右下,全部
-                                //旋转 4
-                                //中心 5
-                                //高级选项6 用于改变线性的start,end值
-                                model: [ qsTr("Horizontal"), qsTr("Vertical"), qsTr("Oblique"), qsTr("All"), qsTr("Center"), qsTr("Conical"),qsTr("Advanced")]
-                                visible: colorGradient.value
-                            }
-                            //高级设置 6
-                            //s.x x轴起始值
-                            // bug 要更新后才能使用
-                            P.SpinPreference {
-                                name: "animationAdvancedStartX"
-                                label: " --- --- " + qsTr("Start X")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: settings.animationDirect==6&&colorGradient.value
-                                defaultValue: 0
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //s.y y轴起始值
-                            P.SpinPreference {
-                                name: "animationAdvancedStartY"
-                                label: " --- --- " + qsTr("Start Y")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: settings.animationDirect==6&&colorGradient.value
-                                defaultValue: 0
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //e.x x轴结束值
-                            P.SpinPreference {
-                                name: "animationAdvancedEndX"
-                                label: " --- --- " + qsTr("End X")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: settings.animationDirect==6&&colorGradient.value
-                                defaultValue: 100
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //e.y y轴结束值
-                            P.SpinPreference {
-                                name: "animationAdvancedEndY"
-                                label: " --- --- " + qsTr("End Y")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: settings.animationDirect==6&&colorGradient.value
-                                defaultValue: 100
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //方向为4,5时提供的垂直水平角度选项,为4时提供水平/垂直半径
-                            //水平
-                            P.SpinPreference {
-                                name: "animationHorizontal"
-                                label: " --- --- " + qsTr("Horizontal")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
-                                defaultValue: 0
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //垂直
-                            P.SpinPreference {
-                                name: "animationVertical"
-                                label: " --- --- " + qsTr("Vertical")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
-                                defaultValue: 0
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //角度
-                            P.SpinPreference {
-                                name: "animationAngle"
-                                label: " --- --- " + qsTr("Angle")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
-                                defaultValue: 0
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //水平半径 4
-                            P.SpinPreference {
-                                name: "animationHorizontalRadius"
-                                label: " --- --- " + qsTr("Horizontal Radius")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: settings.animationDirect==4&&colorGradient.value
-                                defaultValue: 50
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //垂直半径 4
-                            P.SpinPreference {
-                                name: "animationVerticalRadius"
-                                label: " --- --- " + qsTr("Vertical Radius")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: settings.animationDirect==4&&colorGradient.value
-                                defaultValue: 50
-                                from: -10000
-                                to: 10000
-                                stepSize: 5
-                            }
-                            //渐变颜色
-                            P.SelectPreference {
-                                id:cycleColor
-                                name: "cycleColor"
-                                label: " --- " + qsTr("Cycle Color")
-                                defaultValue: 0
-                                //彩虹
-                                model: [ qsTr("Rainbow") ,qsTr("Custom")+"Ⅰ", qsTr("Custom")+"Ⅱ", qsTr("Custom")+"Ⅲ"]
-                                visible: colorGradient.value
-                            }
-                            //自定义颜色 1
-                            //开始颜色
-                            P.SpinPreference {
-                                name: "cycleColorCustomStart"
-                                label: " --- " + qsTr("Color Start")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor==1
-                                defaultValue: 0
-                                from: -5000
-                                to: 5000
-                                stepSize: 16
-                            }
-                            //结束颜色
-                            P.SpinPreference {
-                                name: "cycleColorCustomEnd"
-                                label: " --- " + qsTr("Color End")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor==1
-                                defaultValue: 160
-                                from: -5000
-                                to: 5000
-                                stepSize: 16
-                            }
-                            //自定义颜色 2
-                            Row{
-                                spacing: 4
-                                visible: colorGradient.value&&settings.cycleColor==2
-                                Column {
-                                    Label {
-                                        text: qsTr("00~05")
-                                        anchors.right: parent.right
-                                        anchors.rightMargin: 12
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: colorGradient.height; visible: colorGradient.value }
+                                //开启颜色渐变
+                                P.SwitchPreference {
+                                    id: colorGradient
+                                    name: "colorGradient"
+                                    label: qsTr("Color Gradient")
+                                }
+                                //渐变方向
+                                P.ObjectPreferenceGroup {
+                                    defaultValue: thiz.settings
+                                    syncProperties: true
+                                    enabled: currentItem
+                                    width: parent.width
+                                    data: PreferenceGroupIndicator { anchors.topMargin: animationDirect.height; visible: animationDirect.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                                    P.SelectPreference {
+                                        id:animationDirect
+                                        name: "animationDirect"
+                                        label: qsTr("Animation Direct")
+                                        //defaultValue: 0
+                                        //TODO 去掉defaultvalue后需要重新选择才能显示动画?
+                                        //从左到右,从下到上,从左上到右下,全部
+                                        //旋转 4
+                                        //中心 5
+                                        //高级选项6 用于改变线性的start,end值
+                                        model: [ qsTr("Horizontal"), qsTr("Vertical"), qsTr("Oblique"), qsTr("All"), qsTr("Center"), qsTr("Conical"),qsTr("Advanced")]
+                                        visible: colorGradient.value
                                     }
-                                    P.ObjectPreferenceGroup {
-                                        syncProperties: true
-                                        enabled: currentItem
-                                        defaultValue: thiz.settings
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor0"
-                                            defaultValue: colorInit(0)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor1"
-                                            defaultValue: colorInit(1)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor2"
-                                            defaultValue: colorInit(2)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor3"
-                                            defaultValue: colorInit(3)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor4"
-                                            defaultValue: colorInit(4)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor5"
-                                            defaultValue: colorInit(5)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
+                                    //高级设置 6
+                                    //s.x x轴起始值
+                                    // bug 要更新后才能使用
+                                    P.SpinPreference {
+                                        name: "animationAdvancedStartX"
+                                        label: " --- --- " + qsTr("Start X")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: settings.animationDirect==6&&colorGradient.value
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //s.y y轴起始值
+                                    P.SpinPreference {
+                                        name: "animationAdvancedStartY"
+                                        label: " --- --- " + qsTr("Start Y")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: settings.animationDirect==6&&colorGradient.value
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //e.x x轴结束值
+                                    P.SpinPreference {
+                                        name: "animationAdvancedEndX"
+                                        label: " --- --- " + qsTr("End X")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: settings.animationDirect==6&&colorGradient.value
+                                        defaultValue: 100
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //e.y y轴结束值
+                                    P.SpinPreference {
+                                        name: "animationAdvancedEndY"
+                                        label: " --- --- " + qsTr("End Y")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: settings.animationDirect==6&&colorGradient.value
+                                        defaultValue: 100
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //方向为4,5时提供的垂直水平角度选项,为4时提供水平/垂直半径
+                                    //水平
+                                    P.SpinPreference {
+                                        name: "animationHorizontal"
+                                        label: qsTr("Horizontal")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //垂直
+                                    P.SpinPreference {
+                                        name: "animationVertical"
+                                        label: qsTr("Vertical")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //角度
+                                    P.SpinPreference {
+                                        name: "animationAngle"
+                                        label: qsTr("Angle")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: (settings.animationDirect==4||settings.animationDirect==5)&&colorGradient.value
+                                        defaultValue: 0
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //水平半径 4
+                                    P.SpinPreference {
+                                        name: "animationHorizontalRadius"
+                                        label: qsTr("Horizontal Radius")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: settings.animationDirect==4&&colorGradient.value
+                                        defaultValue: 50
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
+                                    }
+                                    //垂直半径 4
+                                    P.SpinPreference {
+                                        name: "animationVerticalRadius"
+                                        label: qsTr("Vertical Radius")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: settings.animationDirect==4&&colorGradient.value
+                                        defaultValue: 50
+                                        from: -10000
+                                        to: 10000
+                                        stepSize: 5
                                     }
                                 }
-                                Column {
-                                    Label {
-                                        text: qsTr("06~10")
-                                        anchors.right: parent.right
-                                        anchors.rightMargin: 12
+                                //渐变颜色
+                                P.ObjectPreferenceGroup {
+                                    defaultValue: thiz.settings
+                                    syncProperties: true
+                                    enabled: currentItem
+                                    width: parent.width
+                                    data: PreferenceGroupIndicator { anchors.topMargin: cycleColor.height; visible: cycleColor.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                                    P.SelectPreference {
+                                        id:cycleColor
+                                        name: "cycleColor"
+                                        label: qsTr("Cycle Color")
+                                        defaultValue: 0
+                                        //彩虹
+                                        model: [ qsTr("Rainbow") ,qsTr("Custom")+"Ⅰ", qsTr("Custom")+"Ⅱ", qsTr("Custom")+"Ⅲ"]
+                                        visible: colorGradient.value
                                     }
-                                    P.ObjectPreferenceGroup {
-                                        syncProperties: true
-                                        enabled: currentItem
-                                        defaultValue: thiz.settings
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor6"
-                                            defaultValue: colorInit(6)
-                                            visible: colorGradient.value&&settings.cycleColor==2
+                                    //自定义颜色 1
+                                    //开始颜色
+                                    P.SpinPreference {
+                                        name: "cycleColorCustomStart"
+                                        label: qsTr("Color Start")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: colorGradient.value&&settings.cycleColor==1
+                                        defaultValue: 0
+                                        from: -5000
+                                        to: 5000
+                                        stepSize: 16
+                                    }
+                                    //结束颜色
+                                    P.SpinPreference {
+                                        name: "cycleColorCustomEnd"
+                                        label: qsTr("Color End")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: colorGradient.value&&settings.cycleColor==1
+                                        defaultValue: 160
+                                        from: -5000
+                                        to: 5000
+                                        stepSize: 16
+                                    }
+                                    //自定义颜色 2
+                                    Row{
+                                        spacing: 4
+                                        visible: colorGradient.value&&settings.cycleColor==2
+                                        Column {
+                                            Label {
+                                                text: qsTr("00~05")
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 12
+                                            }
+                                            P.ObjectPreferenceGroup {
+                                                syncProperties: true
+                                                enabled: currentItem
+                                                defaultValue: thiz.settings
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor0"
+                                                    defaultValue: colorInit(0)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor1"
+                                                    defaultValue: colorInit(1)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor2"
+                                                    defaultValue: colorInit(2)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor3"
+                                                    defaultValue: colorInit(3)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor4"
+                                                    defaultValue: colorInit(4)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor5"
+                                                    defaultValue: colorInit(5)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                            }
                                         }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor7"
-                                            defaultValue: colorInit(7)
-                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        Column {
+                                            Label {
+                                                text: qsTr("06~10")
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 12
+                                            }
+                                            P.ObjectPreferenceGroup {
+                                                syncProperties: true
+                                                enabled: currentItem
+                                                defaultValue: thiz.settings
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor6"
+                                                    defaultValue: colorInit(6)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor7"
+                                                    defaultValue: colorInit(7)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor8"
+                                                    defaultValue: colorInit(8)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor9"
+                                                    defaultValue: colorInit(9)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor10"
+                                                    defaultValue: colorInit(10)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                            }
                                         }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor8"
-                                            defaultValue: colorInit(8)
-                                            visible: colorGradient.value&&settings.cycleColor==2
+                                        Column {
+                                            Label {
+                                                text: qsTr("11~15")
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 12
+                                            }
+                                            P.ObjectPreferenceGroup {
+                                                syncProperties: true
+                                                enabled: currentItem
+                                                defaultValue: thiz.settings
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor11"
+                                                    defaultValue: colorInit(11)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor12"
+                                                    defaultValue: colorInit(12)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor13"
+                                                    defaultValue: colorInit(13)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor14"
+                                                    defaultValue: colorInit(14)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                                NoDefaultColorPreference {
+                                                    name: "cycleColor15"
+                                                    defaultValue: colorInit(15)
+                                                    visible: colorGradient.value&&settings.cycleColor==2
+                                                }
+                                            }
                                         }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor9"
-                                            defaultValue: colorInit(9)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor10"
-                                            defaultValue: colorInit(10)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
+                                    }
+                                    //自定义颜色3
+                                    GradientPreference {
+                                        name: "fillStops"
+                                        label: qsTr("Fill Gradient")
+                                        defaultValue: defaultFillStops
+                                        visible: colorGradient.value&&settings.cycleColor==3
                                     }
                                 }
-                                Column {
-                                    Label {
-                                        text: qsTr("11~15")
-                                        anchors.right: parent.right
-                                        anchors.rightMargin: 12
+                                //饱和度
+                                P.SpinPreference {
+                                    name: "cycleSaturation"
+                                    label: qsTr("Saturation")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
+                                    defaultValue: 100
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                }
+                                //亮度
+                                P.SpinPreference {
+                                    name: "cycleValue"
+                                    label: qsTr("Value")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
+                                    defaultValue: 100
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                }
+                                //透明度
+                                P.SpinPreference {
+                                    name: "cycleOpacity"
+                                    label: qsTr("Opacity")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
+                                    defaultValue: 100
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                }
+                                //渐变动画
+                                P.ObjectPreferenceGroup {
+                                    defaultValue: thiz.settings
+                                    syncProperties: true
+                                    enabled: currentItem
+                                    width: parent.width
+                                    data: PreferenceGroupIndicator { anchors.topMargin: enableColorAnimation.height; visible: enableColorAnimation.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                                    P.SwitchPreference {
+                                        id: enableColorAnimation
+                                        name: "enableColorAnimation"
+                                        label: qsTr("Color Animation")
+                                        visible: colorGradient.value
                                     }
-                                    P.ObjectPreferenceGroup {
-                                        syncProperties: true
-                                        enabled: currentItem
-                                        defaultValue: thiz.settings
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor11"
-                                            defaultValue: colorInit(11)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor12"
-                                            defaultValue: colorInit(12)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor13"
-                                            defaultValue: colorInit(13)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor14"
-                                            defaultValue: colorInit(14)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
-                                        NoDefaultColorPreference {
-                                            name: "cycleColor15"
-                                            defaultValue: colorInit(15)
-                                            visible: colorGradient.value&&settings.cycleColor==2
-                                        }
+                                    //循环时间
+                                    P.SpinPreference {
+                                        name: "cycleTime"
+                                        label: qsTr("Cycle Time")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: enableColorAnimation.value&&colorGradient.value
+                                        defaultValue: 500
+                                        from: 0
+                                        to: 50000
+                                        stepSize: 100
+                                    }
+                                    P.SpinPreference {
+                                        name: "pauseColorAnimationTime"
+                                        label: qsTr("Pause Time")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: enableColorAnimation.value&&colorGradient.value
+                                        defaultValue: 0
+                                        from: 0
+                                        to: 10000
+                                        stepSize: 100
+                                    }
+                                    //渐变开始值
+                                    P.SpinPreference {
+                                        name: "cycleColorFrom"
+                                        label: qsTr("Color From")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: enableColorAnimation.value&&colorGradient.value&&settings.cycleColor!=3
+                                        defaultValue: 0
+                                        from: 0
+                                        to: 10000
+                                        stepSize: 1
+                                    }
+                                    //渐变结束值
+                                    P.SpinPreference {
+                                        name: "cycleColorTo"
+                                        label: qsTr("Color To")
+                                        editable: true
+                                        display: P.TextFieldPreference.ExpandLabel
+                                        visible: enableColorAnimation.value&&colorGradient.value&&settings.cycleColor!=3
+                                        defaultValue: 15
+                                        from: 0
+                                        to: 10000
+                                        stepSize: 1
                                     }
                                 }
+                                //是否缓存
+                                P.SwitchPreference {
+                                    name: "enableColorAnimationCached"
+                                    label: qsTr("Cached")
+                                    visible: colorGradient.value
+                                }
+                                //TODO渐变次数
                             }
-                            //自定义颜色3
-                            GradientPreference {
-                                name: "fillStops"
-                                label: " --- " + qsTr("Fill Gradient")
-                                defaultValue: gradientStops(null, colorAlpha("#a18cd1", 0.5))
-                                visible: colorGradient.value&&settings.cycleColor==3
-                            }
-                            //饱和度
-                            P.SpinPreference {
-                                name: "cycleSaturation"
-                                label: " --- " + qsTr("Saturation")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
-                                defaultValue: 100
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                            }
-                            //亮度
-                            P.SpinPreference {
-                                name: "cycleValue"
-                                label: " --- " + qsTr("Value")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
-                                defaultValue: 100
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                            }
-                            //透明度
-                            P.SpinPreference {
-                                name: "cycleOpacity"
-                                label: " --- " + qsTr("Opacity")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: colorGradient.value&&settings.cycleColor!=2&&settings.cycleColor!=3
-                                defaultValue: 100
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                            }
-                            //渐变动画
-                            P.SwitchPreference {
-                                id: enableColorAnimation
-                                name: "enableColorAnimation"
-                                label: " --- " + qsTr("Color Animation")
-                                visible: colorGradient.value
-                            }
-                            //循环时间
-                            // BUG 更改之后无法立刻看到预览
-                            P.SpinPreference {
-                                name: "cycleTime"
-                                label: " --- --- " + qsTr("Cycle Time")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value
-                                defaultValue: 500
-                                from: 0
-                                to: 50000
-                                stepSize: 100
-                            }
-                            P.SpinPreference {
-                                name: "pauseColorAnimationTime"
-                                label: " --- --- " + qsTr("Pause Time")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value
-                                defaultValue: 0
-                                from: 0
-                                to: 10000
-                                stepSize: 100
-                            }
-                            //渐变开始值
-                            P.SpinPreference {
-                                name: "cycleColorFrom"
-                                label: " --- " + qsTr("Color From")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value&&settings.cycleColor!=3
-                                defaultValue: 0
-                                from: 0
-                                to: 10000
-                                stepSize: 1
-                            }
-                            //渐变结束值
-                            P.SpinPreference {
-                                name: "cycleColorTo"
-                                label: " --- " + qsTr("Color To")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableColorAnimation.value&&colorGradient.value&&settings.cycleColor!=3
-                                defaultValue: 15
-                                from: 0
-                                to: 10000
-                                stepSize: 1
-                            }
-                            //是否缓存
-                            P.SwitchPreference {
-                                name: "enableColorAnimationCached"
-                                label: " --- " + qsTr("Cached")
-                                visible: colorGradient.value
-                            }
-                            //TODO渐变次数
                         }
                     }
                 }
@@ -1185,19 +1302,14 @@ DataSourceElement {
                             enabled: currentItem
                             width: parent.width
                             //必须资源
-                        //圆角
-                            P.SliderPreference {
-                                name: "radius"
-                                label: qsTr("Border Radius")
-                                displayValue: value <= 50 ? (value + " px") : (value - 50 + " %")
-                                defaultValue: 0
-                                from: 0
-                                to: 150
-                                stepSize: 1
-                                live: true
-                            }
                         //模糊
                             //快速模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: fastBlur.height; visible: fastBlur.value }
                                 P.SwitchPreference {
                                     id: fastBlur
                                     name: "fastBlur"
@@ -1206,7 +1318,7 @@ DataSourceElement {
                                 //半径
                                 P.SpinPreference {
                                     name: "fastBlurRadius"
-                                    label: " --- " + qsTr("Radius")
+                                    label: qsTr("Radius")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: fastBlur.value
@@ -1218,16 +1330,23 @@ DataSourceElement {
                                 //透明边框
                                 P.SwitchPreference {
                                     name: "fastBlurTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                     visible: fastBlur.value
                                 }
                                 //缓存
                                 P.SwitchPreference {
                                     name: "fastBlurCached"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible: fastBlur.value
                                 }
+                            }
                             //高斯模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: gaussianBlur.height; visible: gaussianBlur.value }
                                 P.SwitchPreference {
                                     id: gaussianBlur
                                     name: "gaussianBlur"
@@ -1236,7 +1355,7 @@ DataSourceElement {
                                 //半径
                                 P.SpinPreference {
                                     name: "gaussianBlurRadius"
-                                    label: " --- " + qsTr("Radius")
+                                    label: qsTr("Radius")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: gaussianBlur.value
@@ -1248,7 +1367,7 @@ DataSourceElement {
                                 //偏差值
                                 P.SpinPreference {
                                     name: "gaussianBlurDeviation"
-                                    label: " --- " + qsTr("Deviation")
+                                    label: qsTr("Deviation")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: gaussianBlur.value
@@ -1260,7 +1379,7 @@ DataSourceElement {
                                 //样本数
                                 P.SpinPreference {
                                     name: "gaussianBlurSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: gaussianBlur.value
@@ -1272,16 +1391,23 @@ DataSourceElement {
                                 //透明边框
                                 P.SwitchPreference {
                                     name: "dropShadowTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                     visible: gaussianBlur.value
                                 }
                                 //缓存
                                 P.SwitchPreference {
                                     name: "gaussianBlurCached"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible: gaussianBlur.value
                                 }
+                            }
                             //蒙版模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: maskedBlur.height; visible: maskedBlur.value }
                                 P.SwitchPreference {
                                     id: maskedBlur
                                     name: "maskedBlur"
@@ -1290,13 +1416,13 @@ DataSourceElement {
                                 //遮罩图片
                                 P.ImagePreference {
                                     name: "maskedBlurMaskSource"
-                                    label: " --- " + qsTr("Mask Source")
+                                    label: qsTr("Mask Source")
                                     visible:maskedBlur.value&&!blendMaskedBlurDataEnabled.value
                                 }
                                 //半径
                                 P.SpinPreference {
                                     name: "maskedBlurRadius"
-                                    label: " --- " + qsTr("Radius")
+                                    label: qsTr("Radius")
                                     visible:maskedBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1308,7 +1434,7 @@ DataSourceElement {
                                 //采样数
                                 P.SpinPreference {
                                     name: "maskedBlurSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     visible:maskedBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 9
@@ -1317,20 +1443,27 @@ DataSourceElement {
                                     stepSize: 1
                                     editable: true
                                 }
-                                //缓存
-                                P.SwitchPreference {
-                                    visible:maskedBlur.value
-                                    name: "maskedBlurCached"
-                                    label: " --- " + qsTr("Cached")
-                                }
                                 //启用数据源
                                 P.SwitchPreference {
                                     id: blendMaskedBlurDataEnabled
                                     name: "blendDataEnabled"
-                                    label: " --- " + qsTr("Enable Data Source")
+                                    label: qsTr("Enable Data Source")
                                     visible: maskedBlur.value
                                 }
+                                //缓存
+                                P.SwitchPreference {
+                                    visible:maskedBlur.value
+                                    name: "maskedBlurCached"
+                                    label: qsTr("Cached")
+                                }
+                            }
                             //递归模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: recursiveBlur.height; visible: recursiveBlur.value }
                                 P.SwitchPreference {
                                     id: recursiveBlur
                                     name: "recursiveBlur"
@@ -1339,7 +1472,7 @@ DataSourceElement {
                                 //半径
                                 P.SpinPreference {
                                 name: "recursiveBlurRadius"
-                                label: " --- " + qsTr("Radius")
+                                label: qsTr("Radius")
                                 visible:recursiveBlur.value
                                 display: P.TextFieldPreference.ExpandLabel
                                 defaultValue: 0
@@ -1351,7 +1484,7 @@ DataSourceElement {
                                 //循环次数
                                 P.SpinPreference {
                                     name: "recursiveBlurLoops"
-                                    label: " --- " + qsTr("Loops")
+                                    label: qsTr("Loops")
                                     visible:recursiveBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1363,7 +1496,7 @@ DataSourceElement {
                                 //进度
                                 P.SpinPreference {
                                     name: "recursiveBlurProgress"
-                                    label: " --- " + qsTr("Progress")
+                                    label: qsTr("Progress")
                                     visible:recursiveBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 1
@@ -1376,16 +1509,24 @@ DataSourceElement {
                                 P.SwitchPreference {
                                     visible:recursiveBlur.value
                                     name: "recursiveBlurTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                 }
                                 //缓存
                                 P.SwitchPreference {
                                     visible:recursiveBlur.value
                                     name: "recursiveBlurCached"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                 }
+                            }
+                            P.Separator{}
                         //动态模糊
                             //方向模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: directionalBlur.height; visible: directionalBlur.value }
                                 P.SwitchPreference {
                                     id: directionalBlur
                                     name: "directionalBlur"
@@ -1394,7 +1535,7 @@ DataSourceElement {
                                 //长度
                                 P.SpinPreference {
                                 name: "directionalBlurLength"
-                                label: " --- " + qsTr("Length")
+                                label: qsTr("Length")
                                 visible:directionalBlur.value
                                 display: P.TextFieldPreference.ExpandLabel
                                 defaultValue: 0
@@ -1406,7 +1547,7 @@ DataSourceElement {
                                 //角度
                                 P.SpinPreference {
                                     name: "directionalBlurAngle"
-                                    label: " --- " + qsTr("Angle")
+                                    label: qsTr("Angle")
                                     visible:directionalBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1418,7 +1559,7 @@ DataSourceElement {
                                 //采样
                                 P.SpinPreference {
                                     name: "directionalBlurSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     visible:directionalBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1429,15 +1570,22 @@ DataSourceElement {
                                 }
                                 P.SwitchPreference {
                                     name: "directionalBlurTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                     visible:directionalBlur.value
                                 }
                                 P.SwitchPreference {
                                     name: "directionalBlurCached"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible:directionalBlur.value
                                 }
+                            }
                             //径向模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: radialBlur.height; visible: radialBlur.value }
                                 P.SwitchPreference {
                                     id: radialBlur
                                     name: "radialBlur"
@@ -1446,7 +1594,7 @@ DataSourceElement {
                                 //水平偏移
                                 P.SpinPreference {
                                     name: "radialBlurHorizontalOffset"
-                                    label: " --- " + qsTr("Horizontal Offset")
+                                    label: qsTr("Horizontal Offset")
                                     visible: radialBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1458,7 +1606,7 @@ DataSourceElement {
                                 //垂直偏移
                                 P.SpinPreference {
                                     name: "radialBlurVerticalOffset"
-                                    label: " --- " + qsTr("Vertical Offset")
+                                    label: qsTr("Vertical Offset")
                                     visible: radialBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1470,7 +1618,7 @@ DataSourceElement {
                                 //角度
                                 P.SpinPreference {
                                     name: "radialBlurAngle"
-                                    label: " --- " + qsTr("Angle")
+                                    label: qsTr("Angle")
                                     visible: radialBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1482,7 +1630,7 @@ DataSourceElement {
                                 //采样
                                 P.SpinPreference {
                                     name: "radialBlurSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     visible: radialBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1493,15 +1641,22 @@ DataSourceElement {
                                 }
                                 P.SwitchPreference {
                                     name: "radialBlurTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                     visible: radialBlur.value
                                 }
                                 P.SwitchPreference {
                                     name: "radialBlurCached"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible: radialBlur.value
                                 }
+                            }
                             //缩放模糊
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: zoomBlur.height; visible: zoomBlur.value }
                                 P.SwitchPreference {
                                     id: zoomBlur
                                     name: "zoomBlur"
@@ -1510,7 +1665,7 @@ DataSourceElement {
                                 //水平偏移
                                 P.SpinPreference {
                                     name: "zoomBlurHorizontalOffset"
-                                    label: " --- " + qsTr("Horizontal Offset")
+                                    label: qsTr("Horizontal Offset")
                                     visible: zoomBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1522,7 +1677,7 @@ DataSourceElement {
                                 //垂直偏移
                                 P.SpinPreference {
                                     name: "zoomBlurVerticalOffset"
-                                    label: " --- " + qsTr("Vertical Offset")
+                                    label: qsTr("Vertical Offset")
                                     visible: zoomBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1534,7 +1689,7 @@ DataSourceElement {
                                 //长度
                                 P.SpinPreference {
                                     name: "zoomBlurrLength"
-                                    label: " --- " + qsTr("Length")
+                                    label: qsTr("Length")
                                     visible: zoomBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1546,7 +1701,7 @@ DataSourceElement {
                                 //采样
                                 P.SpinPreference {
                                     name: "zoomBlurSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     visible: zoomBlur.value
                                     display: P.TextFieldPreference.ExpandLabel
                                     defaultValue: 0
@@ -1557,16 +1712,24 @@ DataSourceElement {
                                 }
                                 P.SwitchPreference {
                                     name: "zoomBlurTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                     visible: zoomBlur.value
                                 }
                                 P.SwitchPreference {
                                     name: "zoomBlurCached"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible: zoomBlur.value
                                 }
+                            }
+                            P.Separator{}
                         //阴影
                             //外
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableDropShadow.height; visible: enableDropShadow.value }
                                 P.SwitchPreference {
                                         id: enableDropShadow
                                         name: "enableDropShadow"
@@ -1575,14 +1738,14 @@ DataSourceElement {
                                 //颜色
                                 NoDefaultColorPreference {
                                     name: "dropShadowColor"
-                                    label: " --- " + qsTr("Color")
+                                    label: qsTr("Color")
                                     defaultValue: "white"
                                     visible: enableDropShadow.value
                                 }
                                 //半径
                                 P.SpinPreference {
                                     name: "dropShadowRadius"
-                                    label: " --- " + qsTr("Radius")
+                                    label: qsTr("Radius")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableDropShadow.value
@@ -1594,7 +1757,7 @@ DataSourceElement {
                                 //采样率
                                 P.SpinPreference {
                                     name: "dropShadowSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableDropShadow.value
@@ -1606,7 +1769,7 @@ DataSourceElement {
                                 //水平位移
                                 P.SpinPreference {
                                     name: "dropShadowHorizontalOffset"
-                                    label: " --- " + qsTr("Horizontal Offset")
+                                    label: qsTr("Horizontal Offset")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableDropShadow.value
@@ -1618,7 +1781,7 @@ DataSourceElement {
                                 //垂直位移
                                 P.SpinPreference {
                                     name: "dropShadowVerticalOffset"
-                                    label: " --- " + qsTr("Vertical Offset")
+                                    label: qsTr("Vertical Offset")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableDropShadow.value
@@ -1630,17 +1793,23 @@ DataSourceElement {
                                 //透明边框
                                 P.SwitchPreference {
                                     name: "dropShadowTransparentBorder"
-                                    label: " --- " + qsTr("Transparent Border")
+                                    label: qsTr("Transparent Border")
                                     visible: enableDropShadow.value
                                 }
                                 //缓存
                                 P.SwitchPreference {
                                     name: "dropShadowCache"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible: enableDropShadow.value
-                                } 
-
-                            //内    
+                                }
+                            }
+                            //内
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableInnerShadow.height; visible: enableInnerShadow.value }
                                 P.SwitchPreference {
                                         id: enableInnerShadow
                                         name: "enableInnerShadow"
@@ -1649,14 +1818,14 @@ DataSourceElement {
                                 //颜色
                                 NoDefaultColorPreference {
                                     name: "innerShadowColor"
-                                    label: " --- " + qsTr("Color")
+                                    label: qsTr("Color")
                                     defaultValue: "white"
                                     visible: enableInnerShadow.value
                                 }
                                 //半径
                                 P.SpinPreference {
                                     name: "innerShadowRadius"
-                                    label: " --- " + qsTr("Radius")
+                                    label: qsTr("Radius")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableInnerShadow.value
@@ -1668,7 +1837,7 @@ DataSourceElement {
                                 //采样率
                                 P.SpinPreference {
                                     name: "innerShadowSamples"
-                                    label: " --- " + qsTr("Samples")
+                                    label: qsTr("Samples")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableInnerShadow.value
@@ -1680,7 +1849,7 @@ DataSourceElement {
                                 //水平位移
                                 P.SpinPreference {
                                     name: "innerShadowHorizontalOffset"
-                                    label: " --- " + qsTr("Horizontal Offset")
+                                    label: qsTr("Horizontal Offset")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableInnerShadow.value
@@ -1692,7 +1861,7 @@ DataSourceElement {
                                 //垂直位移
                                 P.SpinPreference {
                                     name: "innerShadowVerticalOffset"
-                                    label: " --- " + qsTr("Vertical Offset")
+                                    label: qsTr("Vertical Offset")
                                     editable: true
                                     display: P.TextFieldPreference.ExpandLabel
                                     visible: enableInnerShadow.value
@@ -1704,76 +1873,85 @@ DataSourceElement {
                                 //快速渲染
                                 P.SwitchPreference {
                                     name: "innerShadowFastAlgorithm"
-                                    label: " --- " + qsTr("Fast Algorithm")
+                                    label: qsTr("Fast Algorithm")
                                     visible: enableInnerShadow.value
                                 }
                                 //缓存
                                 P.SwitchPreference {
                                     name: "innerShadowCache"
-                                    label: " --- " + qsTr("Cached")
+                                    label: qsTr("Cached")
                                     visible: enableInnerShadow.value
                                 }
+                            }
+                            P.Separator{}
                         //发光效果
-                            P.SwitchPreference {
-                                id: enableGlow
-                                name: "enableGlow"
-                                label: qsTr("Glow")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableGlow.height; visible: enableGlow.value }
+                                P.SwitchPreference {
+                                    id: enableGlow
+                                    name: "enableGlow"
+                                    label: qsTr("Glow")
+                                }
+                                //颜色
+                                NoDefaultColorPreference {
+                                    name: "glowColor"
+                                    label: qsTr("Color")
+                                    defaultValue: "white"
+                                    visible: enableGlow.value
+                                }
+                                //作用范围(半径)
+                                P.SpinPreference {
+                                    name: "glowRadius"
+                                    label: qsTr("Radius")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: enableGlow.value
+                                    defaultValue: 5
+                                    from: 0
+                                    to: 500
+                                    stepSize: 1
+                                }
+                                //强度  范围0~1  值除以100
+                                P.SpinPreference {
+                                    name: "glowSpread"
+                                    label: qsTr("Spread")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: enableGlow.value
+                                    defaultValue: 50
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                }
+                                //采样率
+                                P.SpinPreference {
+                                    name: "glowSamples"
+                                    label: qsTr("Samples")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: enableGlow.value
+                                    defaultValue: 5
+                                    from: 0
+                                    to: 1000
+                                    stepSize: 1
+                                }
+                                //透明边框
+                                P.SwitchPreference {
+                                    name: "glowTransparentBorder"
+                                    label: qsTr("Transparent Border")
+                                    visible: enableGlow.value
+                                }
+                                //缓存
+                                P.SwitchPreference {
+                                    name: "glowCache"
+                                    label: qsTr("Cached")
+                                    visible: enableGlow.value
+                                }
                             }
-                            //颜色
-                            NoDefaultColorPreference {
-                                name: "glowColor"
-                                label: " --- " + qsTr("Color")
-                                defaultValue: "white"
-                                visible: enableGlow.value
-                            }
-                            //作用范围(半径)
-                            P.SpinPreference {
-                                name: "glowRadius"
-                                label: " --- " + qsTr("Radius")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableGlow.value
-                                defaultValue: 5
-                                from: 0
-                                to: 500
-                                stepSize: 1
-                            }
-                            //强度  范围0~1  值除以100
-                            P.SpinPreference {
-                                name: "glowSpread"
-                                label: " --- " + qsTr("Spread")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableGlow.value
-                                defaultValue: 50
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                            }
-                            //采样率
-                            P.SpinPreference {
-                                name: "glowSamples"
-                                label: " --- " + qsTr("Samples")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableGlow.value
-                                defaultValue: 5
-                                from: 0
-                                to: 1000
-                                stepSize: 1
-                            }
-                            //透明边框
-                            P.SwitchPreference {
-                                name: "glowTransparentBorder"
-                                label: " --- " + qsTr("Transparent Border")
-                                visible: enableGlow.value
-                            }
-                            //缓存
-                            P.SwitchPreference {
-                                name: "glowCache"
-                                label: " --- " + qsTr("Cached")
-                                visible: enableGlow.value
-                            } 
                         }
                     }
                 }
@@ -1798,154 +1976,183 @@ DataSourceElement {
                             width: parent.width
                             //必须资源
                         //遮罩
-                            P.SwitchPreference {
-                                id: enableBlend
-                                name: "enableBlend"
-                                label: qsTr("Blend")
-                            }
-                            //遮罩图像
-                            P.ImagePreference {
-                                name: "blendSource"
-                                label: " --- " + qsTr("Blend Image")
-                                visible: enableBlend.value&&!blendDataEnabled.value
-                            }
-                            //模式
-                            P.SelectPreference {
-                                name: "blendMode"
-                                label: " --- " + qsTr("Mode")
-                                defaultValue: 0
-                                model: [ qsTr("normal"), qsTr("addition"), qsTr("average"), qsTr("color"), qsTr("colorBurn"), qsTr("colorDodge"),qsTr("darken"),qsTr("darkerColor"),qsTr("difference"),qsTr("divide"),qsTr("exclusion"),qsTr("hardLight"),qsTr("hue"),qsTr("lighten"),qsTr("lighterColor"),qsTr("lightness"),qsTr("multiply"),qsTr("negation"),qsTr("saturation"),qsTr("screen"),qsTr("subtract"),qsTr("softLight")]
-                                visible: enableBlend.value
-                            }
-                            //缓存
-                            P.SwitchPreference {
-                                name: "enableBlendCached"
-                                label: " --- " + qsTr("Cached")
-                                visible: enableBlend.value
-                            }
-                            //启用数据源
-                            P.SwitchPreference {
-                                id: blendDataEnabled
-                                name: "blendDataEnabled"
-                                label: " --- " + qsTr("Enable Data Source")
-                                visible: enableBlend.value
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableBlend.height; visible: enableBlend.value }
+                                P.SwitchPreference {
+                                    id: enableBlend
+                                    name: "enableBlend"
+                                    label: qsTr("Blend")
+                                }
+                                //遮罩图像
+                                P.ImagePreference {
+                                    name: "blendSource"
+                                    label: qsTr("Blend Image")
+                                    visible: enableBlend.value&&!blendDataEnabled.value
+                                }
+                                //模式
+                                P.SelectPreference {
+                                    name: "blendMode"
+                                    label: qsTr("Mode")
+                                    defaultValue: 0
+                                    model: [ qsTr("normal"), qsTr("addition"), qsTr("average"), qsTr("color"), qsTr("colorBurn"), qsTr("colorDodge"),qsTr("darken"),qsTr("darkerColor"),qsTr("difference"),qsTr("divide"),qsTr("exclusion"),qsTr("hardLight"),qsTr("hue"),qsTr("lighten"),qsTr("lighterColor"),qsTr("lightness"),qsTr("multiply"),qsTr("negation"),qsTr("saturation"),qsTr("screen"),qsTr("subtract"),qsTr("softLight")]
+                                    visible: enableBlend.value
+                                }
+                                //启用数据源
+                                P.SwitchPreference {
+                                    id: blendDataEnabled
+                                    name: "blendDataEnabled"
+                                    label: qsTr("Enable Data Source")
+                                    visible: enableBlend.value
+                                }
+                                //缓存
+                                P.SwitchPreference {
+                                    name: "enableBlendCached"
+                                    label: qsTr("Cached")
+                                    visible: enableBlend.value
+                                }
                             }
                         //不透明遮罩
-                            P.SwitchPreference {
-                                id: enableOpacityMask
-                                name: "enableOpacityMask"
-                                label: qsTr("Opacity Mask")
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableOpacityMask.height; visible: enableOpacityMask.value }
+                                P.SwitchPreference {
+                                    id: enableOpacityMask
+                                    name: "enableOpacityMask"
+                                    label: qsTr("Opacity Mask")
+                                }
+                                //遮罩图像
+                                P.ImagePreference {
+                                    name: "opacityMaskSource"
+                                    label: qsTr("Opacity Mask Image")
+                                    visible: enableOpacityMask.value&&!opacityMaskDataEnabled.value
+                                }
+                                //反转
+                                P.SwitchPreference {
+                                    name: "opacityMaskInvert"
+                                    label: qsTr("Invert")
+                                    visible: enableOpacityMask.value
+                                }
+                                //启用数据源
+                                P.SwitchPreference {
+                                    id: opacityMaskDataEnabled
+                                    name: "opacityMaskDataEnabled"
+                                    label: qsTr("Enable Data Source")
+                                    visible: enableOpacityMask.value
+                                }
+                                //缓存
+                                P.SwitchPreference {
+                                    name: "enableOpacityMaskCached"
+                                    label: qsTr("Cached")
+                                    visible: enableOpacityMask.value
+                                }
                             }
-                            //遮罩图像
-                            P.ImagePreference {
-                                name: "opacityMaskSource"
-                                label: " --- " + qsTr("Opacity Mask Image")
-                                visible: enableOpacityMask.value&&!opacityMaskDataEnabled.value
+                        //阈值遮罩
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableThresholdMask.height; visible: enableThresholdMask.value }
+                                P.SwitchPreference {
+                                    id: enableThresholdMask
+                                    name: "enableThresholdMask"
+                                    label: qsTr("Threshold Mask")
+                                }
+                                //遮罩图像
+                                P.ImagePreference {
+                                    name: "thresholdMaskSource"
+                                    label: qsTr("Threshold Mask Image")
+                                    visible: enableThresholdMask.value&&!thresholdMaskDataEnabled.value
+                                }
+                                //强度(0~1)
+                                P.SpinPreference {
+                                    name: "thresholdMaskSpread"
+                                    label: qsTr("Spread")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: enableThresholdMask.value
+                                    defaultValue: 50
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                }
+                                //阔值(0~1)
+                                P.SpinPreference {
+                                    name: "thresholdMaskSourceThreshold"
+                                    label: qsTr("Threshold")
+                                    editable: true
+                                    display: P.TextFieldPreference.ExpandLabel
+                                    visible: enableThresholdMask.value
+                                    defaultValue: 50
+                                    from: 0
+                                    to: 100
+                                    stepSize: 1
+                                }
+                                //启用数据源
+                                P.SwitchPreference {
+                                    id: thresholdMaskDataEnabled
+                                    name: "thresholdMaskDataEnabled"
+                                    label: qsTr("Enable Data Source")
+                                    visible: enableThresholdMask.value
+                                }
+                                //缓存
+                                P.SwitchPreference {
+                                    name: "enableThresholdMaskCached"
+                                    label: qsTr("Cached")
+                                    visible: enableThresholdMask.value
+                                }
                             }
-                            //反转
-                            P.SwitchPreference {
-                                name: "opacityMaskInvert"
-                                label: " --- " + qsTr("Invert")
-                                visible: enableOpacityMask.value
-                            }
-                            //缓存
-                            P.SwitchPreference {
-                                name: "enableOpacityMaskCached"
-                                label: " --- " + qsTr("Cached")
-                                visible: enableOpacityMask.value
-                            }
-                            //启用数据源
-                            P.SwitchPreference {
-                                id: opacityMaskDataEnabled
-                                name: "opacityMaskDataEnabled"
-                                label: " --- " + qsTr("Enable Data Source")
-                                visible: enableOpacityMask.value
-                            }
-                        //覆盖遮罩
-                            P.SwitchPreference {
-                                id: enableThresholdMask
-                                name: "enableThresholdMask"
-                                label: qsTr("Threshold Mask")
-                            }
-                            //遮罩图像
-                            P.ImagePreference {
-                                name: "thresholdMaskSource"
-                                label: " --- " + qsTr("Threshold Mask Image")
-                                visible: enableThresholdMask.value&&!thresholdMaskDataEnabled.value
-                            }
-                            //强度(0~1)
-                            P.SpinPreference {
-                                name: "thresholdMaskSpread"
-                                label: " --- " + qsTr("Spread")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableThresholdMask.value
-                                defaultValue: 50
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                            }
-                            //阔值(0~1)
-                            P.SpinPreference {
-                                name: "thresholdMaskSourceThreshold"
-                                label: " --- " + qsTr("Threshold")
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
-                                visible: enableThresholdMask.value
-                                defaultValue: 50
-                                from: 0
-                                to: 100
-                                stepSize: 1
-                            }
-                            //缓存
-                            P.SwitchPreference {
-                                name: "enableThresholdMaskCached"
-                                label: " --- " + qsTr("Cached")
-                                visible: enableThresholdMask.value
-                            }
-                            //启用数据源
-                            P.SwitchPreference {
-                                id: thresholdMaskDataEnabled
-                                name: "thresholdMaskDataEnabled"
-                                label: " --- " + qsTr("Enable Data Source")
-                                visible: enableThresholdMask.value
-                            }
+                            P.Separator{}
                         //取代
-                            P.SwitchPreference {
-                                id: enableDisplace
-                                name: "enableDisplace"
-                                label: qsTr("Displace")
-                            }
-                            //取代图像
-                            P.ImagePreference {
-                                name: "displacementSource"
-                                label: " --- " + qsTr("Displace Image")
-                                visible: enableDisplace.value&&!displaceDataEnabled.value
-                            }
-                            //取代位移
-                            P.SliderPreference {
-                                name: "displacement"
-                                label: " --- " + qsTr("Displacement")
-                                visible:enableDisplace.value
-                                displayValue: value*100
-                                defaultValue: 0
-                                from: -1
-                                to: 1
-                                stepSize: 0.01
-                                live: true
-                            }
-                            //缓存
-                            P.SwitchPreference {
-                                name: "enableDisplaceCached"
-                                label: " --- " + qsTr("Cached")
-                                visible: enableDisplace.value
-                            }
-                            //启用数据源
-                            P.SwitchPreference {
-                                id: displaceDataEnabled
-                                name: "displaceDataEnabled"
-                                label: " --- " + qsTr("Enable Data Source")
-                                visible: enableDisplace.value
+                            P.ObjectPreferenceGroup {
+                                defaultValue: thiz.settings
+                                syncProperties: true
+                                enabled: currentItem
+                                width: parent.width
+                                data: PreferenceGroupIndicator { anchors.topMargin: enableDisplace.height; visible: enableDisplace.value }
+                                P.SwitchPreference {
+                                    id: enableDisplace
+                                    name: "enableDisplace"
+                                    label: qsTr("Displace")
+                                }
+                                //取代图像
+                                P.ImagePreference {
+                                    name: "displacementSource"
+                                    label: qsTr("Displace Image")
+                                    visible: enableDisplace.value&&!displaceDataEnabled.value
+                                }
+                                //取代位移
+                                P.SliderPreference {
+                                    name: "displacement"
+                                    label: qsTr("Displacement")
+                                    visible:enableDisplace.value
+                                    displayValue: value*100
+                                    defaultValue: 0
+                                    from: -1
+                                    to: 1
+                                    stepSize: 0.01
+                                    live: true
+                                }
+                                //启用数据源
+                                P.SwitchPreference {
+                                    id: displaceDataEnabled
+                                    name: "displaceDataEnabled"
+                                    label: qsTr("Enable Data Source")
+                                    visible: enableDisplace.value
+                                }
+                                //缓存
+                                P.SwitchPreference {
+                                    name: "enableDisplaceCached"
+                                    label: qsTr("Cached")
+                                    visible: enableDisplace.value
+                                }
                             }
                         }
                     }
@@ -2141,8 +2348,8 @@ DataSourceElement {
                 target: thiz  // 目标对象
                 property: "idxx" // 目标对象中的属性
                 duration: cycleTime ?? 500 // 变化时间
-                from: settings.cycleColor===3 ? 0 : settings.cycleColorFrom ?? 0
-                to: settings.cycleColor===3 ? 1 : settings.cycleColorTo ?? 15// 目标值
+                from: settings.cycleColor ===3 ? 0 : cycleColorFrom ?? 0
+                to: settings.cycleColor ===3 ? 1 : cycleColorTo ?? 15// 目标值
             }
         }
 //发光
