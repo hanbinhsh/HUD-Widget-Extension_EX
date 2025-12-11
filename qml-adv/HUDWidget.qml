@@ -44,39 +44,137 @@ T.Widget {
     signal hideHUDItem(int i)
     signal toggleHUDItem(int i)
     function getHUDItemView(){return itemView.model}
-    // 颜色渐变
+    // --- 颜色渐变
+    // 默认渐变
     property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 1.0, color: "#fbc2eb" }]
+    property var overallGradientAnimDuration: defaultSettings.overallGradientAnimDuration ?? 5000
+
+    onOverallGradientAnimDurationChanged: {
+        gradientAnimPhaseAnimation.restart();
+    }
+    
+    // 动画驱动器 (0.0 ~ 1.0 循环)
+    property real gradientAnimPhase: 0.0
+    NumberAnimation on gradientAnimPhase {
+        id: gradientAnimPhaseAnimation
+        // 仅在开启效果且开启动画时运行
+        running: (defaultSettings.enableOverallGradientEffect ?? false) && (defaultSettings.enableOverallGradientAnim ?? false)
+        from: 0.0
+        to: 1.0
+        duration: overallGradientAnimDuration
+        loops: Animation.Infinite
+    }
+    onGradientAnimPhaseChanged: {
+        // 只有在使用自定义颜色时，才需要手动刷新 gradient 属性来实现位置移动
+        if (defaultSettings.useFillGradient) {
+            var newGrad = generateGradient();
+            if (linearG.visible) linearG.gradient = newGrad;
+            if (radialG.visible) radialG.gradient = newGrad;
+            if (conicalG.visible) conicalG.gradient = newGrad;
+        }
+    }
+    function adjustGradientColor(clr, phase) {
+        if (!clr) return "#000000"; 
+        // 如果没开特效或没开动画，直接返回原色
+        if (!(defaultSettings.enableOverallGradientEffect ?? false)) return clr;
+        if (!(defaultSettings.enableOverallGradientAnim ?? false)) return clr;
+        if (defaultSettings.useFillGradient ?? false) return clr;
+        
+        var c = Qt.lighter(clr, 1.0); 
+        var h = c.hslHue + phase; // 偏移色相
+        if (h > 1.0) h -= 1.0;    // 归一化
+        
+        return Qt.hsla(h, c.hslSaturation, c.hslLightness, c.a);
+    }
+    function generateGradient() {
+        // 1. 如果没开自定义颜色，返回简易渐变对象(由 adjustGradientColor 控制动画)
+        if (!defaultSettings.useFillGradient) {
+            return grad;
+        }
+
+        // 2. 基础数据检查
+        var stopsData = defaultSettings.fillStops;
+        if (!stopsData || stopsData.length === 0) {
+            return makeGradient(defaultStops);
+        }
+
+        // 3. 如果没开动画，直接渲染静态自定义颜色
+        if (!(defaultSettings.enableOverallGradientAnim ?? false)) {
+            return makeGradient(stopsData);
+        }
+
+        // 4. 自定义颜色的动画逻辑 (位置移动)
+        // 4.1 清洗并排序数据
+        var baseStops = [];
+        for (var i = 0; i < stopsData.length; i++) {
+            var item = stopsData[i];
+            if (item) {
+                baseStops.push({
+                    pos: Number(item.position),
+                    color: (item.color ? item.color.toString() : "#FF0000")
+                });
+            }
+        }
+        baseStops.sort(function(a, b) { return a.pos - b.pos; });
+
+        // 4.2 构建渲染列表 (三段拼接 k=-1, 0, 1)
+        // 这解决了循环时的跳变问题
+        var renderStops = [];
+        var shift = gradientAnimPhase; // 0.0 ~ 1.0
+
+        for (var k = -1; k <= 1; k++) {
+            for (var j = 0; j < baseStops.length; j++) {
+                var original = baseStops[j];
+                
+                // 新位置 = 原始位置 + 周期偏移 + 动画位移
+                var newPos = original.pos + k + shift;
+
+                // 总是保留所有生成的点，交给 QML 处理边界插值
+                // 这样保证了数组结构稳定，不会卡顿
+                renderStops.push({
+                    position: newPos,
+                    color: original.color
+                });
+            }
+        }
+        return makeGradient(renderStops);
+    }
     Gradient {
         id: grad
-        GradientStop { position: 0.0; color: defaultSettings.overallGradientColor0 ?? "#a18cd1" }
-        GradientStop { position: 1.0; color: defaultSettings.overallGradientColor1 ?? "#fbc2eb" }
+        GradientStop { 
+            position: 0.0; 
+            color: adjustGradientColor(defaultSettings.overallGradientColor0 ?? "#a18cd1", gradientAnimPhase) 
+        }
+        GradientStop { 
+            position: 1.0; 
+            color: adjustGradientColor(defaultSettings.overallGradientColor1 ?? "#fbc2eb", gradientAnimPhase) 
+        }
     }
-    // 渐变组件生成
     function makeGradient(stopdefs) {
         if(Array.isArray(stopdefs))
-            return gradientComponent.createObject(null, {stopdefs});
+            return gradientComponent.createObject(null, {stopdefs: stopdefs});
         return makeGradient(defaultStops)
     }
     Component {
         id: gradientComponent
         Gradient {
             property var stopdefs
-            stops: stopdefs.map( d => gradientStopComponent.createObject(null, d) );
+            stops: stopdefs.map( d => gradientStopComponent.createObject(null, { position: d.position, baseColor: d.color }) );
         }
     }
-    Component { id: gradientStopComponent; GradientStop { } }
-    // 渐变组件生成完成
+    Component { 
+        id: gradientStopComponent; 
+        GradientStop { 
+            property color baseColor: "white" 
+            color: adjustGradientColor(baseColor, gradientAnimPhase)
+        } 
+    }
+    // --- 渐变组件应用 ---
     LinearGradient {
         id: linearG
         anchors.fill: widget
         visible: false
-        gradient: {
-            if (!defaultSettings.useFillGradient){
-                return grad;
-            }else{
-                return makeGradient(defaultSettings.fillStops);
-            }
-        }
+        gradient: generateGradient()
         start: {
             switch (defaultSettings.overallGradientDirect ?? 1) {
                 case 0 : 
@@ -90,28 +188,24 @@ T.Widget {
         }
         end: {
             switch (defaultSettings.overallGradientDirect ?? 1) {
-                case 0 : return Qt.point(widget.width, 0); break;//1.横向渐变
-                case 1 : return Qt.point(0, widget.height); break;//2.竖向渐变
-                case 2 : return Qt.point(widget.width, widget.height); break;//3.斜向渐变
+                case 0 : return Qt.point(widget.width, 0); break;
+                case 1 : return Qt.point(0, widget.height); break;
+                case 2 : return Qt.point(widget.width, widget.height); break;
                 case 5 : return Qt.point(defaultSettings.overallGradientEndX ?? 100, defaultSettings.overallGradientEndY ?? 100); break;
                 default: return Qt.point(widget.width, 0); break; 
             }
             return Qt.point(widget.width, 0);
         }
+        // 当动画开启时，强制关闭缓存以保证流畅
         cached: defaultSettings.overallGradientCached ?? false
     }
-    // 3
+
+    // 3. 径向渐变
     RadialGradient {
         id: radialG
         visible: false
         anchors.fill: widget
-        gradient: {
-            if (!defaultSettings.useFillGradient){
-                return grad;
-            }else{
-                return makeGradient(defaultSettings.fillStops);
-            }
-        }
+        gradient: generateGradient()
         angle: defaultSettings.overallGradientAngle ?? 0
         horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
         verticalOffset: defaultSettings.overallGradientVertical ?? 0
@@ -119,18 +213,13 @@ T.Widget {
         verticalRadius: defaultSettings.overallGradientVerticalRadius ?? 50
         cached: defaultSettings.overallGradientCached ?? false
     }
-    // 4
+
+    // 4. 锥形渐变
     ConicalGradient {
         id: conicalG
         visible: false
         anchors.fill: widget
-        gradient: {
-            if (!defaultSettings.useFillGradient){
-                return grad;
-            }else{
-                return makeGradient(defaultSettings.fillStops);
-            }
-        }
+        gradient: generateGradient()
         angle: defaultSettings.overallGradientAngle ?? 0
         horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
         verticalOffset: defaultSettings.overallGradientVertical ?? 0
@@ -152,7 +241,7 @@ T.Widget {
             maskSource: widget
         }
     }
-    // 颜色渐变结束
+    // --- 颜色渐变结束
 
     //菜单中的编辑模式
     menu: Menu {

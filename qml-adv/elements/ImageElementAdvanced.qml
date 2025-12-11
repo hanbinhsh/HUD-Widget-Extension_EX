@@ -45,6 +45,18 @@ DataSourceElement {
     property real cycleSaturation: (settings.cycleSaturation ?? 100) / 100
     property real cycleValue: (settings.cycleValue ?? 100) / 100
     property real cycleOpacity: (settings.cycleOpacity ?? 100) / 100
+    property int  cycleTime: settings.cycleTime ?? 500
+    property int  pauseColorAnimationTime: settings.pauseColorAnimationTime ?? 0
+
+    onCycleTimeChanged: {
+        colorAnimPhaseAnimation.restart();
+        idxxAnimation.restart();
+    }
+    onPauseColorAnimationTimeChanged: {
+        colorAnimPhaseAnimation.restart();
+        idxxAnimation.restart();
+    }
+
     // 计算颜色的函数
     function colorInit(index){
         var hueIndex = (15 - (((idxx + index) > 15) ? idxx - 15 + index : idxx + index));
@@ -72,28 +84,70 @@ DataSourceElement {
                                 { position: 0.667, color: getColor(5) },{ position: 0.733, color: getColor(4) },
                                 { position: 0.800, color: getColor(3) },{ position: 0.867, color: getColor(2) },
                                 { position: 0.933, color: getColor(1) },{ position: 1.000, color: getColor(0) }]
-    function generateGradient(){
-        if(settings.cycleColor===3){
-            if(settings.fillStops.length!=0&&settings.enableColorAnimation)
-            for (var i = 0; i < settings.fillStops.length; i++) {
-                settings.fillStops[i].position = (settings.fillStops[i].position + idxx/100.0) % 1;
-            }
-            return makeGradient(settings.fillStops)
-        }else{
-            return makeGradient(defaultStops)
+    // 高级颜色3组件
+    property real colorAnimPhase: 0.0
+    SequentialAnimation {
+        id: colorAnimPhaseAnimation
+        running: (settings.cycleColor === 3) && (settings.fillStops.length > 0) && (settings.enableColorAnimation ?? false)
+        loops:Animation.Infinite
+        PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
+        NumberAnimation {
+            target: thiz
+            property: "colorAnimPhase"
+            duration: cycleTime ?? 500 // 变化时间
+            from: 0.0
+            to: 1.0
         }
     }
-    // 渐变组件生成
+    onColorAnimPhaseChanged: {
+        if (linearG.visible) linearG.gradient = generateGradient();
+    }
+    function generateGradient() {
+        if (settings.cycleColor !== 3 || !settings.fillStops || settings.fillStops.length === 0) {
+            return makeGradient(defaultStops);
+        }
+        if (!settings.enableColorAnimation) {
+            return makeGradient(settings.fillStops);
+        }
+        var baseStops = [];
+        for (var i = 0; i < settings.fillStops.length; i++) {
+            var item = settings.fillStops[i];
+            if (item) {
+                baseStops.push({
+                    pos: Number(item.position),
+                    color: (item.color ? item.color.toString() : "#FF0000")
+                });
+            }
+        }
+        baseStops.sort(function(a, b) { return a.pos - b.pos; });
+        var renderStops = [];
+        var shift = colorAnimPhase; // 0.0 ~ 1.0
+        for (var k = -1; k <= 1; k++) {
+            for (var j = 0; j < baseStops.length; j++) {
+                var original = baseStops[j];
+                var newPos = original.pos + k + shift;
+                renderStops.push({
+                    position: newPos,
+                    color: original.color
+                });
+            }
+        }
+        return makeGradient(renderStops);
+    }
+    // 渐变组件生成器
     function makeGradient(stopdefs) {
-        if(Array.isArray(stopdefs))
-            return gradientComponent.createObject(null, {stopdefs});
-        return makeGradient(defaultStops)
+        if (Array.isArray(stopdefs)) {
+            return gradientComponent.createObject(null, { "stopdefs": stopdefs });
+        }
+        return makeGradient(defaultStops);
     }
     Component {
         id: gradientComponent
         Gradient {
             property var stopdefs
-            stops: stopdefs.map( d => gradientStopComponent.createObject(null, d) );
+            stops: stopdefs.map(function(d) {
+                return gradientStopComponent.createObject(null, d);
+            })
         }
     }
     Component { id: gradientStopComponent; GradientStop { } }
@@ -1062,7 +1116,7 @@ DataSourceElement {
                                 visible: enableColorAnimation.value&&colorGradient.value
                                 defaultValue: 500
                                 from: 0
-                                to: 5000
+                                to: 50000
                                 stepSize: 100
                             }
                             P.SpinPreference {
@@ -2076,17 +2130,17 @@ DataSourceElement {
             gradient: generateGradient()
         }
         //颜色渐变动画
-        //TODO 需要重新开关来启用效果
         // readonly property real cf: Number(thiz.cycleColorFrom)
         // onCfChanged: settings.cycleColorFrom=cf
         SequentialAnimation {
-            running: enableColorGradientAnimation && widget.NVG.View.exposed  // 默认启动
+            id: idxxAnimation
+            running: enableColorGradientAnimation && (settings.cycleColor !== 3) && widget.NVG.View.exposed  // 默认启动
             loops:Animation.Infinite  // 无限循环
-            PauseAnimation { duration: settings.pauseColorAnimationTime ?? 0 }
+            PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
             NumberAnimation {
                 target: thiz  // 目标对象
                 property: "idxx" // 目标对象中的属性
-                duration: settings.cycleTime ?? 500 // 变化时间
+                duration: cycleTime ?? 500 // 变化时间
                 from: settings.cycleColor===3 ? 0 : settings.cycleColorFrom ?? 0
                 to: settings.cycleColor===3 ? 1 : settings.cycleColorTo ?? 15// 目标值
             }

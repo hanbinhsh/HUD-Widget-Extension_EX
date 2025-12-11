@@ -251,7 +251,7 @@ NVG.Window {
                         P.SwitchPreference {
                             id: useFillGradient
                             name: "useFillGradient"
-                            label: qsTr("Use Advanced Color")
+                            label: " --- " + qsTr("Use Advanced Color")
                             defaultValue: false
                             visible: enableOverallGradientEffect.value
                         }
@@ -269,7 +269,7 @@ NVG.Window {
                         }
                         GradientPreference {
                             name: "fillStops"
-                            label: qsTr("Fill Gradient")
+                            label: " --- --- " + qsTr("Fill Gradient")
                             defaultValue: gradientStops(null, colorAlpha("#a18cd1", 0.5))
                             visible: enableOverallGradientEffect.value&&useFillGradient.value
                         }
@@ -409,6 +409,25 @@ NVG.Window {
                                     }
                                 }
                             }
+                        }
+                        P.SwitchPreference {
+                            id: enableGradientAnim
+                            name: "enableOverallGradientAnim"
+                            label: " --- " + qsTr("Enable Gradient Animation") // 开启渐变动画
+                            visible: enableOverallGradientEffect.value
+                            defaultValue: false
+                        }
+                        
+                        P.SpinPreference {
+                            name: "overallGradientAnimDuration"
+                            label: " --- --- " + qsTr("Duration (ms)") // 动画周期(毫秒)
+                            editable: true
+                            display: P.TextFieldPreference.ExpandLabel
+                            visible: enableOverallGradientEffect.value && enableGradientAnim.value
+                            defaultValue: 5000 // 默认5秒一圈
+                            from: 100
+                            to: 60000
+                            stepSize: 100
                         }
                         //缓存
                         P.SwitchPreference {
