@@ -10,6 +10,8 @@ import "shared.js" as Shared
 import NERvGear.Controls 1.0
 import NERvExtras 1.0
 
+import "../Utils/ColorAnimation.js" as GradientUtils
+
 
 DataSourceElement {
     id:  thiz
@@ -50,22 +52,10 @@ DataSourceElement {
     property int  cycleColorFrom: settings.cycleColorFrom ?? 0
     property int  cycleColorTo: settings.cycleColorTo ?? 15
 
-    onCycleTimeChanged: {
-        colorAnimPhaseAnimation.restart();
-        idxxAnimation.restart();
-    }
-    onPauseColorAnimationTimeChanged: {
-        colorAnimPhaseAnimation.restart();
-        idxxAnimation.restart();
-    }
-    onCycleColorFromChanged: {
-        colorAnimPhaseAnimation.restart();
-        idxxAnimation.restart();
-    }
-    onCycleColorToChanged: {
-        colorAnimPhaseAnimation.restart();
-        idxxAnimation.restart();
-    }
+    onCycleTimeChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
+    onPauseColorAnimationTimeChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
+    onCycleColorFromChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
+    onCycleColorToChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
 
     // 计算颜色的函数
     function colorInit(index){
@@ -86,83 +76,123 @@ DataSourceElement {
             return cycleCustomColor2[(idxx+index)%16]
         }
     }
-    property var defaultStops: [{ position: 0.000, color: getColor(15) },{ position: 0.067, color: getColor(14) },
-                                { position: 0.133, color: getColor(13) },{ position: 0.200, color: getColor(12) },
-                                { position: 0.267, color: getColor(11) },{ position: 0.333, color: getColor(10) },
-                                { position: 0.400, color: getColor(9) },{ position: 0.467, color: getColor(8) },
-                                { position: 0.533, color: getColor(7) },{ position: 0.600, color: getColor(6) },
-                                { position: 0.667, color: getColor(5) },{ position: 0.733, color: getColor(4) },
-                                { position: 0.800, color: getColor(3) },{ position: 0.867, color: getColor(2) },
-                                { position: 0.933, color: getColor(1) },{ position: 1.000, color: getColor(0) }]
-    // 高级颜色3组件
+
+    // 1. 本地缓存 (持有 Stop 对象)
+    property var stopCache: []
+    
+    // 2. 常驻 Gradient 对象
+    Gradient {
+        id: dynamicGradient
+    }
+    
+    // 3. 基础组件 (用于 JS 创建对象)
+    Component {
+        id: stopComponent
+        GradientStop {}
+    }
+
     property var defaultFillStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
     property var fillStops: settings.fillStops ?? defaultFillStops
+
+    Connections {
+        target: settings
+        onCycleColorChanged: initGradientSystem()
+        onFillStopsChanged: initGradientSystem()
+        onEnableColorAnimationChanged: initGradientSystem()
+    }
+
+    Component.onCompleted: initGradientSystem()
+
+    function initGradientSystem() {
+        // 清理旧对象
+        GradientUtils.clearCache(stopCache);
+        stopCache = [];
+        
+        // 模式 3: 自定义高级颜色
+        if (settings.cycleColor === 3) {
+            // 调用 JS 生成 3 倍数量的 Stops (k=-1,0,1)
+            stopCache = GradientUtils.rebuildStops(dynamicGradient, stopComponent, fillStops, 3);
+            
+            // 立即更新一次位置
+            GradientUtils.updatePositions(colorAnimPhase, stopCache);
+        } 
+        // 模式 0, 1, 2: 标准循环
+        else {
+            // 调用 JS 生成 16 个固定位置的 Stops
+            stopCache = GradientUtils.rebuildStops(dynamicGradient, stopComponent, null, 0);
+            
+            // 立即更新一次颜色
+            updateStandardColors();
+        }
+        
+        // 重新绑定 Gradient (触发视图刷新)
+        // 这一步对于某些情况下的 Qt 是必要的，尽管对象引用没变，但内容变了
+        dynamicGradient.stops = stopCache.map(function(item){ return item.qmlObject; });
+    }
+
+
+
+    // === 模式 3 驱动 (Phase 0.0 ~ 1.0) ===
     property real colorAnimPhase: 0.0
     SequentialAnimation {
         id: colorAnimPhaseAnimation
+        // 逻辑保持原版
         running: (settings.cycleColor === 3) && (fillStops.length > 0) && (settings.enableColorAnimation ?? false)
-        loops:Animation.Infinite
+        loops: Animation.Infinite
         PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
         NumberAnimation {
             target: thiz
             property: "colorAnimPhase"
-            duration: cycleTime ?? 500 // 变化时间
+            duration: cycleTime ?? 500 
             from: 0.0
             to: 1.0
         }
     }
+    // 监听相位 -> 更新位置 (零内存分配)
     onColorAnimPhaseChanged: {
-        if (linearG.visible) linearG.gradient = generateGradient();
+        if (settings.cycleColor === 3) {
+            GradientUtils.updatePositions(colorAnimPhase, stopCache);
+        }
     }
-    function generateGradient() {
-        if (settings.cycleColor !== 3 || !fillStops || fillStops.length === 0) {
-            return makeGradient(defaultStops);
+
+    // === 模式 0-2 驱动 (IDXX 整数步进) ===
+    SequentialAnimation {
+        id: idxxAnimation
+        running: enableColorGradientAnimation && (settings.cycleColor !== 3) && widget.NVG.View.exposed 
+        loops: Animation.Infinite
+        PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
+        NumberAnimation {
+            target: thiz 
+            property: "idxx"
+            duration: cycleTime ?? 500
+            from: settings.cycleColor === 3 ? 0 : cycleColorFrom ?? 0
+            to: settings.cycleColor === 3 ? 1 : cycleColorTo ?? 15
         }
-        if (!settings.enableColorAnimation) {
-            return makeGradient(fillStops);
+    }
+    // 监听 IDXX -> 更新颜色 (零内存分配)
+    onIdxxChanged: {
+        if (settings.cycleColor !== 3) {
+            updateStandardColors();
         }
-        var baseStops = [];
-        for (var i = 0; i < fillStops.length; i++) {
-            var item = fillStops[i];
-            if (item) {
-                baseStops.push({
-                    pos: Number(item.position),
-                    color: (item.color ? item.color.toString() : "#FF0000")
-                });
+    }
+
+    // 辅助: 更新标准模式的 16 个颜色
+    function updateStandardColors() {
+        if (!stopCache || stopCache.length !== 16) return;
+        
+        // 对应原代码 defaultStops 里的逻辑:
+        // position: 0.0 -> getColor(15)
+        // position: 1.0 -> getColor(0)
+        // 这里的 i 是 stopCache 的索引，从 0(pos 0.0) 到 15(pos 1.0)
+        
+        for (var i = 0; i < 16; i++) {
+            var item = stopCache[i];
+            if (item.qmlObject) {
+                // 原逻辑是倒序映射: stop[0] 对应 getColor(15)
+                item.qmlObject.color = getColor(15 - i);
             }
         }
-        baseStops.sort(function(a, b) { return a.pos - b.pos; });
-        var renderStops = [];
-        var shift = colorAnimPhase; // 0.0 ~ 1.0
-        for (var k = -1; k <= 1; k++) {
-            for (var j = 0; j < baseStops.length; j++) {
-                var original = baseStops[j];
-                var newPos = original.pos + k + shift;
-                renderStops.push({
-                    position: newPos,
-                    color: original.color
-                });
-            }
-        }
-        return makeGradient(renderStops);
     }
-    // 渐变组件生成器
-    function makeGradient(stopdefs) {
-        if (Array.isArray(stopdefs)) {
-            return gradientComponent.createObject(null, { "stopdefs": stopdefs });
-        }
-        return makeGradient(defaultStops);
-    }
-    Component {
-        id: gradientComponent
-        Gradient {
-            property var stopdefs
-            stops: stopdefs.map(function(d) {
-                return gradientStopComponent.createObject(null, d);
-            })
-        }
-    }
-    Component { id: gradientStopComponent; GradientStop { } }
     // 渐变组件生成完成
 //发光
     readonly property bool allowGlowTransparentBorder: settings.glowTransparentBorder ?? false
@@ -2283,9 +2313,13 @@ DataSourceElement {
         //颜色动画选项0~3 , 6
         LinearGradient {
             anchors.fill: imageSource
-            cached:settings.enableColorAnimationCached ?? false
-            source: (enableColorGradient&&(settings.animationDirect>=0&&settings.animationDirect<=3||settings.animationDirect==6)) ? imageSource : null
-            visible: (enableColorGradient&&(settings.animationDirect>=0&&settings.animationDirect<=3||settings.animationDirect==6))
+            cached: settings.enableColorAnimationCached ?? false
+            source: (enableColorGradient && (settings.animationDirect >= 0 && settings.animationDirect <= 3 || settings.animationDirect == 6)) ? imageSource : null
+            visible: (enableColorGradient && (settings.animationDirect >= 0 && settings.animationDirect <= 3 || settings.animationDirect == 6))
+            
+            // [优化] 绑定常驻对象
+            gradient: dynamicGradient
+            
             start: {
                 switch (settings.animationDirect ?? 0) {
                     case 0 : 
@@ -2299,58 +2333,45 @@ DataSourceElement {
             }
             end: {
                 switch (settings.animationDirect ?? 0) {
-                    case 0 : return Qt.point(imageSource.width, 0); break;//1.横向渐变
-                    case 1 : return Qt.point(0, imageSource.height); break;//2.竖向渐变
-                    case 2 : return Qt.point(imageSource.width, imageSource.height); break;//3.斜向渐变
-                    case 3 : return Qt.point(0, 0); break;// All
+                    case 0 : return Qt.point(imageSource.width, 0); break;
+                    case 1 : return Qt.point(0, imageSource.height); break;
+                    case 2 : return Qt.point(imageSource.width, imageSource.height); break;
+                    case 3 : return Qt.point(0, 0); break;
                     case 6 : return Qt.point(settings.animationAdvancedEndX ?? 100, settings.animationAdvancedEndY ?? 100); break;
                     default: return Qt.point(imageSource.width, 0); break; 
                 }
                 return Qt.point(imageSource.width, 0);
             }
-            gradient: generateGradient()
         }
-        //颜色动画选项4
+
+        // 颜色动画选项 4 (Radial)
         RadialGradient {
             anchors.fill: imageSource
-            //可调节的角度,x,y,x半径,y半径
             angle: settings.animationAngle ?? 0
-            cached:settings.enableColorAnimationCached ?? false
+            cached: settings.enableColorAnimationCached ?? false
             horizontalOffset: settings.animationHorizontal ?? 0
             verticalOffset: settings.animationVertical ?? 0
-            horizontalRadius:settings.animationHorizontalRadius ?? 50
-            verticalRadius:settings.animationVerticalRadius ?? 50
-            source: (enableColorGradient&&(settings.animationDirect==4)) ? imageSource : null
-            visible: (enableColorGradient&&(settings.animationDirect==4))
-            gradient: generateGradient()
+            horizontalRadius: settings.animationHorizontalRadius ?? 50
+            verticalRadius: settings.animationVerticalRadius ?? 50
+            source: (enableColorGradient && (settings.animationDirect == 4)) ? imageSource : null
+            visible: (enableColorGradient && (settings.animationDirect == 4))
+            
+            // [优化] 绑定常驻对象
+            gradient: dynamicGradient
         }
-        //颜色动画选项5
+
+        // 颜色动画选项 5 (Conical)
         ConicalGradient {
             anchors.fill: imageSource
-            cached:settings.enableColorAnimationCached ?? false
-            //可调节的角度,x,y值
+            cached: settings.enableColorAnimationCached ?? false
             angle: settings.animationAngle ?? 0
             horizontalOffset: settings.animationHorizontal ?? 0
             verticalOffset: settings.animationVertical ?? 0
-            source: (enableColorGradient&&(settings.animationDirect==5)) ? imageSource : null
-            visible: (enableColorGradient&&(settings.animationDirect==5))
-            gradient: generateGradient()
-        }
-        //颜色渐变动画
-        // readonly property real cf: Number(thiz.cycleColorFrom)
-        // onCfChanged: settings.cycleColorFrom=cf
-        SequentialAnimation {
-            id: idxxAnimation
-            running: enableColorGradientAnimation && (settings.cycleColor !== 3) && widget.NVG.View.exposed  // 默认启动
-            loops:Animation.Infinite  // 无限循环
-            PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
-            NumberAnimation {
-                target: thiz  // 目标对象
-                property: "idxx" // 目标对象中的属性
-                duration: cycleTime ?? 500 // 变化时间
-                from: settings.cycleColor ===3 ? 0 : cycleColorFrom ?? 0
-                to: settings.cycleColor ===3 ? 1 : cycleColorTo ?? 15// 目标值
-            }
+            source: (enableColorGradient && (settings.animationDirect == 5)) ? imageSource : null
+            visible: (enableColorGradient && (settings.animationDirect == 5))
+            
+            // [优化] 绑定常驻对象
+            gradient: dynamicGradient
         }
 //发光
     Glow {
