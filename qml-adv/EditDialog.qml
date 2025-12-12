@@ -323,74 +323,133 @@ NVG.Window {
                     Page {
                         id: elemPage
                         width: parent.width
-                        implicitHeight: switch(elemBar.currentIndex){
-                            case 0: return layoutNormalSetting.contentHeight + 56;
-                            case 1: return layoutVisibleSetting.contentHeight + 56;
-                            case 2: return layoutTransformSetting.contentHeight + 56;
-                            case 3: return layoutActionSetting.contentHeight + 56;
-                            case 4: return layoutColorSetting.contentHeight + 56;
-                            case 5: return displayMaskSetting.contentHeight + 56;
-                            case 5: return layoutADVSetting.contentHeight + 56;
+                        
+                        // 动态高度计算
+                        implicitHeight: {
+                            // 基础内边距/标题栏高度修正
+                            let baseH = 56; 
+                            
+                            // 如果选中了 Others (index 4)，需要加上第二行 TabBar 的高度
+                            if (elemBar.currentIndex === 4) {
+                                baseH += othersBar.height;
+                                // 根据第二行 Tab 的索引计算高度
+                                switch(othersBar.currentIndex) {
+                                    case 0: return layoutColorSetting.contentHeight + baseH;
+                                    case 1: return displayMaskSetting.contentHeight + baseH;
+                                    case 2: return layoutADVSetting.contentHeight + baseH;
+                                }
+                            } else {
+                                // 第一行 Tab 的高度计算
+                                switch(elemBar.currentIndex){
+                                    case 0: return layoutNormalSetting.contentHeight + baseH;
+                                    case 1: return layoutVisibleSetting.contentHeight + baseH;
+                                    case 2: return layoutTransformSetting.contentHeight + baseH;
+                                    case 3: return layoutActionSetting.contentHeight + baseH;
+                                }
+                            }
                             return 0;
                         }
-                        //Component.onCompleted: elemBar.currentIndex = 3
-                        header:TabBar {
-                            id: elemBar
+
+                        // 头部：改为 Column 以容纳两行 TabBar
+                        header: Column {
                             width: parent.width
-                            clip:true//超出父项直接裁剪
-                            Repeater {
-                                model: [qsTr("Normal"),qsTr("Visible"),qsTr("Transform"),qsTr("Action"),qsTr("Color"),qsTr("Display Mask"),qsTr("ADV")]
-                                TabButton {
-                                    text: modelData
-                                    width: Math.max(128, elemBar.width / 3)
+                            
+                            // 第一行：主要分类
+                            TabBar {
+                                id: elemBar
+                                width: parent.width
+                                clip: true
+                                Repeater {
+                                    // 将 Color, Display Mask, ADV 合并为 Others
+                                    model: [qsTr("Normal"), qsTr("Visible"), qsTr("Transform"), qsTr("Action"), qsTr("Others")]
+                                    TabButton {
+                                        text: modelData
+                                        // 5个按钮平均分配宽度，或者保持最小宽度
+                                        width: Math.max(100, elemBar.width / 5) 
+                                    }
+                                }
+                            }
+
+                            // 第二行：其他设置 (仅当选中 Others 时显示)
+                            TabBar {
+                                id: othersBar
+                                width: parent.width
+                                visible: elemBar.currentIndex === 4
+                                clip: true
+                                Repeater {
+                                    model: [qsTr("Color"), qsTr("Display Mask"), qsTr("ADV")]
+                                    TabButton {
+                                        text: modelData
+                                        width: Math.max(100, othersBar.width / 3)
+                                    }
                                 }
                             }
                         }
+
+                        // 主内容区域
                         StackLayout {
-                            //anchors.centerIn: parent
                             width: parent.width
                             currentIndex: elemBar.currentIndex
-                            //效果设置
-                            Item{
-                                NormalPreferenceGroup{
+
+                            // Index 0: Normal
+                            Item {
+                                NormalPreferenceGroup {
                                     item: currentItem
                                     id: layoutNormalSetting
                                 }
                             }
-                            Item{
-                                VisiblePreferenceGroup{
+                            // Index 1: Visible
+                            Item {
+                                VisiblePreferenceGroup {
                                     item: currentItem
                                     id: layoutVisibleSetting
                                 }
                             }
-                            Item{
-                                TransformPreferenceGroup{
+                            // Index 2: Transform
+                            Item {
+                                TransformPreferenceGroup {
                                     item: currentItem
                                     id: layoutTransformSetting
                                 }
                             }
-                            Item{
-                                ActionPreferenceGroup{
+                            // Index 3: Action
+                            Item {
+                                ActionPreferenceGroup {
                                     item: currentItem
                                     id: layoutActionSetting
                                 }
                             }
-                            Item{
-                                ColorPreferenceGroup{
-                                    item: currentItem
-                                    id: layoutColorSetting
-                                }
-                            }
-                            Item{
-                                ShowMaskPreferenceGroup{
-                                    item: currentItem
-                                    id: displayMaskSetting
-                                }
-                            }
-                            Item{
-                                ADVPreferenceGroup{
-                                    item: currentItem
-                                    id: layoutADVSetting
+                            
+                            // Index 4: Others (Nested StackLayout)
+                            Item {
+                                width: elemPage.width
+                                // 这是一个容器，内部再放一个 StackLayout
+                                StackLayout {
+                                    width: elemPage.width
+                                    anchors.fill: parent // 关键：内层 StackLayout 填满外层 Item
+                                    currentIndex: othersBar.currentIndex
+                                    
+                                    // Others -> Index 0: Color
+                                    Item {
+                                        ColorPreferenceGroup {
+                                            item: currentItem
+                                            id: layoutColorSetting
+                                        }
+                                    }
+                                    // Others -> Index 1: Mask
+                                    Item {
+                                        ShowMaskPreferenceGroup {
+                                            item: currentItem
+                                            id: displayMaskSetting
+                                        }
+                                    }
+                                    // Others -> Index 2: ADV
+                                    Item {
+                                        ADVPreferenceGroup {
+                                            item: currentItem
+                                            id: layoutADVSetting
+                                        }
+                                    }
                                 }
                             }
                         }
