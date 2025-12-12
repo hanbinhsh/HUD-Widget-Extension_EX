@@ -425,5 +425,4 @@ MouseArea {
         }
         opaADV = v*5/(128/s)
     }
-
 }

@@ -1,12 +1,15 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtGraphicalEffects.private 1.12
+import QtGraphicalEffects 1.12 
 
 import NERvGear 1.0 as NVG
 
 import "utils.js" as Utils
 
 import "Launcher" as LC
+
+import "./Utils/ColorAnimation.js" as GradientUtils
 
 CraftDelegate {
     id: craftElement
@@ -118,7 +121,10 @@ CraftDelegate {
             onDprChanged: rebuildShaders();
             onMaskSourceChanged: rebuildShaders();
             onAlphaOnlyChanged: rebuildShaders();
-            Component.onCompleted: rebuildShaders();
+            Component.onCompleted: {
+                rebuildShaders();
+                Qt.callLater(initCustomGradient_item)
+            }
 
             function rebuildShaders() {
                 var params = {
@@ -529,4 +535,217 @@ CraftDelegate {
             configuration: settings.action
         }
     }
+    // --- 颜色渐变逻辑 ---
+    // 1. 定义默认数据 (用于保底)
+    property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
+    
+    // 2. 定义安全的数据源属性
+    // 如果 settings.fillStops 为空/无效，强制使用 defaultStops
+    // 这样能保证 rebuildGradientStops 永远有数据可处理，不会返回空
+    property var safeFillStops: (settings.fillStops && settings.fillStops.length > 0) 
+                                ? settings.fillStops 
+                                : defaultStops
+
+    // 3. 核心变量
+    property var innerLevelStopCache: []
+    property var customGradObject_item: null
+    
+    // [修复] 绑定逻辑：
+    // 只有当“开启了自定义”且“自定义对象已创建”时，才使用自定义对象
+    // 否则回退到 simpleGrad_item
+    property var currentGradient_item: (settings.useFillGradient && customGradObject_item) 
+                                       ? customGradObject_item 
+                                       : simpleGrad_item
+
+    property var overallGradientAnimDurationItem: settings.overallGradientAnimDuration ?? 5000
+    property real itemGradientAnimPhase: 0.0
+
+    onOverallGradientAnimDurationItemChanged: {
+        gradientAnimPhaseAnimation_item.restart();
+    }
+
+    NumberAnimation on itemGradientAnimPhase {
+        id: gradientAnimPhaseAnimation_item
+        running: (settings.enableOverallGradientEffect ?? false) && (settings.enableOverallGradientAnim ?? false)
+        from: 0.0
+        to: 1.0
+        duration: overallGradientAnimDurationItem
+        loops: Animation.Infinite
+    }
+
+    onItemGradientAnimPhaseChanged: {
+        if (settings.useFillGradient && settings.enableOverallGradientAnim) {
+            GradientUtils.updateGradientPositions(itemGradientAnimPhase, innerLevelStopCache);
+        }
+    }
+
+    Connections {
+        target: settings
+        // 监听 safeFillStops 变化会自动涵盖 fillStops 的变化
+        onUseFillGradientChanged: initCustomGradient_item()
+        onEnableOverallGradientAnimChanged: initCustomGradient_item()
+        onOverallGradientColor0Changed: initCustomGradient_item()
+        onOverallGradientColor1Changed: initCustomGradient_item()
+    }
+    
+    // 监听数据源变化 (比直接监听 settings.fillStops 更安全)
+    onSafeFillStopsChanged: initCustomGradient_item()
+
+    function initCustomGradient_item() {
+        // A. 如果用户没开自定义颜色，直接清理并退出
+        if (!settings.useFillGradient) {
+            if (customGradObject_item) {
+                GradientUtils.clearGradientCache(innerLevelStopCache);
+                innerLevelStopCache = [];
+                customGradObject_item.destroy();
+                customGradObject_item = null;
+            }
+            return; // currentGradient_item 会自动回退到 simple
+        }
+
+        // B. 开启了自定义颜色 -> 重建对象
+        
+        // 1. 清理旧数据
+        GradientUtils.clearGradientCache(innerLevelStopCache);
+        innerLevelStopCache = [];
+
+        if (customGradObject_item) {
+            customGradObject_item.destroy();
+            customGradObject_item = null;
+        }
+
+        // 2. 创建新对象 (挂载到 craftElement 以防 linearG 未就绪)
+        var newGradObj = customGradComponent_item.createObject(craftElement);
+
+        if (newGradObj) {
+            // [关键修复] 构造一个临时的 settings 对象传给 JS
+            // 强制使用 safeFillStops，确保一定有数据
+            var tempSettings = {
+                fillStops: safeFillStops, // 使用保底数据
+                enableOverallGradientEffect: settings.enableOverallGradientEffect,
+                enableOverallGradientAnim: settings.enableOverallGradientAnim,
+                useFillGradient: true
+            };
+
+            var result = GradientUtils.rebuildGradientStops(
+                tempSettings, 
+                itemGradientStopComponent, 
+                newGradObj
+            );
+
+            // 因为使用了 safeFillStops，result.qmlStops 几乎不可能为空
+            if (result.qmlStops.length > 0) {
+                newGradObj.stops = result.qmlStops;
+                innerLevelStopCache = result.cache;
+                
+                // 赋值，触发绑定更新
+                customGradObject_item = newGradObj;
+            } else {
+                // 极端的异常情况
+                newGradObj.destroy();
+                customGradObject_item = null;
+            }
+        }
+    }
+
+    // --- 组件定义 ---
+
+    Gradient {
+        id: simpleGrad_item
+        GradientStop { 
+            position: 0.0; 
+            color: GradientUtils.adjustGradientColor(settings.overallGradientColor0 ?? "#a18cd1", itemGradientAnimPhase, settings) 
+        }
+        GradientStop { 
+            position: 1.0; 
+            color: GradientUtils.adjustGradientColor(settings.overallGradientColor1 ?? "#fbc2eb", itemGradientAnimPhase, settings) 
+        }
+    }
+
+    Component {
+        id: customGradComponent_item
+        Gradient { }
+    }
+
+    Component { 
+        id: itemGradientStopComponent; 
+        GradientStop { } 
+    }
+    
+    // --- 渐变组件应用 ---
+    
+    LinearGradient {
+        id: linearG
+        anchors.fill: craftElement
+        visible: false
+        
+        // 绑定属性
+        gradient: currentGradient_item
+        
+        start: {
+            switch (settings.overallGradientDirect ?? 1) {
+                case 0 : 
+                case 1 : 
+                case 2 : 
+                case 3 : return Qt.point(0, 0); break; 
+                case 5 : return Qt.point(settings.overallGradientStartX ?? 0, settings.overallGradientStartY ?? 0); break;
+                default: return Qt.point(0, 0); break;
+            }
+            return Qt.point(0, 0);
+        }
+        end: {
+            switch (settings.overallGradientDirect ?? 1) {
+                case 0 : return Qt.point(width, 0); break; // 这里的 width 是 LinearGradient 自身的宽度
+                case 1 : return Qt.point(0, height); break;
+                case 2 : return Qt.point(width, height); break;
+                case 5 : return Qt.point(settings.overallGradientEndX ?? 100, settings.overallGradientEndY ?? 100); break;
+                default: return Qt.point(width, 0); break; 
+            }
+            return Qt.point(width, 0);
+        }
+        cached: settings.overallGradientCached ?? false
+    }
+
+    RadialGradient {
+        id: radialG
+        visible: false
+        anchors.fill: craftElement
+        gradient: currentGradient_item
+        angle: settings.overallGradientAngle ?? 0
+        horizontalOffset: settings.overallGradientHorizontal ?? 0
+        verticalOffset: settings.overallGradientVertical ?? 0
+        horizontalRadius: settings.overallGradientHorizontalRadius ?? 50
+        verticalRadius: settings.overallGradientVerticalRadius ?? 50
+        cached: settings.overallGradientCached ?? false
+    }
+
+    ConicalGradient {
+        id: conicalG
+        visible: false
+        anchors.fill: craftElement
+        gradient: currentGradient_item
+        angle: settings.overallGradientAngle ?? 0
+        horizontalOffset: settings.overallGradientHorizontal ?? 0
+        verticalOffset: settings.overallGradientVertical ?? 0
+        cached: settings.overallGradientCached ?? false
+    }
+
+    layer {
+        enabled: settings.enableOverallGradientEffect ?? false
+        samplerName: "maskSource" 
+        effect: OpacityMask {
+            anchors.fill: craftElement
+            source: switch(settings.overallGradientDirect ?? 1){
+                case 0:
+                case 1:
+                case 2:
+                case 5: return linearG;
+                case 3: return radialG;
+                case 4: return conicalG;
+                default: return linearG;
+            }
+        }
+    }
+
+    // -- 渐变结束 --
 }

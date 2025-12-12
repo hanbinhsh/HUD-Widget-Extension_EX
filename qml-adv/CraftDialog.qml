@@ -461,6 +461,7 @@ NVG.Window {
                                 case 0: return layoutEffects.height + 56;
                                 case 1: return layoutTransformSetting.contentHeight + 56;
                                 case 2: return layoutActionSetting.contentHeight + 56;
+                                case 3: return layoutColorSetting.contentHeight + 56;
                                 return 0;
                             }
                             header:TabBar {
@@ -468,7 +469,7 @@ NVG.Window {
                                 width: parent.width
                                 clip:true//超出父项直接裁剪
                                 Repeater {//效果，变换(平移，镜像，透明度，旋转)
-                                    model: [qsTr("Effects"),qsTr("Transform"),qsTr("Action")]
+                                    model: [qsTr("Effects"),qsTr("Transform"),qsTr("Action"),qsTr("Color")]
                                     TabButton {
                                         text: modelData
                                         width: Math.max(108, elemBar.width / 3)
@@ -600,6 +601,12 @@ NVG.Window {
                                     ActionPreferenceGroup{
                                         item: currentElement
                                         id: layoutActionSetting
+                                    }
+                                }
+                                Item {
+                                    ColorPreferenceGroup {
+                                        item: currentElement
+                                        id: layoutColorSetting
                                     }
                                 }
                             }

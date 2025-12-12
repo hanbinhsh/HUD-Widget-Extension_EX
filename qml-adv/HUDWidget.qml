@@ -983,12 +983,8 @@ T.Widget {
 
                 // --- 颜色渐变逻辑 ---
                 property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
-                
-                // [新增] 1. 本地缓存数组 (防止与顶层冲突)
                 property var innerLevelStopCache: []
-                // [新增] 2. 动态 Gradient 对象容器
                 property var customGradObject_item: null
-                // [新增] 3. 当前使用的 Gradient (用于绑定)
                 property var currentGradient_item: settings.useFillGradient ? customGradObject_item : simpleGrad_item
 
                 property var overallGradientAnimDurationItem: settings.overallGradientAnimDuration ?? 5000
@@ -1008,7 +1004,6 @@ T.Widget {
                     loops: Animation.Infinite
                 }
 
-                // [优化] 核心逻辑 1: 高频动画更新 (仅更新位置)
                 onItemGradientAnimPhaseChanged: {
                     if (settings.useFillGradient && settings.enableOverallGradientAnim) {
                         // 将本地缓存 innerLevelStopCache 传给 JS
@@ -1016,7 +1011,6 @@ T.Widget {
                     }
                 }
 
-                // [优化] 核心逻辑 2: 初始化/设置改变 -> 重建对象
                 Connections {
                     target: settings
                     onFillStopsChanged: itemContent.initCustomGradient_item()
@@ -1174,6 +1168,8 @@ T.Widget {
                         }
                     }
                 }
+
+                // -- 渐变结束 --
 
                 Repeater {
                     model: NVG.Settings.makeList(modelData, "elements")
