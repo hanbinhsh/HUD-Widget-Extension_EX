@@ -311,15 +311,15 @@ MouseArea {
         moveAnimation.start();
     }
     Gradient {
-        id: grad
+        id: gradS
         GradientStop { position: staOpciMask/1000.0; color: Qt.rgba(255, 255, 255, 1) }// sta
         GradientStop { position: endOpciMask/1000.0; color: Qt.rgba(255, 255, 255, endOpci/100.0) }// end
     }
     LinearGradient {
-        id: linearG
+        id: linearGS
         anchors.fill: parent
         visible: false
-        gradient: grad
+        gradient: gradS
         start: {
             switch (settings.fadeTransitionDirect ?? 1) {
                 case 0 : 
@@ -345,10 +345,10 @@ MouseArea {
     }
     // 3
     RadialGradient {
-        id: radialG
+        id: radialGS
         visible: false
         anchors.fill: parent
-        gradient: grad
+        gradient: gradS
         angle: settings.fadeTransitionAngle ?? 0
         horizontalOffset: settings.fadeTransitionHorizontal ?? 0
         verticalOffset: settings.fadeTransitionVertical ?? 0
@@ -358,10 +358,10 @@ MouseArea {
     }
     // 4
     ConicalGradient {
-        id: conicalG
+        id: conicalGS
         visible: false
         anchors.fill: parent
-        gradient: grad
+        gradient: gradS
         angle: settings.fadeTransitionAngle ?? 0
         horizontalOffset: settings.fadeTransitionHorizontal ?? 0
         verticalOffset: settings.fadeTransitionVertical ?? 0
@@ -374,10 +374,10 @@ MouseArea {
                 case 0:
                 case 1:
                 case 2:
-                case 5: return linearG;
-                case 3: return radialG;
-                case 4: return conicalG;
-                default: return linearG;
+                case 5: return linearGS;
+                case 3: return radialGS;
+                case 4: return conicalGS;
+                default: return linearGS;
             }
         }
     }
@@ -425,4 +425,5 @@ MouseArea {
         }
         opaADV = v*5/(128/s)
     }
+
 }
