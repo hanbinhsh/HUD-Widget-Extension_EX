@@ -1030,7 +1030,7 @@ T.Widget {
                 Component.onCompleted: itemContent.initCustomGradient_item()
 
                 function initCustomGradient_item() {
-                    console.log("Initializing custom gradient for item at index" + settings.fillStops);
+                    // console.log("Initializing custom gradient for item at index" + settings.fillStops);
                     // 1. 清理旧数据引用
                     GradientUtils.clearGradientCache(itemContent.innerLevelStopCache);
                     itemContent.innerLevelStopCache = [];
