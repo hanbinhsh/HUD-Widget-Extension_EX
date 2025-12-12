@@ -52,10 +52,12 @@ DataSourceElement {
     property int  cycleColorFrom: settings.cycleColorFrom ?? 0
     property int  cycleColorTo: settings.cycleColorTo ?? 15
 
-    onCycleTimeChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
-    onPauseColorAnimationTimeChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
-    onCycleColorFromChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
-    onCycleColorToChanged: { colorAnimPhaseAnimation.restart(); idxxAnimation.restart(); }
+    onCycleTimeChanged:                 { if(colorAnimPhaseAnimation.running) colorAnimPhaseAnimation.restart(); if(idxxAnimation.running) idxxAnimation.restart(); }
+    onPauseColorAnimationTimeChanged:   { if(colorAnimPhaseAnimation.running) colorAnimPhaseAnimation.restart(); if(idxxAnimation.running) idxxAnimation.restart(); }
+    onCycleColorFromChanged:            { if(colorAnimPhaseAnimation.running) colorAnimPhaseAnimation.restart(); if(idxxAnimation.running) idxxAnimation.restart(); }
+    onCycleColorToChanged:              { if(colorAnimPhaseAnimation.running) colorAnimPhaseAnimation.restart(); if(idxxAnimation.running) idxxAnimation.restart(); }
+    onCycleStartChanged:                { if(colorAnimPhaseAnimation.running) colorAnimPhaseAnimation.restart(); if(idxxAnimation.running) idxxAnimation.restart(); }
+    onCycleEndChanged:                  { if(colorAnimPhaseAnimation.running) colorAnimPhaseAnimation.restart(); if(idxxAnimation.running) idxxAnimation.restart(); }
 
     // 计算颜色的函数
     function colorInit(index){
@@ -130,14 +132,12 @@ DataSourceElement {
         dynamicGradient.stops = stopCache.map(function(item){ return item.qmlObject; });
     }
 
-
-
     // === 模式 3 驱动 (Phase 0.0 ~ 1.0) ===
     property real colorAnimPhase: 0.0
     SequentialAnimation {
         id: colorAnimPhaseAnimation
         // 逻辑保持原版
-        running: (settings.cycleColor === 3) && (fillStops.length > 0) && (settings.enableColorAnimation ?? false)
+        running: (settings.cycleColor === 3) && (fillStops.length > 0) && enableColorGradientAnimation && widget.NVG.View.exposed
         loops: Animation.Infinite
         PauseAnimation { duration: pauseColorAnimationTime ?? 0 }
         NumberAnimation {
