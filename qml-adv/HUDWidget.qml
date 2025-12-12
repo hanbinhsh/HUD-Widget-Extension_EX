@@ -49,77 +49,135 @@ T.Widget {
     // --- 颜色渐变
     // 默认渐变
     property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
+    
+    // 动画时长更新
     property var overallGradientAnimDuration: defaultSettings.overallGradientAnimDuration ?? 5000
     onOverallGradientAnimDurationChanged: {
         gradientAnimPhaseAnimation.restart();
     }
-    // 动画驱动器 (0.0 ~ 1.0 循环)
+
+    // --- 动画驱动器 ---
     property real gradientAnimPhase: 0.0
     NumberAnimation on gradientAnimPhase {
         id: gradientAnimPhaseAnimation
-        // 仅在开启效果且开启动画时运行
         running: (defaultSettings.enableOverallGradientEffect ?? false) && (defaultSettings.enableOverallGradientAnim ?? false)
         from: 0.0
         to: 1.0
         duration: overallGradientAnimDuration
         loops: Animation.Infinite
     }
+
+    // --- 变量定义 ---
+    // 1. 缓存数组 (持有 Stop 对象的引用)
+    property var topLevelStopCache: []
+    // 2. 动态 Gradient 对象容器
+    property var customGradObject: null
+    // 3. 当前使用的 Gradient (用于绑定到 LinearGradient)
+    property var currentGradient: defaultSettings.useFillGradient ? customGradObject : simpleGrad
+
+    // --- 核心逻辑 1: 高频动画更新 ---
+    // 每一帧只运行这个，不创建对象，不排序，只做加法
     onGradientAnimPhaseChanged: {
-        // 只有在使用自定义颜色时，才需要手动刷新 gradient 属性来实现位置移动
-        if (defaultSettings.useFillGradient) {
-            var newGrad = generateGradient();
-            if (linearG.visible) linearG.gradient = newGrad;
-            if (radialG.visible) radialG.gradient = newGrad;
-            if (conicalG.visible) conicalG.gradient = newGrad;
+        if (defaultSettings.useFillGradient && defaultSettings.enableOverallGradientAnim) {
+            GradientUtils.updateGradientPositions(gradientAnimPhase, topLevelStopCache);
         }
     }
-    function adjustGradientColor(clr, phase) {
-        return GradientUtils.adjustGradientColor(clr, phase, defaultSettings);
+
+    // --- 核心逻辑 2: 初始化/设置改变 ---
+    Connections {
+        target: defaultSettings
+        // 任何相关设置改变，触发重建
+        onFillStopsChanged: initCustomGradient()
+        onUseFillGradientChanged: initCustomGradient()
+        onEnableOverallGradientAnimChanged: initCustomGradient()
+
+        onOverallGradientColor0Changed: initCustomGradient()
+        onOverallGradientColor1Changed: initCustomGradient()
     }
-    function generateGradient() {
-        if (!defaultSettings.useFillGradient)
-            return grad;
-        return GradientUtils.generateGradient(
-            defaultSettings,
-            gradientAnimPhase,
-            defaultStops,
-            makeGradient
-        );
+
+    function initCustomGradient() {
+        // 1. 清理旧数据引用
+        GradientUtils.clearGradientCache(topLevelStopCache);
+        topLevelStopCache = [];
+
+        // 2. 销毁旧的 Gradient 对象 (强制刷新渲染的关键)
+        if (customGradObject) {
+            customGradObject.destroy();
+            customGradObject = null;
+        }
+
+        // 3. 如果启用了自定义颜色，创建新对象
+        if (defaultSettings.useFillGradient) {
+            // 3.1 动态创建 Gradient 容器，父对象设为 linearG 以跟随生命周期
+            customGradObject = customGradComponent.createObject(linearG);
+
+            if (customGradObject) {
+                // 3.2 调用 JS 生成 3 倍数量的 Stops
+                var result = GradientUtils.rebuildGradientStops(
+                    defaultSettings, 
+                    gradientStopComponent, 
+                    customGradObject // Parent
+                );
+
+                if (result.qmlStops.length > 0) {
+                    customGradObject.stops = result.qmlStops;
+                    topLevelStopCache = result.cache; // 保存缓存供动画使用
+                } else {
+                    // 出错回退
+                    customGradObject.stops = defaultGradientComponent.createObject(customGradObject).stops;
+                }
+            }
+        }
+        // currentGradient 属性会自动更新，因为 customGradObject 变了
     }
-    function makeGradient(stopdefs) {
-        return GradientUtils.makeGradient(stopdefs, defaultStops, gradientComponent);
-    }
+
+    // --- 组件定义 ---
+
+    // A. 简易模式渐变 (Simple Gradient)
     Gradient {
-        id: grad
+        id: simpleGrad
         GradientStop { 
             position: 0.0; 
-            color: adjustGradientColor(defaultSettings.overallGradientColor0 ?? "#a18cd1", gradientAnimPhase) 
+            color: GradientUtils.adjustGradientColor(defaultSettings.overallGradientColor0 ?? "#a18cd1", gradientAnimPhase, defaultSettings) 
         }
         GradientStop { 
             position: 1.0; 
-            color: adjustGradientColor(defaultSettings.overallGradientColor1 ?? "#fbc2eb", gradientAnimPhase) 
+            color: GradientUtils.adjustGradientColor(defaultSettings.overallGradientColor1 ?? "#fbc2eb", gradientAnimPhase, defaultSettings) 
         }
     }
+
+    // B. 高级模式渐变组件 (Component)
     Component {
-        id: gradientComponent
+        id: customGradComponent
         Gradient {
-            property var stopdefs
-            stops: stopdefs.map( d => gradientStopComponent.createObject(null, { position: d.position, baseColor: d.color }) );
+            // 空容器，Stops 由 JS 注入
         }
     }
+
+    // C. 基础 Stop 组件 (Component)
     Component { 
         id: gradientStopComponent; 
-        GradientStop { 
-            property color baseColor: "white" 
-            color: adjustGradientColor(baseColor, gradientAnimPhase)
-        } 
+        GradientStop { } 
     }
+    
+    // D. 默认 Stops 组件 (Component)
+    Component {
+        id: defaultGradientComponent
+        Gradient {
+            GradientStop { position: 0.0; color: "#a18cd1" }
+            GradientStop { position: 1.0; color: "#fbc2eb" }
+        }
+    }
+
     // --- 渐变组件应用 ---
     LinearGradient {
         id: linearG
         anchors.fill: widget
         visible: false
-        gradient: generateGradient()
+        
+        // [优化] 绑定属性，而非函数调用
+        gradient: currentGradient
+        
         start: {
             switch (defaultSettings.overallGradientDirect ?? 1) {
                 case 0 : 
@@ -141,15 +199,15 @@ T.Widget {
             }
             return Qt.point(widget.width, 0);
         }
-        // 当动画开启时，强制关闭缓存以保证流畅
         cached: defaultSettings.overallGradientCached ?? false
     }
+
     // 3. 径向渐变
     RadialGradient {
         id: radialG
         visible: false
         anchors.fill: widget
-        gradient: generateGradient()
+        gradient: currentGradient
         angle: defaultSettings.overallGradientAngle ?? 0
         horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
         verticalOffset: defaultSettings.overallGradientVertical ?? 0
@@ -163,12 +221,13 @@ T.Widget {
         id: conicalG
         visible: false
         anchors.fill: widget
-        gradient: generateGradient()
+        gradient: currentGradient
         angle: defaultSettings.overallGradientAngle ?? 0
         horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
         verticalOffset: defaultSettings.overallGradientVertical ?? 0
         cached: defaultSettings.overallGradientCached ?? false
     }
+
     layer {
         enabled: defaultSettings.enableOverallGradientEffect ?? false
         effect: OpacityMask {
@@ -226,6 +285,7 @@ T.Widget {
     }
 
     Component.onCompleted: { // upgrade settings
+        initCustomGradient()
         if (settings.font !== undefined) {
             defaultSettings.font = settings.font;
             settings.font = undefined;
@@ -923,6 +983,14 @@ T.Widget {
 
                 // --- 颜色渐变逻辑 ---
                 property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
+                
+                // [新增] 1. 本地缓存数组 (防止与顶层冲突)
+                property var innerLevelStopCache: []
+                // [新增] 2. 动态 Gradient 对象容器
+                property var customGradObject_item: null
+                // [新增] 3. 当前使用的 Gradient (用于绑定)
+                property var currentGradient_item: settings.useFillGradient ? customGradObject_item : simpleGrad_item
+
                 property var overallGradientAnimDurationItem: settings.overallGradientAnimDuration ?? 5000
                 property real itemGradientAnimPhase: 0.0
 
@@ -940,64 +1008,108 @@ T.Widget {
                     loops: Animation.Infinite
                 }
 
-                // 监听动画相位，更新自定义渐变位置
+                // [优化] 核心逻辑 1: 高频动画更新 (仅更新位置)
                 onItemGradientAnimPhaseChanged: {
-                    if (settings.useFillGradient) {
-                        var newGrad = generateGradient_item();
-                        // 只有当组件可见时才赋值，节省性能
-                        if (linearG.visible) linearG.gradient = newGrad;
-                        if (radialG.visible) radialG.gradient = newGrad;
-                        if (conicalG.visible) conicalG.gradient = newGrad;
+                    if (settings.useFillGradient && settings.enableOverallGradientAnim) {
+                        // 将本地缓存 innerLevelStopCache 传给 JS
+                        GradientUtils.updateGradientPositions(itemContent.itemGradientAnimPhase, itemContent.innerLevelStopCache);
                     }
                 }
-                function adjustGradientColor_item(clr, phase) {
-                    return GradientUtils.adjustGradientColor(clr, phase, settings);
+
+                // [优化] 核心逻辑 2: 初始化/设置改变 -> 重建对象
+                Connections {
+                    target: settings
+                    onFillStopsChanged: itemContent.initCustomGradient_item()
+                    onUseFillGradientChanged: itemContent.initCustomGradient_item()
+                    onEnableOverallGradientAnimChanged: itemContent.initCustomGradient_item()
+
+                    onOverallGradientColor0Changed: itemContent.initCustomGradient_item()
+                    onOverallGradientColor1Changed: itemContent.initCustomGradient_item()
                 }
-                function generateGradient_item() {
-                    if (!settings.useFillGradient)
-                        return grad;
-                    return GradientUtils.generateGradient(
-                        settings,
-                        itemContent.itemGradientAnimPhase,
-                        itemContent.defaultStops,
-                        itemContent.makeGradient_item
-                    );
+
+                Component.onCompleted: itemContent.initCustomGradient_item()
+
+                function initCustomGradient_item() {
+                    console.log("Initializing custom gradient for item at index" + settings.fillStops);
+                    // 1. 清理旧数据引用
+                    GradientUtils.clearGradientCache(itemContent.innerLevelStopCache);
+                    itemContent.innerLevelStopCache = [];
+
+                    // 2. 销毁旧的 Gradient 对象 (强制刷新渲染)
+                    if (itemContent.customGradObject_item) {
+                        itemContent.customGradObject_item.destroy();
+                        itemContent.customGradObject_item = null;
+                    }
+
+                    // 3. 如果需要使用自定义渐变，则创建新的对象
+                    if (settings.useFillGradient) {
+                        // 3.1 动态创建 Gradient 容器，父对象设为 linearG (或其他存在的对象)
+                        itemContent.customGradObject_item = customGradComponent_item.createObject(linearG);
+
+                        if (itemContent.customGradObject_item) {
+                            // 3.2 调用 JS 生成 Stops
+                            var result = GradientUtils.rebuildGradientStops(
+                                settings, 
+                                itemGradientStopComponent, 
+                                itemContent.customGradObject_item // Parent
+                            );
+
+                            if (result.qmlStops.length > 0) {
+                                itemContent.customGradObject_item.stops = result.qmlStops;
+                                itemContent.innerLevelStopCache = result.cache; // 保存到本地缓存
+                            } else {
+                                // 回退
+                                itemContent.customGradObject_item.stops = defaultGradientComponent_item.createObject(itemContent.customGradObject_item).stops;
+                            }
+                        }
+                    }
                 }
-                function makeGradient_item(stopdefs) {
-                    return GradientUtils.makeGradient(stopdefs, itemContent.defaultStops, itemGradientComponent);
-                }
-                // 简单渐变对象
+
+                // --- 组件定义 ---
+
+                // A. 简易模式渐变
                 Gradient {
-                    id: grad
+                    id: simpleGrad_item
                     GradientStop { 
                         position: 0.0; 
-                        color: itemContent.adjustGradientColor_item(settings.overallGradientColor0 ?? "#a18cd1", itemContent.itemGradientAnimPhase) 
+                        color: GradientUtils.adjustGradientColor(settings.overallGradientColor0 ?? "#a18cd1", itemContent.itemGradientAnimPhase, settings) 
                     }
                     GradientStop { 
                         position: 1.0; 
-                        color: itemContent.adjustGradientColor_item(settings.overallGradientColor1 ?? "#fbc2eb", itemContent.itemGradientAnimPhase) 
+                        color: GradientUtils.adjustGradientColor(settings.overallGradientColor1 ?? "#fbc2eb", itemContent.itemGradientAnimPhase, settings) 
                     }
                 }
+
+                // B. 高级模式渐变组件 (Component)
                 Component {
-                    id: itemGradientComponent
+                    id: customGradComponent_item
+                    Gradient { }
+                }
+
+                // C. 基础 Stop 组件
+                Component { 
+                    id: itemGradientStopComponent; 
+                    GradientStop { } 
+                }
+                
+                // D. 默认 Stops 组件
+                Component {
+                    id: defaultGradientComponent_item
                     Gradient {
-                        property var stopdefs
-                        stops: stopdefs.map( d => itemGradientStopComponent.createObject(null, { position: d.position, baseColor: d.color }) );
+                        GradientStop { position: 0.0; color: "#a18cd1" }
+                        GradientStop { position: 1.0; color: "#fbc2eb" }
                     }
                 }
-                Component { 
-                    id: itemGradientStopComponent
-                    GradientStop { 
-                        property color baseColor: "white" 
-                        color: itemContent.adjustGradientColor_item(baseColor, itemContent.itemGradientAnimPhase)
-                    } 
-                }
+
                 // --- 渐变组件应用 ---
+                
                 LinearGradient {
                     id: linearG
                     anchors.fill: itemContent
                     visible: false
-                    gradient: itemContent.generateGradient_item() // 初始化绑定
+                    // [优化] 绑定属性
+                    gradient: itemContent.currentGradient_item
+                    
                     start: {
                         switch (settings.overallGradientDirect ?? 1) {
                             case 0 : 
@@ -1019,30 +1131,33 @@ T.Widget {
                         }
                         return Qt.point(itemContent.width, 0);
                     }
-                    cached: (settings.overallGradientCached ?? false) && !(settings.enableOverallGradientAnim ?? false)
+                    cached: settings.overallGradientCached ?? false
                 }
+
                 RadialGradient {
                     id: radialG
                     visible: false
                     anchors.fill: itemContent
-                    gradient: itemContent.generateGradient_item()
+                    gradient: itemContent.currentGradient_item
                     angle: settings.overallGradientAngle ?? 0
                     horizontalOffset: settings.overallGradientHorizontal ?? 0
                     verticalOffset: settings.overallGradientVertical ?? 0
                     horizontalRadius: settings.overallGradientHorizontalRadius ?? 50
                     verticalRadius: settings.overallGradientVerticalRadius ?? 50
-                    cached: (settings.overallGradientCached ?? false) && !(settings.enableOverallGradientAnim ?? false)
+                    cached: settings.overallGradientCached ?? false
                 }
+
                 ConicalGradient {
                     id: conicalG
                     visible: false
                     anchors.fill: itemContent
-                    gradient: itemContent.generateGradient_item()
+                    gradient: itemContent.currentGradient_item
                     angle: settings.overallGradientAngle ?? 0
                     horizontalOffset: settings.overallGradientHorizontal ?? 0
                     verticalOffset: settings.overallGradientVertical ?? 0
-                    cached: (settings.overallGradientCached ?? false) && !(settings.enableOverallGradientAnim ?? false)
+                    cached: settings.overallGradientCached ?? false
                 }
+
                 layer {
                     enabled: settings.enableOverallGradientEffect ?? false
                     samplerName: "maskSource" 
