@@ -88,7 +88,16 @@
                 "zh_TW": "网页挂件"
             },
             "entry": "qml-adv/elements/WebElement.qml"
-        },{
+        }, {
+            "location": "/element/pomodoro-element",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Pomodoro Timer",
+                "zh": "番茄时钟",
+                "zh_TW": "番茄时钟"
+            },
+            "entry": "qml-adv/elements/PomodoroElement.qml"
+        }, {
             "location": "/data",
             "catalog": "data",
             "title": {
