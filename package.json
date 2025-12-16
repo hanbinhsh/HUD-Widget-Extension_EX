@@ -98,6 +98,15 @@
             },
             "entry": "qml-adv/elements/PomodoroElement.qml"
         }, {
+            "location": "/element/slider-element",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Slider",
+                "zh": "滑动条",
+                "zh_TW": "滑动条"
+            },
+            "entry": "qml-adv/elements/SliderElement.qml"
+        }, {
             "location": "/data",
             "catalog": "data",
             "title": {

@@ -196,6 +196,8 @@ DataSourceElement {
         
         P.Separator {}
 
+        // TODO 增加点击缩放（反馈）
+
         // 外观设置
         P.SliderPreference {
             name: "radius"
