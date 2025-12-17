@@ -151,6 +151,7 @@ NVG.Window {
                     gridSnap: craftSettings?.snap ?? true
                     model: targetSettings ? NVG.Settings.makeList(targetSettings, "elements") : null
                     delegate: CraftElement {
+                        id: thiz_ce
                         view: elementView
                         itemBackground: bgSource
                         settings: modelData

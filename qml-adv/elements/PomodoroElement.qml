@@ -464,18 +464,23 @@ DataSourceElement {
         MouseArea {
             id: mouseArea
             anchors.fill: parent
-            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            
+            // 编辑模式下不接受任何按钮，正常模式接受左右键
+            acceptedButtons: widget.editing ? Qt.NoButton : (Qt.LeftButton | Qt.RightButton)
+            
             hoverEnabled: true
 
-            onClicked: {
+            onClicked: (mouse) => {
+                if (widget.editing) {
+                    mouse.accepted = false;
+                    return;
+                }
+
                 if (mouse.button === Qt.RightButton) {
                     // 右键跳过
-                    timer.stop() // 先停
+                    timer.stop()
                     thiz.isWorkSession = !thiz.isWorkSession
                     thiz.resetTimer()
-                    
-                    // 跳过也遵循自动切换逻辑吗？通常跳过意味着用户想立即开始下一段
-                    // 或者你可以强制暂停，看你喜好。这里改为强制暂停，让用户准备好再点开始
                     thiz.isRunning = false 
                 } else {
                     // 左键暂停/开始
@@ -489,15 +494,20 @@ DataSourceElement {
                 }
             }
 
-            onDoubleClicked: {
+            onDoubleClicked: (mouse) => {
+                if (widget.editing) {
+                    mouse.accepted = false;
+                    return;
+                }
+
                 thiz.resetTimer()
                 thiz.isRunning = false
             }
             
-            ToolTip.visible: showToolTip && containsMouse
+            ToolTip.visible: showToolTip && containsMouse && !widget.editing
             ToolTip.text: (isRunning ? qsTr("Pause") : qsTr("Start")) + "\n" +
-                          qsTr("Double-Click: Reset") + "\n" +
-                          qsTr("R-Click: Skip")
+                        qsTr("Double-Click: Reset") + "\n" +
+                        qsTr("R-Click: Skip")
             ToolTip.delay: 500
         }
     }
