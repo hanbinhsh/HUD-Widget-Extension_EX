@@ -12,7 +12,7 @@ import "./PreferenceBase/"
 P.PreferenceGroup {
     property var item: null
 
-    ColorPreferenceBase{
+    RipplePreferenceBase{
         itemIn: item
     }
 }

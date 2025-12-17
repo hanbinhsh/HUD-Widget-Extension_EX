@@ -12,9 +12,9 @@ import ".."
 import "../Launcher/"
 
 HUDElementTemplate {
-    id: sliderDelegate
+    id: controllerDelegate
 
-    title: qsTr("Control Slider")
+    title: qsTr("Controller")
     
     // 默认尺寸
     implicitWidth: 160
@@ -33,7 +33,7 @@ HUDElementTemplate {
     readonly property int sliderStyle: settings.sliderStyle ?? 0
 
     // 滑块/旋钮外观
-    readonly property int handleType: settings.handleType ?? 0 // 0=Glow, 1=Solid
+    readonly property int handleType: settings.handleType ?? 1 // 0=Glow, 1=Solid
     readonly property real handleSize: settings.handleSize ?? 16
     readonly property int handleVisibility: settings.handleVisibility ?? 2 // 0=Hover, 1=None, 2=Always
     readonly property color handleColor: settings.handleColor ?? "#FFFFFF"
@@ -42,7 +42,8 @@ HUDElementTemplate {
     readonly property color trackColor: settings.trackColor ?? "#40FFFFFF"
     readonly property color progressColor: settings.progressColor ?? "#00AAFF"
     readonly property int trackThickness: settings.trackThickness ?? 4
-    
+
+    // 滑动条特有
     readonly property bool showTicks: settings.showTicks ?? false
     readonly property int tickCount: settings.tickCount ?? 5
     readonly property color tickColor: settings.tickColor ?? "#88FFFFFF"
@@ -53,6 +54,11 @@ HUDElementTemplate {
     readonly property bool knobShowIndicator: settings.knobShowIndicator ?? true
     readonly property real knobTrackRadius: settings.knobTrackRadius ?? 24
     readonly property color knobBorderColor: settings.knobBorderColor ?? "#00AAFF"
+    readonly property color knobBackgroundColor: settings.knobBackgroundColor ?? "#40000000"
+    readonly property real knobBorderWidth: settings.knobBorderWidth ?? 1
+
+    // 显示Tips
+    readonly property bool showTips: settings.showTips ?? true
 
     // --- 内部逻辑变量 ---
     readonly property int controlTarget: settings.controlTarget ?? 0
@@ -249,7 +255,7 @@ HUDElementTemplate {
 
     // --- 设置面板 ---
     preference: P.ObjectPreferenceGroup {
-        defaultValue: sliderDelegate.settings
+        defaultValue: controllerDelegate.settings
         syncProperties: true
 
         P.SelectPreference {
@@ -386,40 +392,22 @@ HUDElementTemplate {
             defaultValue: "#40FFFFFF"
         }
         
-        P.Separator {}
+        P.Separator {visible: pStyle.value !== 2}
 
         // 滑块特有
         P.ObjectPreferenceGroup {
             visible: pStyle.value === 0
-            defaultValue: sliderDelegate.settings
+            defaultValue: controllerDelegate.settings
             syncProperties: true
-            P.SelectPreference {
-                name: "handleType"
-                label: qsTr("Handle Style")
-                model: [qsTr("Glow Ring"), qsTr("Solid Circle")]
-                defaultValue: 0
-            }
-            P.SelectPreference {
-                name: "handleVisibility"
-                label: qsTr("Handle Visibility")
-                model: [qsTr("Hover Only"), qsTr("None"), qsTr("Always")]
-                defaultValue: 2
-            }
-            NoDefaultColorPreference {
-                name: "handleColor";
-                label: qsTr("Handle Color");
-                defaultValue: "#FFFFFF"
-            }
             P.SpinPreference {
                 name: "trackThickness";
                 label: qsTr("Track Height");
                 defaultValue: 4;
                 from: 1;
-                to: 50
+                to: 9999
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
             }
-            
             // 刻度
             P.SwitchPreference {
                 id: pShowTicks;
@@ -454,7 +442,7 @@ HUDElementTemplate {
         // 旋钮特有
         P.ObjectPreferenceGroup {
             visible: pStyle.value === 1
-            defaultValue: sliderDelegate.settings
+            defaultValue: controllerDelegate.settings
             syncProperties: true
             P.SpinPreference {
                 name: "knobSize";
@@ -506,35 +494,50 @@ HUDElementTemplate {
                 label: qsTr("Background Color")
                 defaultValue: "#40000000"
             }
-            // Handle 样式
-            P.SelectPreference {
-                name: "handleType"
-                label: qsTr("Handle Style")
-                model: [qsTr("Glow Ring"), qsTr("Solid Circle")]
-                defaultValue: 0
-            }
-            P.SelectPreference {
-                name: "handleVisibility"
-                label: qsTr("Handle Visibility")
-                model: [qsTr("Hover Only"), qsTr("None"), qsTr("Always")]
-                defaultValue: 2
-            }
-            NoDefaultColorPreference {
-                name: "handleColor"
-                label: qsTr("Handle Color")
-                defaultValue: "#FFFFFF"
-            }
         }
+
+        P.Separator {visible: pStyle.value !== 2}
+
+        // Handle 样式
+        P.SelectPreference {
+            name: "handleType"
+            label: qsTr("Handle Style")
+            model: [qsTr("Glow Ring"), qsTr("Solid Circle")]
+            defaultValue: 1
+            visible: pStyle.value !== 2
+        }
+        P.SelectPreference {
+            name: "handleVisibility"
+            label: qsTr("Handle Visibility")
+            model: [qsTr("Press Only"), qsTr("None"), qsTr("Always")]
+            defaultValue: 2
+            visible: pStyle.value !== 2
+        }
+        NoDefaultColorPreference {
+            name: "handleColor"
+            label: qsTr("Handle Color")
+            defaultValue: "#FFFFFF"
+            visible: pStyle.value !== 2
+        }
+
+        P.Separator {}
+
+        P.SwitchPreference {
+            name: "showTips";
+            label: qsTr("Show Tips");
+            defaultValue: true
+        }
+
     }
 
     // --- 逻辑实现 ---
 
     function getRawTargetMap() {
-        if (sliderDelegate.controlTarget === 0) { // HUD Element
+        if (controllerDelegate.controlTarget === 0) { // HUD Element
             var hudModel = widget.getHUDItemView();
             if (hudModel && itemIndex_hud >= 0 && itemIndex_hud < hudModel.count) {
                 var parentData = hudModel.get(itemIndex_hud);
-                if (sliderDelegate.controlParent) {
+                if (controllerDelegate.controlParent) {
                     return parentData;
                 }
                 if (parentData) {
@@ -662,7 +665,7 @@ HUDElementTemplate {
             
             from: minValue
             to: maxValue
-            stepSize: sliderDelegate.stepSize
+            stepSize: controllerDelegate.stepSize
             value: settings.defaultValue ?? 50
 
             onMoved: writeValue(value)
@@ -720,7 +723,7 @@ HUDElementTemplate {
                 
                 // 颜色逻辑 (实心或发光)
                 color: handleType === 1 ? handleColor : (control.pressed ? "#f0f0f0" : handleColor)
-                border.color: handleType === 1 ? Qt.darker(handleColor, 1.2) : progressColor
+                border.color: handleType === 1 ? Qt.darker(handleColor, 1.2) : controllerDelegate.handleColor
                 border.width: handleType === 1 ? 1 : 2
                 
                 // 发光效果 (仅 Type 0)
@@ -728,12 +731,12 @@ HUDElementTemplate {
                 layer.effect: RectangularGlow {
                     glowRadius: 5
                     spread: 0.2
-                    color: Qt.rgba(progressColor.r, progressColor.g, progressColor.b, 0.5)
+                    color: Qt.rgba(handleColor.r, handleColor.g, handleColor.b, 0.5)
                     cornerRadius: handleRect.radius
                 }
             }
             
-            ToolTip.visible: hovered || pressed
+            ToolTip.visible: (hovered || pressed) && showTips
             ToolTip.text: (value/divider).toFixed(stepSize < 1 ? 2 : 0)
         }
     }
@@ -744,133 +747,138 @@ HUDElementTemplate {
         Dial {
             id: dial
             
-            // [关键修改 1] 尺寸不再依赖 parent (挂件)，而是完全由设置决定
-            // 这对应了你给出的参考代码中的 Circle Graph 逻辑
-            width: knobSize
-            height: knobSize
-            
-            // [关键修改 2] 始终居中于挂件。如果挂件被拉大，旋钮保持原大小居中
+            // [尺寸] 直接绑定 controllerDelegate 的属性
+            width: controllerDelegate.knobSize
+            height: width
             anchors.centerIn: parent
             
-            // 轨道半径
-            readonly property real trackRadius: settings.knobTrackRadius ?? 24
-            // [新增] 属性读取
-            readonly property color bgColor: settings.knobBackgroundColor ?? "#40000000"
-            readonly property real borderWidth: settings.knobBorderWidth ?? 1
-            
-            from: minValue
-            to: maxValue
-            stepSize: sliderDelegate.stepSize
+            from: controllerDelegate.minValue
+            to: controllerDelegate.maxValue
+            stepSize: controllerDelegate.stepSize
             value: settings.defaultValue ?? 50
 
             onMoved: writeValue(value)
 
-            // 背景层 (圆盘主体)
-            background: Rectangle {
-                // 填满 Dial (即填满 knobSize)
-                anchors.fill: parent
-                radius: width / 2
+            // [背景] 使用 Canvas 统一绘制背景、边框、轨道
+            background: Canvas {
+                id: knobCanvas
+                width: controllerDelegate.knobSize
+                height: width
                 
-                // [修改] 使用独立的背景色，不混用 trackColor
-                color: dial.bgColor
-                
-                // [修改] 边框设置
-                border.color: knobBorderColor
-                border.width: dial.borderWidth
-                
-                // Canvas 仅用于绘制轨道条 (Track) 和 进度条 (Progress)
-                Canvas {
-                    id: knobCanvas
-                    anchors.fill: parent
+                renderStrategy: Canvas.Threaded 
+                renderTarget: Canvas.Image
+
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.clearRect(0, 0, width, height);
                     
-                    onPaint: {
-                        var ctx = getContext("2d");
-                        ctx.clearRect(0, 0, width, height);
-                        
-                        var cx = width / 2;
-                        var cy = height / 2;
-                        var r = dial.trackRadius;
-                        
-                        // 角度定义: 135度 ~ 405度
-                        var startAngle = Math.PI * 0.75;
-                        var endAngle = Math.PI * 2.25;
-                        
-                        // 计算进度
-                        var valuePos = (dial.value - dial.from) / (dial.to - dial.from);
-                        valuePos = Math.max(0, Math.min(1, valuePos));
-                        var currentAngle = startAngle + (valuePos * (endAngle - startAngle));
-                        
-                        ctx.lineCap = "round";
-
-                        // 1. 绘制轨道 (Track) - 未激活部分
-                        // [修改] 使用 trackColor 绘制线条，而不是背景填充
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, r, startAngle, endAngle);
-                        ctx.strokeStyle = trackColor; 
-                        ctx.lineWidth = trackThickness;
-                        ctx.stroke();
-
-                        // 2. 绘制进度 (Progress) - 激活部分
-                        ctx.beginPath();
-                        ctx.arc(cx, cy, r, startAngle, currentAngle);
-                        ctx.strokeStyle = progressColor;
-                        ctx.lineWidth = trackThickness;
+                    var cx = width / 2;
+                    var cy = height / 2;
+                    
+                    // --- 1. 绘制背景圆 (Body) ---
+                    // 引用 controllerDelegate.knobBorderWidth
+                    var bgRadius = controllerDelegate.knobSize / 2 - controllerDelegate.knobBorderWidth / 2;
+                    
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, bgRadius, 0, 2 * Math.PI);
+                    ctx.fillStyle = controllerDelegate.knobBackgroundColor; 
+                    ctx.fill();
+                    
+                    // --- 2. 绘制边框 (Border) ---
+                    if (controllerDelegate.knobBorderWidth > 0) {
+                        ctx.lineWidth = controllerDelegate.knobBorderWidth;
+                        ctx.strokeStyle = controllerDelegate.knobBorderColor;
                         ctx.stroke();
                     }
+
+                    // --- 3. 绘制轨道与进度 (Tracks) ---
+                    var r = controllerDelegate.knobTrackRadius;
                     
-                    // 信号连接
-                    Connections {
-                        target: sliderDelegate
-                        onTrackThicknessChanged: knobCanvas.requestPaint()
-                        onProgressColorChanged: knobCanvas.requestPaint()
-                        onTrackColorChanged: knobCanvas.requestPaint()
-                    }
-                    Connections {
-                        target: settings
-                        onKnobTrackRadiusChanged: knobCanvas.requestPaint()
-                        // [新增] 监听新增的属性变化
-                        onKnobBackgroundColorChanged: knobCanvas.requestPaint() 
-                    }
-                    Connections {
-                        target: dial
-                        onPositionChanged: knobCanvas.requestPaint()
-                        onValueChanged: knobCanvas.requestPaint() 
-                    }
+                    // 角度定义: 135度 ~ 405度
+                    var startAngle = Math.PI * 0.75;
+                    var endAngle = Math.PI * 2.25;
+                    
+                    // 计算进度角度
+                    var valuePos = (dial.value - dial.from) / (dial.to - dial.from);
+                    valuePos = Math.max(0, Math.min(1, valuePos));
+                    var currentAngle = startAngle + (valuePos * (endAngle - startAngle));
+                    
+                    ctx.lineCap = "round";
+
+                    // 3.1 轨道槽 (未激活)
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, startAngle, endAngle);
+                    ctx.strokeStyle = Qt.rgba(controllerDelegate.trackColor.r, controllerDelegate.trackColor.g, controllerDelegate.trackColor.b, 0.3);
+                    ctx.lineWidth = controllerDelegate.trackThickness;
+                    ctx.stroke();
+
+                    // 3.2 进度条 (激活)
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, r, startAngle, currentAngle);
+                    ctx.strokeStyle = controllerDelegate.progressColor;
+                    ctx.lineWidth = controllerDelegate.trackThickness;
+                    ctx.stroke();
+                }
+                
+                // [关键] 统一监听 controllerDelegate 的属性变化
+                Connections {
+                    target: controllerDelegate
+                    
+                    // 通用外观
+                    onTrackColorChanged: knobCanvas.requestPaint()
+                    onProgressColorChanged: knobCanvas.requestPaint()
+                    onTrackThicknessChanged: knobCanvas.requestPaint()
+                    
+                    // 旋钮特有外观
+                    onKnobSizeChanged: knobCanvas.requestPaint()
+                    onKnobTrackRadiusChanged: knobCanvas.requestPaint()
+                    onKnobBackgroundColorChanged: knobCanvas.requestPaint()
+                    onKnobBorderColorChanged: knobCanvas.requestPaint()
+                    onKnobBorderWidthChanged: knobCanvas.requestPaint()
+                }
+
+                // 监听 Dial 自身的进度变化
+                Connections {
+                    target: dial
+                    onPositionChanged: knobCanvas.requestPaint()
+                    onValueChanged: knobCanvas.requestPaint() 
                 }
             }
 
-            // Handle (保持之前的三角函数定位逻辑，非常稳定)
+            // [Handle]
             handle: Rectangle {
                 id: knobHandleRect
-                visible: handleVisibility === 2 || (handleVisibility === 0 && (dial.hovered || dial.pressed))
+                // 引用 controllerDelegate 的 handleVisibility
+                visible: controllerDelegate.handleVisibility === 2 || (controllerDelegate.handleVisibility === 0 && (dial.hovered || dial.pressed))
                 
-                width: handleSize
-                height: handleSize
+                width: controllerDelegate.handleSize
+                height: controllerDelegate.handleSize
                 radius: width / 2
                 
-                color: handleType === 1 ? handleColor : (dial.pressed ? "#f0f0f0" : handleColor)
-                border.color: handleType === 1 ? Qt.darker(handleColor, 1.2) : progressColor
-                border.width: handleType === 1 ? 1 : 2
+                color: controllerDelegate.handleType === 1 ? controllerDelegate.handleColor : (dial.pressed ? "#f0f0f0" : controllerDelegate.handleColor)
+                border.color: controllerDelegate.handleType === 1 ? Qt.darker(controllerDelegate.handleColor, 1.2) : controllerDelegate.handleColor
+                border.width: controllerDelegate.handleType === 1 ? 1 : 2
                 
                 // 定位逻辑
                 readonly property real centerX: dial.width / 2
                 readonly property real centerY: dial.height / 2
                 readonly property real angleRad: (dial.angle - 90) * Math.PI / 180
                 
-                x: centerX + dial.trackRadius * Math.cos(angleRad) - width / 2
-                y: centerY + dial.trackRadius * Math.sin(angleRad) - height / 2
+                // 引用 controllerDelegate.knobTrackRadius
+                x: centerX + controllerDelegate.knobTrackRadius * Math.cos(angleRad) - width / 2
+                y: centerY + controllerDelegate.knobTrackRadius * Math.sin(angleRad) - height / 2
                 
-                layer.enabled: handleType === 0
+                layer.enabled: controllerDelegate.handleType === 0
                 layer.effect: RectangularGlow {
                     glowRadius: 5
                     spread: 0.2
-                    color: Qt.rgba(progressColor.r, progressColor.g, progressColor.b, 0.5)
+                    color: Qt.rgba(handleColor.r, handleColor.g, handleColor.b, 0.5)
                     cornerRadius: knobHandleRect.radius
                 }
             }
             
-            ToolTip.visible: hovered || pressed
-            ToolTip.text: (value/divider).toFixed(stepSize < 1 ? 2 : 0)
+            ToolTip.visible: (hovered || pressed) && showTips
+            ToolTip.text: (value/controllerDelegate.divider).toFixed(stepSize < 1 ? 2 : 0)
         }
     }
 

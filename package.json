@@ -98,14 +98,14 @@
             },
             "entry": "qml-adv/elements/PomodoroElement.qml"
         }, {
-            "location": "/element/slider-element",
+            "location": "/element/controller-element",
             "catalog": "com.gpbeta.hud-element",
             "title": {
-                "en": "Slider",
-                "zh": "滑动条",
-                "zh_TW": "滑动条"
+                "en": "Controller",
+                "zh": "控制器",
+                "zh_TW": "控制器"
             },
-            "entry": "qml-adv/elements/SliderElement.qml"
+            "entry": "qml-adv/elements/ControllerElement.qml"
         }, {
             "location": "/data",
             "catalog": "data",

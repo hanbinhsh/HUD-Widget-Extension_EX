@@ -7,7 +7,7 @@ import NERvGear 1.0 as NVG
 import com.gpbeta.common 1.0
 
 import ".."
-import "./ColorPreferenceBase/"
+import "./PreferenceBase/"
 
 // 一般设置
 //必须资源
