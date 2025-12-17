@@ -1005,13 +1005,10 @@ T.Widget {
                     animationSpin_Click.running = true
                 }
                 if (widget.defaultSettings.rippleEffectEnabled) {
-                    // 调试：检查设置是否读取正确
                     var enableGlobal = widget.defaultSettings.rippleEffectEnabled;
                     if (enableGlobal) {
-                        // 调试：检查 widget 引用是否存在
                         if (widget) {
                             var mappedPos = thiz.mapToItem(widget, mouse.x, mouse.y);
-                            // 调用根组件函数
                             widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);
                         } else {
                             console.error("[Child] Error: 'widget' (root id) is not accessible or null!");

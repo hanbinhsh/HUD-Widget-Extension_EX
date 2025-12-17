@@ -72,6 +72,134 @@ CraftDelegate {
     property NumberAnimation visibilityAnimation
     property bool animationVisible: true
 
+    MouseArea{
+        hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
+        anchors.fill: settings.enableAction ? parent : undefined
+        z: -1
+        onEntered: {
+            if(settings.moveOnHover){
+                moveAnimationX.stop()
+                moveAnimationY.stop()
+                moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                moveAnimationX.running = true
+                moveAnimationY.running = true
+            }
+            if(settings.zoomOnHover){
+                animationZoomX.stop()
+                animationZoomY.stop()
+                animationZoomX.to = Number(settings.zoomHover_XSize??100)
+                animationZoomY.to = Number(settings.zoomHover_YSize??100)
+                animationZoomX.running = true
+                animationZoomY.running = true
+            }
+            if(settings.spinOnHover){
+                animationSpin_Normal.stop()
+                animationSpin_Normal.to = Number(settings.spinHover_Direction??360)
+                animationSpin_Normal.running = true
+            }
+            if(settings.glimmerOnHover){
+                animationGlimmer.running = true
+            }
+        }
+        onExited: {
+            if(settings.moveOnHover){
+                moveAnimationX.stop()
+                moveAnimationY.stop()
+                moveAnimationX.to = 0
+                moveAnimationY.to = 0
+                moveAnimationX.running = true
+                moveAnimationY.running = true
+            }
+            if(settings.zoomOnHover){
+                animationZoomX.stop()
+                animationZoomY.stop()
+                animationZoomX.to = 0
+                animationZoomY.to = 0
+                animationZoomX.running = true
+                animationZoomY.running = true
+            }
+            if(settings.spinOnHover){
+                animationSpin_Normal.stop()
+                animationSpin_Normal.to = 0
+                animationSpin_Normal.running = true
+            }
+            if(settings.glimmerOnHover){
+                animationGlimmer.running = false
+                recoverOpacity.start()
+            }
+        }
+        onClicked: {
+            //选择了动作
+            if (settings.action&&settings.enableAction) {
+                actionSource.trigger(this);
+            }
+            if(settings.showEXLauncher){
+                LC.LauncherCore.toggleLauncherView()
+            }
+            if(settings.showOriMenu){
+                LC.LauncherCore.showOriMenu()
+            }
+            if(settings.moveOnClick && !isAnimationRunning){
+                isAnimationRunning = true // 标记动画已经开始
+                if(settings.moveBackAfterClick){
+                    clickMoveStatus = !clickMoveStatus
+                }
+                moveClickAnimationX.stop()
+                moveClickAnimationY.stop()
+                moveClickAnimationX.to =  Number(settings.moveClick_Distance??10) * Math.cos(Number(settings.moveClick_Direction??0) * Math.PI / 180)
+                moveClickAnimationY.to = -Number(settings.moveClick_Distance??10) * Math.sin(Number(settings.moveClick_Direction??0) * Math.PI / 180)
+                moveClickAnimationX.running = true
+                moveClickAnimationY.running = true
+                if(settings.moveBackAfterClick){
+                    if(!clickMoveStatus){
+                        moveClickAnimationX.stop()
+                        moveClickAnimationY.stop()
+                        moveClickAnimationX.to = 0
+                        moveClickAnimationY.to = 0
+                        moveClickAnimationX.running = true
+                        moveClickAnimationY.running = true
+                    }
+                }
+            }
+        }
+        onPressed: {
+            if (actionSource.status) NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
+            if(settings.zoomOnClick){
+                animationZoomX_Click.stop()
+                animationZoomY_Click.stop()
+                animationZoomX_Click.to = Number(settings.zoomClick_XSize ?? 100)
+                animationZoomY_Click.to = Number(settings.zoomClick_YSize ?? 100)
+                animationZoomX_Click.running = true
+                animationZoomY_Click.running = true
+            }
+            if(settings.spinOnClick){
+                animationSpin_Click.stop()
+                animationSpin_Click.to += Number(settings.spinClick_Direction??360)
+                animationSpin_Click.running = true
+            }
+        }
+        onReleased:{
+            if(settings.zoomOnClick){
+                animationZoomX_Click.stop()
+                animationZoomY_Click.stop()
+                animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 0
+                animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 0
+                animationZoomX_Click.running = true
+                animationZoomY_Click.running = true
+            }
+            if(settings.spinOnClick&&!settings.spinOnClickInstantRecuvery){
+                animationSpin_Click.stop()
+                animationSpin_Click.to = 0
+                animationSpin_Click.running = true
+            }
+        }
+        NVG.ActionSource {
+            id: actionSource
+            configuration: settings.action
+        }
+    }
+
     Loader {
         id: loader
         anchors.fill: parent
@@ -410,129 +538,23 @@ CraftDelegate {
         easing.type: settings.glimmerHover_Easing ?? 3// 使用缓动函数使动画更平滑
     }
     //鼠标区域
-    MouseArea{
-        hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
-        anchors.fill: settings.enableAction ? parent : undefined
-        onEntered: {
-            if(settings.moveOnHover){
-                moveAnimationX.stop()
-                moveAnimationY.stop()
-                moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
-                moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
-                moveAnimationX.running = true
-                moveAnimationY.running = true
-            }
-            if(settings.zoomOnHover){
-                animationZoomX.stop()
-                animationZoomY.stop()
-                animationZoomX.to = Number(settings.zoomHover_XSize??100)
-                animationZoomY.to = Number(settings.zoomHover_YSize??100)
-                animationZoomX.running = true
-                animationZoomY.running = true
-            }
-            if(settings.spinOnHover){
-                animationSpin_Normal.stop()
-                animationSpin_Normal.to = Number(settings.spinHover_Direction??360)
-                animationSpin_Normal.running = true
-            }
-            if(settings.glimmerOnHover){
-                animationGlimmer.running = true
-            }
-        }
-        onExited: {
-            if(settings.moveOnHover){
-                moveAnimationX.stop()
-                moveAnimationY.stop()
-                moveAnimationX.to = 0
-                moveAnimationY.to = 0
-                moveAnimationX.running = true
-                moveAnimationY.running = true
-            }
-            if(settings.zoomOnHover){
-                animationZoomX.stop()
-                animationZoomY.stop()
-                animationZoomX.to = 0
-                animationZoomY.to = 0
-                animationZoomX.running = true
-                animationZoomY.running = true
-            }
-            if(settings.spinOnHover){
-                animationSpin_Normal.stop()
-                animationSpin_Normal.to = 0
-                animationSpin_Normal.running = true
-            }
-            if(settings.glimmerOnHover){
-                animationGlimmer.running = false
-                recoverOpacity.start()
-            }
-        }
-        onClicked: {
-            //选择了动作
-            if (settings.action&&settings.enableAction) {
-                actionSource.trigger(this);
-            }
-            if(settings.showEXLauncher){
-                LC.LauncherCore.toggleLauncherView()
-            }
-            if(settings.showOriMenu){
-                LC.LauncherCore.showOriMenu()
-            }
-            if(settings.moveOnClick && !isAnimationRunning){
-                isAnimationRunning = true // 标记动画已经开始
-                if(settings.moveBackAfterClick){
-                    clickMoveStatus = !clickMoveStatus
-                }
-                moveClickAnimationX.stop()
-                moveClickAnimationY.stop()
-                moveClickAnimationX.to =  Number(settings.moveClick_Distance??10) * Math.cos(Number(settings.moveClick_Direction??0) * Math.PI / 180)
-                moveClickAnimationY.to = -Number(settings.moveClick_Distance??10) * Math.sin(Number(settings.moveClick_Direction??0) * Math.PI / 180)
-                moveClickAnimationX.running = true
-                moveClickAnimationY.running = true
-                if(settings.moveBackAfterClick){
-                    if(!clickMoveStatus){
-                        moveClickAnimationX.stop()
-                        moveClickAnimationY.stop()
-                        moveClickAnimationX.to = 0
-                        moveClickAnimationY.to = 0
-                        moveClickAnimationX.running = true
-                        moveClickAnimationY.running = true
-                    }
+    MouseArea {
+        id: rippleTriggerArea
+        anchors.fill: parent
+        z: 999 
+        propagateComposedEvents: true
+        hoverEnabled: true
+        acceptedButtons: Qt.LeftButton
+
+        onPressed: (mouse)=> {
+            // 触发涟漪
+            if (widget.defaultSettings.rippleEffectEnabled) {
+                if (widget) {
+                    var mappedPos = mapToItem(widget, mouse.x, mouse.y);
+                    widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);
                 }
             }
-        }
-        onPressed: {
-            if(settings.zoomOnClick){
-                animationZoomX_Click.stop()
-                animationZoomY_Click.stop()
-                animationZoomX_Click.to = Number(settings.zoomClick_XSize ?? 100)
-                animationZoomY_Click.to = Number(settings.zoomClick_YSize ?? 100)
-                animationZoomX_Click.running = true
-                animationZoomY_Click.running = true
-            }
-            if(settings.spinOnClick){
-                animationSpin_Click.stop()
-                animationSpin_Click.to += Number(settings.spinClick_Direction??360)
-                animationSpin_Click.running = true
-            }
-        }
-        onReleased:{
-            if(settings.zoomOnClick){
-                animationZoomX_Click.stop()
-                animationZoomY_Click.stop()
-                animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 0
-                animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 0
-                animationZoomX_Click.running = true
-                animationZoomY_Click.running = true
-            }
-            if(settings.spinOnClick&&!settings.spinOnClickInstantRecuvery){
-                animationSpin_Click.stop()
-                animationSpin_Click.to = 0
-                animationSpin_Click.running = true
-            }
-        }
-        NVG.ActionSource {
-            id: actionSource
-            configuration: settings.action
+            mouse.accepted = false; 
         }
     }
     // --- 颜色渐变逻辑 ---

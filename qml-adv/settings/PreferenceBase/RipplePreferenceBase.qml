@@ -9,6 +9,7 @@ import com.gpbeta.common 1.0
 import "../.."
 import "../../Utils"
 
+// Warning 这里如果在内层控件（除rippleEffectEnabled）使用 message 会导致显示 implicitHeight循环绑定 报错（警告） 不知道为什么
 
 P.ObjectPreferenceGroup {
     id: control

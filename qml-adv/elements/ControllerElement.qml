@@ -57,6 +57,13 @@ HUDElementTemplate {
     readonly property color knobBackgroundColor: settings.knobBackgroundColor ?? "#40000000"
     readonly property real knobBorderWidth: settings.knobBorderWidth ?? 1
 
+    // 开关特有
+    readonly property string valueOnRaw: settings.valueOn ?? "1"
+    readonly property string valueOffRaw: settings.valueOff ?? "0"
+
+    property var valueOn: parseTypedValue(valueOnRaw)
+    property var valueOff: parseTypedValue(valueOffRaw)
+
     // 显示Tips
     readonly property bool showTips: settings.showTips ?? true
 
@@ -233,6 +240,24 @@ HUDElementTemplate {
         _isUpdatingIndex = false;
     }
 
+    function parseTypedValue(val) {
+        if (val === undefined || val === null) return 0;
+        var str = val.toString();
+        
+        // 1. 尝试转为布尔值
+        if (str.toLowerCase() === "true") return true;
+        if (str.toLowerCase() === "false") return false;
+        
+        // 2. 尝试转为数字 (排除空字符串，空字符串视为字符串)
+        if (str.trim() === "") return "";
+        var num = Number(str);
+        if (!isNaN(num)) return num;
+        
+        // 3. 否则保留为字符串 (去除可能的引号)
+        // 如果用户输入 "hide"，返回 hide
+        return str.replace(/^"|"$/g, ''); 
+    }
+
     // 在属性列表更新时调用
     on_Target_propertiesChanged: {
         if (!_isInitializing && !_isSwitchingTarget) {
@@ -262,7 +287,7 @@ HUDElementTemplate {
             id: selectItem
             label: qsTr("Control Target")
             name: "controlTarget"
-            model: [qsTr("HUD Element"), qsTr("EXL Element")]
+            model: [qsTr("HUD Element")] // TODO , qsTr("EXL Element")
             defaultValue: 0
         }
         P.SelectPreference {
@@ -496,6 +521,29 @@ HUDElementTemplate {
             }
         }
 
+        // 开关特有
+        P.ObjectPreferenceGroup {
+            visible: pStyle.value === 2
+            defaultValue: controllerDelegate.settings
+            syncProperties: true
+            
+            // 使用文本框以支持 "hide", "true", "0.5" 等各种输入
+            P.TextFieldPreference {
+                name: "valueOn"
+                label: qsTr("Value On")
+                defaultValue: "1"
+                hint: "1, true, hide..."
+                display: P.TextFieldPreference.ExpandControl
+            }
+            P.TextFieldPreference {
+                name: "valueOff"
+                label: qsTr("Value Off")
+                defaultValue: "0"
+                hint: "0, false, normal..."
+                display: P.TextFieldPreference.ExpandControl
+            }
+        }
+
         P.Separator {visible: pStyle.value !== 2}
 
         // Handle 样式
@@ -520,12 +568,13 @@ HUDElementTemplate {
             visible: pStyle.value !== 2
         }
 
-        P.Separator {}
+        P.Separator {visible: pStyle.value !== 2}
 
         P.SwitchPreference {
             name: "showTips";
             label: qsTr("Show Tips");
             defaultValue: true
+            visible: pStyle.value !== 2
         }
 
     }
@@ -560,25 +609,23 @@ HUDElementTemplate {
         if (!root || !path) return;
         var parts = path.split('.');
         var current = root;
-        
-        // 遍历到倒数第二个节点
         for (var i = 0; i < parts.length - 1; i++) {
             var key = parts[i];
             if (current[key] === undefined) {
-                // 如果路径不存在，通常不应该创建，直接返回
                 console.warn("Slider: Path not found:", path);
                 return;
             }
             current = current[key];
         }
-        
-        // 设置最后一个节点的值
         var lastKey = parts[parts.length - 1];
-        // 应用除数逻辑：写入值 = 滑块值 / 除数
-        var finalValue = value / divider;
+        // 只有当 value 是数字时才应用除数
+        var finalValue = value;
+        if (typeof value === 'number') {
+            finalValue = value / divider;
+        }
         current[lastKey] = finalValue;
     }
-    
+
     function getDeepValue(root, path) {
         if (!root || !path) return undefined;
         var parts = path.split('.');
@@ -590,28 +637,21 @@ HUDElementTemplate {
         }
         return current;
     }
-
+    
     function getStoredValue() {
         var val = undefined;
-        var map = getRawTargetMap(); // 获取根对象
+        var map = getRawTargetMap(); 
         
-        // 1. 尝试深度读取
-        if (map && targetKey) {
-            val = getDeepValue(map, targetKey);
-        }
+        if (map && targetKey) val = getDeepValue(map, targetKey);
+        if (val === undefined && targetKey) val = getDeepValue(widget.settings, targetKey);
+        if (val === undefined) val = settings.defaultValue ?? 50;
 
-        // 2. 如果没找到，尝试全局
-        if (val === undefined && targetKey) {
-            val = getDeepValue(widget.settings, targetKey);
+        // 只有读取到的是数字时，才乘以除数还原
+        // 如果读取到的是 "hide" 字符串，直接返回
+        if (!isNaN(Number(val))) {
+            return Number(val) * divider;
         }
-
-        // 3. 默认值
-        if (val === undefined) {
-            val = settings.defaultValue ?? 50;
-        }
-
-        // 读取值 = 存储值 * 除数 (还原到滑块范围)
-        return Number(val) * divider;
+        return val;
     }
 
     // 初始化默认值
@@ -889,16 +929,25 @@ HUDElementTemplate {
             id: sw
             anchors.centerIn: parent
             
-            // [关键修复] 添加 value 属性以避免报错
-            property real value: 0
+            property var value: settings.defaultValue ?? 0
             
-            // 双向绑定
-            checked: value > 0
+            // 判断当前值是否等于"开"的值 (允许微小误差)
+            checked: {
+                var vOn = controllerDelegate.valueOn;
+                var current = sw.value;
+                
+                // 数字比较 (允许误差)
+                if (typeof vOn === 'number' && typeof current === 'number') {
+                    return Math.abs(current - vOn) < 0.001;
+                }
+                // 字符串/布尔比较
+                return current == vOn; // 使用 == 允许类型转换 (如 "true" == true)
+            }
             
             onToggled: {
-                var newVal = checked ? 1 : 0;
-                value = newVal;
-                writeValue(newVal);
+                var targetVal = checked ? controllerDelegate.valueOn : controllerDelegate.valueOff;
+                value = targetVal;
+                writeValue(targetVal);
             }
 
             indicator: Rectangle {
