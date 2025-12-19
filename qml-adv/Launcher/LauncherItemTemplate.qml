@@ -55,6 +55,27 @@ Item{
     function toggleItem() { thiz.visible ? hideItem() : showItem() }
     function showItem(){
         hideAnimation.stop()
+        
+        // ---【新增/修改】初始化起始状态 ---
+        // 1. 先把透明度设为 0，防止暂停期间直接显示出来
+        thiz.opacity = 0; 
+        
+        // 2. 如果启用了移动动画，先把坐标设置到由 'from' 计算出的起始位置
+        // 这样在 PauseAnimation 期间，物体也是在起始位置等待，而不是在终点等待
+        if(settings.enableShowAnimation){
+            var dist = Number(settings.showAnimation_Distance ?? 10);
+            var dir = Number(settings.showAnimation_Direction ?? 0) * Math.PI / 180;
+            
+            // 下面的公式要和你 showMoveAnimationX/Y 里的 from 逻辑保持一致
+            thiz.showAnimationX = dist * Math.cos(dir);
+            thiz.showAnimationY = -dist * Math.sin(dir); 
+        } else {
+            // 如果没开动画，确保偏移归零
+            thiz.showAnimationX = 0;
+            thiz.showAnimationY = 0;
+        }
+        // --------------------------------
+
         thiz.visible = true
         showAnimation.start()
     }
@@ -102,7 +123,13 @@ Item{
                 }
             }
         }
-        NumberAnimation { target: thiz; property: "opacity"; to: settings.viewO ? settings.viewO/100.0 : 1.0; duration: settings.showhideDuration ?? 300 }
+        NumberAnimation {
+            target: thiz;
+            property: "opacity";
+            from: 0; 
+            to: settings.viewO ? settings.viewO/100.0 : 1.0;
+            duration: settings.showhideDuration ?? 300
+        }
     }
     NumberAnimation {
         id: showMoveAnimationX

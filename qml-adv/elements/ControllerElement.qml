@@ -76,10 +76,10 @@ HUDElementTemplate {
     readonly property int selectedPropertyIndex: settings.selectedPropertyIndex ?? 0
 
     // --- 动态属性刷新逻辑 ---
-    property var _target_properties: getTargetProperties();
-    property var _items_child: getHUDChildItems();
-    property var _items_hud: getHUDItems();
-    property var _items_ex: getEXLItems();
+    property var _target_properties: []
+    property var _items_child: []
+    property var _items_hud: []
+    property var _items_ex: []
 
     property bool _isInitializing: true
     property bool _isUpdatingIndex: false
@@ -108,10 +108,14 @@ HUDElementTemplate {
     }
 
     function getSettingItems() {
-        _target_properties = getTargetProperties();
-        _items_child = getHUDChildItems();
         _items_hud = getHUDItems();
         _items_ex = getEXLItems();
+        if (controllerDelegate.controlTarget === 1) { // 1 = EXL
+            _items_child = getEXLChildItems();
+        } else { // 0 = HUD
+            _items_child = getHUDChildItems();
+        }
+        _target_properties = getTargetProperties();
     }
     
     function getEXLItems() {
@@ -126,7 +130,7 @@ HUDElementTemplate {
     }
 
     function getHUDItems() {
-        if(widget===undefined) return [];
+        if (typeof widget === "undefined" || !widget) return [];
         var itemView = widget.getHUDItemView();
         var labels = [];
         if (itemView) {
@@ -138,7 +142,7 @@ HUDElementTemplate {
     }
 
     function getHUDChildItems() {
-        if(widget===undefined) return [];
+        if (typeof widget === "undefined" || !widget) return [];
         var hudModel = widget.getHUDItemView();
         if (!hudModel || itemIndex_hud < 0 || itemIndex_hud >= hudModel.count) return [];
         var parentItemData = hudModel.get(itemIndex_hud);
@@ -155,11 +159,32 @@ HUDElementTemplate {
         }
         return labels;
     }
+
+    // [新增] 获取 EXL 挂件的子项列表
+    function getEXLChildItems() {
+        var itemView = LauncherCore.getEXLItemView();
+        if (!itemView || !itemView.model) return [];
+        
+        var exlModel = itemView.model;
+        if (itemIndex_ex < 0 || itemIndex_ex >= exlModel.count) return [];
+        
+        var parentData = exlModel.get(itemIndex_ex);
+        if (!parentData || !parentData.elements) return [];
+        
+        var childList = parentData.elements;
+        var labels = [];
+        
+        for (var i = 0; i < childList.count; i++) {
+            var child = childList.get(i);
+            labels.push(child.label || qsTr("Item") + " " + (i + 1));
+        }
+        return labels;
+    }
     
     function getTargetProperties() {
         var targetSettings = getRawTargetMap(); // 获取根设置对象
         if (!targetSettings) {
-            // console.log("Slider: No target settings found.");
+            console.log("Slider: No target settings found.");
             return [];
         }
         return flattenKeys(targetSettings);
@@ -323,7 +348,7 @@ HUDElementTemplate {
             name: "selectedPropertyIndex"
             label: qsTr("Property")
             model: _target_properties
-            visible: _target_properties.length > 0
+            visible: _target_properties ? _target_properties.length > 0 : false
             defaultValue: 0
         }
 
@@ -587,7 +612,7 @@ HUDElementTemplate {
     // --- 逻辑实现 ---
 
     function getRawTargetMap() {
-        if (controllerDelegate.controlTarget === 0 && widget!==undefined) { // HUD Element
+        if (controllerDelegate.controlTarget === 0 && typeof widget !== "undefined" && widget) { // HUD Element
             var hudModel = widget.getHUDItemView();
             if (hudModel && itemIndex_hud >= 0 && itemIndex_hud < hudModel.count) {
                 var parentData = hudModel.get(itemIndex_hud);
@@ -605,30 +630,32 @@ HUDElementTemplate {
                     return parentData;
                 }
             }
-        }else{
-            var exlModel = LauncherCore.getEXLItemView().model;
-            if (exlModel && itemIndex_ex >= 0 && itemIndex_ex < exlModel.count) {
-                var parentData = exlModel.get(itemIndex_ex);
-                if (controllerDelegate.controlParent) {
-                    return parentData;
-                }
-                if (parentData) {
-                    // 如果选了子项
-                    if (_items_child.length > 0 && itemIndex_child >= 0) {
-                        if (parentData.elements && itemIndex_child < parentData.elements.count) {
-                            return parentData.elements.get(itemIndex_child);
-                        }
-                    } 
-                    // 否则是父项
-                    return parentData;
+        } else if (controllerDelegate.controlTarget === 1){
+            // EXL 逻辑分支
+            var itemView = LauncherCore.getEXLItemView();
+            if (itemView && itemView.model) {
+                var exlModel = itemView.model;
+                if (itemIndex_ex >= 0 && itemIndex_ex < exlModel.count) {
+                    var parentData = exlModel.get(itemIndex_ex);
+                    
+                    if (settings.controlParent) return parentData;
+                    
+                    if (parentData) {
+                        if (_items_child.length > 0 && itemIndex_child >= 0) {
+                            if (parentData.elements && itemIndex_child < parentData.elements.count) {
+                                return parentData.elements.get(itemIndex_child);
+                            }
+                        } 
+                        return parentData;
+                    }
                 }
             }
         }
-        // 如果需要支持 EXL，在这里添加逻辑
         return null; 
     }
 
     function setDeepValue(root, path, value) {
+        // console.log("setDeepValue:", root, path, value);
         if (!root || !path) return;
         var parts = path.split('.');
         var current = root;
@@ -665,12 +692,20 @@ HUDElementTemplate {
         var val = undefined;
         var map = getRawTargetMap(); 
         
-        if (map && targetKey) val = getDeepValue(map, targetKey);
-        if (val === undefined && targetKey) val = getDeepValue(widget.settings, targetKey);
-        if (val === undefined) val = settings.defaultValue ?? 50;
+        if (map && targetKey) {
+            val = getDeepValue(map, targetKey);
+        }
 
-        // 只有读取到的是数字时，才乘以除数还原
-        // 如果读取到的是 "hide" 字符串，直接返回
+        if (val === undefined && targetKey) {
+            if (typeof widget !== "undefined" && widget && widget.settings) {
+                val = getDeepValue(widget.settings, targetKey);
+            }
+        }
+
+        if (val === undefined) {
+            val = settings.defaultValue ?? 50;
+        }
+
         if (!isNaN(Number(val))) {
             return Number(val) * divider;
         }
@@ -678,33 +713,47 @@ HUDElementTemplate {
     }
 
     // 初始化默认值
-    Component.onCompleted: {
-        _isInitializing = true;
-        
-        Qt.callLater(function(){
-            // 先获取所有项目
+    Timer {
+        id: initTimer
+        interval: 100 // 给足时间让环境准备好
+        running: true
+        repeat: false
+        onTriggered: {
+            // 安全调用函数
             getSettingItems();
             
-            // 等待一帧确保设置加载完成
-            Qt.callLater(function(){
-                // 同步索引
-                syncPropertyIndex();
-                
-                // 加载保存的值
-                var savedVal = getStoredValue();
-                if (loader.item) loader.item.value = savedVal;
-                
-                _isInitializing = false;
-                // console.log("Slider: Initialization complete, targetKey=", settings.targetKey);
-            });
-        });
+            // 同步索引
+            syncPropertyIndex();
+            
+            // 加载保存的值
+            var savedVal = getStoredValue();
+            
+            // 确保 Loader 已加载
+            if (loader.item) {
+                loader.item.value = savedVal;
+            } else {
+                // 如果 Loader还没好，监听 loaded 信号
+                loader.loaded.connect(function() {
+                    loader.item.value = savedVal;
+                });
+            }
+            
+            _isInitializing = false;
+        }
     }
 
     function writeValue(val) {
         if (!targetKey) return;
         var targetMap = getRawTargetMap();
-        if (targetMap) setDeepValue(targetMap, targetKey, val);
-        else setDeepValue(widget.settings, targetKey, val);
+        if (targetMap) {
+            setDeepValue(targetMap, targetKey, val)
+        } else {
+            if (typeof widget !== "undefined" && widget && widget.settings) {
+                setDeepValue(widget.settings, targetKey, val);
+            } else {
+                console.warn("Slider: Unable to find target map to write value.");
+            }
+        }
     }
 
     Loader {
