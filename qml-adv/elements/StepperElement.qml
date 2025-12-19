@@ -193,9 +193,15 @@ HUDElementTemplate {
         P.Separator {}
 
         // 刻度
-        P.SwitchPreference { name: "showTicks"; label: qsTr("Show Ticks"); defaultValue: true }
+        P.SwitchPreference {
+            id: showTicks
+            name: "showTicks"
+            label: qsTr("Show Ticks")
+            defaultValue: true
+        }
+
         P.ObjectPreferenceGroup {
-            visible: settings.showTicks
+            visible: showTicks.value
             syncProperties: true
             defaultValue: root.settings
             P.SpinPreference {
