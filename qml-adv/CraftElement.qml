@@ -222,200 +222,201 @@ CraftDelegate {
     }
 
     MouseArea {
-    id: visualMouseArea
-    anchors.fill: parent
-    z: -1
-    
-    propagateComposedEvents: true
-    hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
-    acceptedButtons: Qt.NoButton
-
-    // --- 悬停进入 ---
-    onEntered: {
-        if (widget.editing) {
-            if(thiz_ce ?? false) elementView.currentTarget = thiz_ce
-            return;
-        }
-
-        // 移动
-        if(settings.moveOnHover){
-            moveAnimationX.stop(); moveAnimationY.stop()
-            moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
-            moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
-            moveAnimationX.running = true; moveAnimationY.running = true
-        }
-        // 缩放
-        if(settings.zoomOnHover){
-            animationZoomX.stop(); animationZoomY.stop()
-            animationZoomX.to = Number(settings.zoomHover_XSize??100)
-            animationZoomY.to = Number(settings.zoomHover_YSize??100)
-            animationZoomX.running = true; animationZoomY.running = true
-        }
-        // 旋转
-        if(settings.spinOnHover){
-            animationSpin_Normal.stop()
-            animationSpin_Normal.to = Number(settings.spinHover_Direction??360)
-            animationSpin_Normal.running = true
-        }
-        // 闪烁
-        if(settings.glimmerOnHover){
-            animationGlimmer.running = true
-        }
-    }
-
-    // --- 悬停退出 ---
-    onExited: {
-        if (widget.editing) return;
-
-        if(settings.moveOnHover){
-            moveAnimationX.stop(); moveAnimationY.stop()
-            moveAnimationX.to = 0; moveAnimationY.to = 0
-            moveAnimationX.running = true; moveAnimationY.running = true
-        }
-        if(settings.zoomOnHover){
-            animationZoomX.stop(); animationZoomY.stop()
-            animationZoomX.to = 0; animationZoomY.to = 0
-            animationZoomX.running = true; animationZoomY.running = true
-        }
-        if(settings.spinOnHover){
-            animationSpin_Normal.stop()
-            animationSpin_Normal.to = 0
-            animationSpin_Normal.running = true
-        }
-        if(settings.glimmerOnHover){
-            animationGlimmer.running = false
-            recoverOpacity.start()
-        }
-    }
-}
-
-MouseArea {
-    id: interactionMouseArea
-    anchors.fill: parent
-    z: 1000
-    
-    propagateComposedEvents: true
-    hoverEnabled: false
-    acceptedButtons: Qt.LeftButton
-
-    onPressed: (mouse)=> {
-        // console.log("Pressed detected in interactionMouseArea")
+        id: visualMouseArea
+        anchors.fill: parent
+        z: -1
         
-        if (widget.editing) {
-            mouse.accepted = false; 
-            return;
-        }
+        propagateComposedEvents: true
+        hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
+        acceptedButtons: Qt.NoButton
 
-        // ========== 1. 视觉反馈 ==========
-        
-        // 1.1 触发涟漪
-        if (widget.defaultSettings.rippleEffectEnabled) {
-            if (widget) {
-                var mappedPos = mapToItem(widget, mouse.x, mouse.y);
-                widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);
+        // --- 悬停进入 ---
+        onEntered: {
+            if (widget.editing) {
+                if(thiz_ce ?? false) elementView.currentTarget = thiz_ce
+                return;
+            }
+
+            // 移动
+            if(settings.moveOnHover){
+                moveAnimationX.stop(); moveAnimationY.stop()
+                moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
+                moveAnimationX.running = true; moveAnimationY.running = true
+            }
+            // 缩放
+            if(settings.zoomOnHover){
+                animationZoomX.stop(); animationZoomY.stop()
+                animationZoomX.to = Number(settings.zoomHover_XSize??100)
+                animationZoomY.to = Number(settings.zoomHover_YSize??100)
+                animationZoomX.running = true; animationZoomY.running = true
+            }
+            // 旋转
+            if(settings.spinOnHover){
+                animationSpin_Normal.stop()
+                animationSpin_Normal.to = Number(settings.spinHover_Direction??360)
+                animationSpin_Normal.running = true
+            }
+            // 闪烁
+            if(settings.glimmerOnHover){
+                animationGlimmer.running = true
             }
         }
 
-        // 1.2 触发按压音效
-        if (actionSource.status) {
-            NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
-        }
-        
-        // 1.3 触发按压缩放
-        if(settings.zoomOnClick){
-            animationZoomX_Click.stop(); animationZoomY_Click.stop()
-            animationZoomX_Click.to = Number(settings.zoomClick_XSize ?? 100)
-            animationZoomY_Click.to = Number(settings.zoomClick_YSize ?? 100)
-            animationZoomX_Click.running = true; animationZoomY_Click.running = true
-        }
-        
-        // 1.4 触发按压旋转
-        if(settings.spinOnClick){
-            animationSpin_Click.stop()
-            animationSpin_Click.to += Number(settings.spinClick_Direction??360)
-            animationSpin_Click.running = true
-        }
+        // --- 悬停退出 ---
+        onExited: {
+            if (widget.editing) return;
 
-        // ========== 2. 功能触发 ==========
-        
-        // 2.1 触发 Action
-        if (actionSource.configuration) {
-            actionSource.trigger(thiz);
+            if(settings.moveOnHover){
+                moveAnimationX.stop(); moveAnimationY.stop()
+                moveAnimationX.to = 0; moveAnimationY.to = 0
+                moveAnimationX.running = true; moveAnimationY.running = true
+            }
+            if(settings.zoomOnHover){
+                animationZoomX.stop(); animationZoomY.stop()
+                animationZoomX.to = 0; animationZoomY.to = 0
+                animationZoomX.running = true; animationZoomY.running = true
+            }
+            if(settings.spinOnHover){
+                animationSpin_Normal.stop()
+                animationSpin_Normal.to = 0
+                animationSpin_Normal.running = true
+            }
+            if(settings.glimmerOnHover){
+                animationGlimmer.running = false
+                recoverOpacity.start()
+            }
         }
-        
-        // 2.2 触发启动器逻辑
-        if(settings.showEXLauncher) {
-            LC.LauncherCore.toggleLauncherView()
-        }
-        if(settings.showOriMenu) {
-            LC.LauncherCore.showOriMenu()
-        }
+    }
 
-        // 2.3 点击移动逻辑
-        if(settings.moveOnClick && !isAnimationRunning){
-            // console.log("Starting click move animation") // 调试日志
+    MouseArea {
+        id: interactionMouseArea
+        anchors.fill: parent
+        z: 1000
+        
+        propagateComposedEvents: true
+        hoverEnabled: false
+        acceptedButtons: Qt.LeftButton
+
+        onPressed: (mouse)=> {
+            // console.log("Pressed detected in interactionMouseArea")
+            // TODO EXL增加点击涟漪
+            if (widget !== undefined){
+                if (widget.editing) {
+                    mouse.accepted = false; 
+                    return;
+                }
+                // 1.1 触发涟漪
+                if (widget.defaultSettings.rippleEffectEnabled) {
+                    if (widget) {
+                        var mappedPos = mapToItem(widget, mouse.x, mouse.y);
+                        widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);
+                    }
+                }
+            }
+
+            // ========== 1. 视觉反馈 ==========
             
-            isAnimationRunning = true 
-            if(settings.moveBackAfterClick) {
-                clickMoveStatus = !clickMoveStatus
+            // 1.2 触发按压音效
+            if (actionSource.status) {
+                NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
             }
             
-            // 停止并重新计算动画目标
-            moveClickAnimationX.stop(); moveClickAnimationY.stop()
+            // 1.3 触发按压缩放
+            if(settings.zoomOnClick){
+                animationZoomX_Click.stop(); animationZoomY_Click.stop()
+                animationZoomX_Click.to = Number(settings.zoomClick_XSize ?? 100)
+                animationZoomY_Click.to = Number(settings.zoomClick_YSize ?? 100)
+                animationZoomX_Click.running = true; animationZoomY_Click.running = true
+            }
             
-            var distance = Number(settings.moveClick_Distance ?? 10)
-            var direction = Number(settings.moveClick_Direction ?? 0)
+            // 1.4 触发按压旋转
+            if(settings.spinOnClick){
+                animationSpin_Click.stop()
+                animationSpin_Click.to += Number(settings.spinClick_Direction??360)
+                animationSpin_Click.running = true
+            }
+
+            // ========== 2. 功能触发 ==========
             
-            moveClickAnimationX.to = distance * Math.cos(direction * Math.PI / 180)
-            moveClickAnimationY.to = -distance * Math.sin(direction * Math.PI / 180)
+            // 2.1 触发 Action
+            if (actionSource.configuration) {
+                actionSource.trigger(thiz);
+            }
             
-            // console.log("Move to X:", moveClickAnimationX.to, "Y:", moveClickAnimationY.to) // 调试日志
-            
-            moveClickAnimationX.running = true
-            moveClickAnimationY.running = true
-            
-            if(settings.moveBackAfterClick && !clickMoveStatus){
+            // 2.2 触发启动器逻辑
+            if(settings.showEXLauncher) {
+                LC.LauncherCore.toggleLauncherView()
+            }
+            if(settings.showOriMenu) {
+                LC.LauncherCore.showOriMenu()
+            }
+
+            // 2.3 点击移动逻辑
+            if(settings.moveOnClick && !isAnimationRunning){
+                // console.log("Starting click move animation") // 调试日志
+                
+                isAnimationRunning = true 
+                if(settings.moveBackAfterClick) {
+                    clickMoveStatus = !clickMoveStatus
+                }
+                
+                // 停止并重新计算动画目标
                 moveClickAnimationX.stop(); moveClickAnimationY.stop()
-                moveClickAnimationX.to = 0
-                moveClickAnimationY.to = 0
+                
+                var distance = Number(settings.moveClick_Distance ?? 10)
+                var direction = Number(settings.moveClick_Direction ?? 0)
+                
+                moveClickAnimationX.to = distance * Math.cos(direction * Math.PI / 180)
+                moveClickAnimationY.to = -distance * Math.sin(direction * Math.PI / 180)
+                
+                // console.log("Move to X:", moveClickAnimationX.to, "Y:", moveClickAnimationY.to) // 调试日志
+                
                 moveClickAnimationX.running = true
                 moveClickAnimationY.running = true
+                
+                if(settings.moveBackAfterClick && !clickMoveStatus){
+                    moveClickAnimationX.stop(); moveClickAnimationY.stop()
+                    moveClickAnimationX.to = 0
+                    moveClickAnimationY.to = 0
+                    moveClickAnimationX.running = true
+                    moveClickAnimationY.running = true
+                }
             }
-        }
 
-        // [关键] 穿透事件给 Switch
-        mouse.accepted = false;
-    }
-
-    onReleased: (mouse)=> {
-        if (widget.editing) {
+            // [关键] 穿透事件给 Switch
             mouse.accepted = false;
-            return;
         }
 
-        // 恢复缩放
-        if(settings.zoomOnClick){
-            animationZoomX_Click.stop(); animationZoomY_Click.stop()
-            animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 0
-            animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 0
-            animationZoomX_Click.running = true; animationZoomY_Click.running = true
+        onReleased: (mouse)=> {
+            if (widget.editing) {
+                mouse.accepted = false;
+                return;
+            }
+
+            // 恢复缩放
+            if(settings.zoomOnClick){
+                animationZoomX_Click.stop(); animationZoomY_Click.stop()
+                animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 0
+                animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 0
+                animationZoomX_Click.running = true; animationZoomY_Click.running = true
+            }
+            
+            // 恢复旋转
+            if(settings.spinOnClick && !settings.spinOnClickInstantRecuvery){
+                animationSpin_Click.stop()
+                animationSpin_Click.to = 0
+                animationSpin_Click.running = true
+            }
+            
+            mouse.accepted = false;
         }
         
-        // 恢复旋转
-        if(settings.spinOnClick && !settings.spinOnClickInstantRecuvery){
-            animationSpin_Click.stop()
-            animationSpin_Click.to = 0
-            animationSpin_Click.running = true
+        NVG.ActionSource {
+            id: actionSource
+            configuration: settings.action
         }
-        
-        mouse.accepted = false;
     }
-    
-    NVG.ActionSource {
-        id: actionSource
-        configuration: settings.action
-    }
-}
     //鼠标动作，悬停动作
     // TODO 点击动作
     //移动动画
@@ -432,22 +433,31 @@ MouseArea {
         easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
     }
     //数据移动
-    NVG.DataSource {
-        id: distanceDataSource
-        // BUG 以下一行会导致报错107
-        configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Distance_data) ? settings.distanceData : null
+    Loader {
+        id: distanceDSLoader
+        active: !!(settings && settings.dataAnimation && settings.dataAnimation_move && settings.moveData_Distance_data)
+        sourceComponent: Component {
+            NVG.DataSource {
+                configuration: settings.distanceData
+            }
+        }
     }
-    NVG.DataSource {
-        id: directionDataSource
-        configuration: (settings.dataAnimation&&settings.dataAnimation_move&&settings.moveData_Direction_data) ? settings.directionData : null
+    Loader {
+        id: directionDSLoader
+        active: !!(settings && settings.dataAnimation && settings.dataAnimation_move && settings.moveData_Direction_data)
+        sourceComponent: Component {
+            NVG.DataSource {
+                configuration: settings.directionData
+            }
+        }
     }
     NVG.DataSourceRawOutput {
         id: distanceData
-        source: distanceDataSource
+        source: distanceDSLoader.item
     }
     NVG.DataSourceRawOutput {
         id: directionData
-        source: directionDataSource
+        source: directionDSLoader.item
     }
     NumberAnimation on moveDataX {
         id: moveDataX
@@ -484,13 +494,18 @@ MouseArea {
         }
     }
     //数据旋转
-    NVG.DataSource {
-        id: spinDataSource
-        configuration: (settings.dataAnimation&&settings.dataAnimation_spin) ? settings.spinData : null
+    Loader {
+        id: spinDSLoader
+        active: !!(settings && settings.dataAnimation && settings.dataAnimation_spin)
+        sourceComponent: Component {
+            NVG.DataSource {
+                configuration: settings.spinData
+            }
+        }
     }
     NVG.DataSourceRawOutput {
         id: spinData
-        source: spinDataSource
+        source: spinDSLoader.item
     }
     NumberAnimation on spinDataA {
         id: spinDataAnimation

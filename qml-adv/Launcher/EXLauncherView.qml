@@ -210,7 +210,7 @@ NVG.View {
             id: thiz
             index: model.index
             settings: modelData
-            readonly property NVG.DataSource dataSource: dataSource
+            readonly property NVG.DataSource rootDataSource: dataSource
             view: eXLItemView
             
             Item {
@@ -221,7 +221,7 @@ NVG.View {
                     model: NVG.Settings.makeList(modelData, "elements")
                     delegate: CraftElement {
                         itemSettings: thiz.settings
-                        itemData: dataSource
+                        itemData: rootDataSource
                         itemBackground: bgSource
                         settings: modelData
                         index: model.index

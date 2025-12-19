@@ -126,6 +126,7 @@ HUDElementTemplate {
     }
 
     function getHUDItems() {
+        if(widget===undefined) return [];
         var itemView = widget.getHUDItemView();
         var labels = [];
         if (itemView) {
@@ -137,6 +138,7 @@ HUDElementTemplate {
     }
 
     function getHUDChildItems() {
+        if(widget===undefined) return [];
         var hudModel = widget.getHUDItemView();
         if (!hudModel || itemIndex_hud < 0 || itemIndex_hud >= hudModel.count) return [];
         var parentItemData = hudModel.get(itemIndex_hud);
@@ -287,7 +289,7 @@ HUDElementTemplate {
             id: selectItem
             label: qsTr("Control Target")
             name: "controlTarget"
-            model: [qsTr("HUD Element")] // TODO , qsTr("EXL Element")
+            model: [qsTr("HUD Element"), qsTr("EXL Element")] // TODO 
             defaultValue: 0
         }
         P.SelectPreference {
@@ -585,10 +587,28 @@ HUDElementTemplate {
     // --- 逻辑实现 ---
 
     function getRawTargetMap() {
-        if (controllerDelegate.controlTarget === 0) { // HUD Element
+        if (controllerDelegate.controlTarget === 0 && widget!==undefined) { // HUD Element
             var hudModel = widget.getHUDItemView();
             if (hudModel && itemIndex_hud >= 0 && itemIndex_hud < hudModel.count) {
                 var parentData = hudModel.get(itemIndex_hud);
+                if (controllerDelegate.controlParent) {
+                    return parentData;
+                }
+                if (parentData) {
+                    // 如果选了子项
+                    if (_items_child.length > 0 && itemIndex_child >= 0) {
+                        if (parentData.elements && itemIndex_child < parentData.elements.count) {
+                            return parentData.elements.get(itemIndex_child);
+                        }
+                    } 
+                    // 否则是父项
+                    return parentData;
+                }
+            }
+        }else{
+            var exlModel = LauncherCore.getEXLItemView().model;
+            if (exlModel && itemIndex_ex >= 0 && itemIndex_ex < exlModel.count) {
+                var parentData = exlModel.get(itemIndex_ex);
                 if (controllerDelegate.controlParent) {
                     return parentData;
                 }
