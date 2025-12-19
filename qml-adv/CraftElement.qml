@@ -299,7 +299,7 @@ MouseArea {
     acceptedButtons: Qt.LeftButton
 
     onPressed: (mouse)=> {
-        console.log("Pressed detected in interactionMouseArea")
+        // console.log("Pressed detected in interactionMouseArea")
         
         if (widget.editing) {
             mouse.accepted = false; 
@@ -353,7 +353,7 @@ MouseArea {
 
         // 2.3 点击移动逻辑
         if(settings.moveOnClick && !isAnimationRunning){
-            console.log("Starting click move animation") // 调试日志
+            // console.log("Starting click move animation") // 调试日志
             
             isAnimationRunning = true 
             if(settings.moveBackAfterClick) {
@@ -369,7 +369,7 @@ MouseArea {
             moveClickAnimationX.to = distance * Math.cos(direction * Math.PI / 180)
             moveClickAnimationY.to = -distance * Math.sin(direction * Math.PI / 180)
             
-            console.log("Move to X:", moveClickAnimationX.to, "Y:", moveClickAnimationY.to) // 调试日志
+            // console.log("Move to X:", moveClickAnimationX.to, "Y:", moveClickAnimationY.to) // 调试日志
             
             moveClickAnimationX.running = true
             moveClickAnimationY.running = true

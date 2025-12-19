@@ -99,7 +99,7 @@ HUDElementTemplate {
         if (_target_properties && _target_properties.length > 0) {
             settings.selectedPropertyIndex = 0;
             settings.targetKey = _target_properties[0].toString();
-            console.log("Slider: Target switched, reset to", settings.targetKey);
+            // console.log("Slider: Target switched, reset to", settings.targetKey);
         } else {
             settings.selectedPropertyIndex = 0;
             settings.targetKey = "";
@@ -157,7 +157,7 @@ HUDElementTemplate {
     function getTargetProperties() {
         var targetSettings = getRawTargetMap(); // 获取根设置对象
         if (!targetSettings) {
-            console.log("Slider: No target settings found.");
+            // console.log("Slider: No target settings found.");
             return [];
         }
         return flattenKeys(targetSettings);
@@ -222,7 +222,7 @@ HUDElementTemplate {
         for (var i = 0; i < _target_properties.length; i++) {
             if (_target_properties[i] === currentKey) {
                 if (settings.selectedPropertyIndex !== i) {
-                    console.log("Slider: Syncing index to", i, "for key", currentKey);
+                    // console.log("Slider: Syncing index to", i, "for key", currentKey);
                     settings.selectedPropertyIndex = i;
                 }
                 _isUpdatingIndex = false;
@@ -231,7 +231,7 @@ HUDElementTemplate {
         }
         
         // 如果找不到（比如目标改变了），重置为第一项
-        console.warn("Slider: targetKey '" + currentKey + "' not found, resetting");
+        // console.warn("Slider: targetKey '" + currentKey + "' not found, resetting");
         if (_target_properties.length > 0) {
             settings.selectedPropertyIndex = 0;
             settings.targetKey = _target_properties[0].toString();
@@ -272,7 +272,7 @@ HUDElementTemplate {
         if (_target_properties && idx >= 0 && idx < _target_properties.length) {
             var newKey = _target_properties[idx].toString();
             if (settings.targetKey !== newKey) {
-                console.log("Slider: User selected property", newKey);
+                // console.log("Slider: User selected property", newKey);
                 settings.targetKey = newKey;
             }
         }
@@ -675,7 +675,7 @@ HUDElementTemplate {
                 if (loader.item) loader.item.value = savedVal;
                 
                 _isInitializing = false;
-                console.log("Slider: Initialization complete, targetKey=", settings.targetKey);
+                // console.log("Slider: Initialization complete, targetKey=", settings.targetKey);
             });
         });
     }
