@@ -345,6 +345,7 @@ HUDElementTemplate {
             to: 99999
             editable: true
             display: P.TextFieldPreference.ExpandLabel
+            visible: pStyle.value !== 2
         }
         P.SpinPreference {
             name: "maxValue"
@@ -354,6 +355,7 @@ HUDElementTemplate {
             to: 99999
             editable: true
             display: P.TextFieldPreference.ExpandLabel
+            visible: pStyle.value !== 2
         }
         P.SpinPreference {
             name: "stepSize"
@@ -364,6 +366,7 @@ HUDElementTemplate {
             stepSize: 1
             editable: true
             display: P.TextFieldPreference.ExpandLabel
+            visible: pStyle.value !== 2
         }
         P.SpinPreference {
             name: "defaultValue"

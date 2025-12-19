@@ -107,6 +107,15 @@
             },
             "entry": "qml-adv/elements/ControllerElement.qml"
         }, {
+            "location": "/element/stepper-element",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Stepper",
+                "zh": "步进器",
+                "zh_TW": "步进器"
+            },
+            "entry": "qml-adv/elements/StepperElement.qml"
+        }, {
             "location": "/data",
             "catalog": "data",
             "title": {
