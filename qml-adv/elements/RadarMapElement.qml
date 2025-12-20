@@ -59,6 +59,7 @@ DataSourceElement {
                 valueAnimator.itemAt(i).value = val;
             }
         }
+        canvas.requestPaint()
     }
 
     dataConfiguration: settings.data ?? undefined
@@ -82,7 +83,6 @@ DataSourceElement {
     onDrawAxisChanged: canvas.requestPaint()
     onAxisColorChanged: canvas.requestPaint()
     onAxisGlowChanged: canvas.requestPaint()
-    // onAxisCountChanged: canvas.requestPaint() // 移除，由 syncData -> item.onValueChanged 触发
 
     preference: P.ObjectPreferenceGroup {
         defaultValue: thiz.settings

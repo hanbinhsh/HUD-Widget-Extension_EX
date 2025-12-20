@@ -65,20 +65,6 @@ T.Data {
         }
     }
 
-    function fetchFromNet(steamId) {
-        var xhr = new XMLHttpRequest();
-        var url = "https://steamcommunity.com/profiles/" + steamId + "/?xml=1";
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    parseXML(xhr.responseText);
-                }
-            }
-        }
-        xhr.open("GET", url);
-        xhr.send();
-    }
-
     function parseXML(xml) {
         var newData = { games: [] };
         var newGameNames = [];
@@ -139,6 +125,21 @@ T.Data {
         } else {
             root.gameListModel = newGameNames;
         }
+    }
+
+    function fetchFromNet(steamId) {
+        var xhr = new XMLHttpRequest();
+        var url = "https://steamcommunity.com/profiles/" + steamId + "/?xml=1";
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    if(typeof parseXML === "function")
+                        parseXML(xhr.responseText);
+                }
+            }
+        }
+        xhr.open("GET", url);
+        xhr.send();
     }
 
     // ============================================================
