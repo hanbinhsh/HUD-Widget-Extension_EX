@@ -7,6 +7,9 @@ T.Data {
     title: qsTr("Steam Profile Data")
     description: qsTr("Data available only if the user has set their Steam profile to public.")
 
+    // https://partner.steamgames.com/documentation/community_data
+    // https://developer.valvesoftware.com/wiki/Steam_Web_API
+
     // ============================================================
     //  1. 核心缓存与网络逻辑
     // ============================================================
@@ -42,17 +45,20 @@ T.Data {
     })
 
     // 游戏名称列表（用于下拉框模型）
-    property var gameListModel: ["Loading..."]
+    property var gameListModel: [qsTr("Loading...")]
 
     // 缓存控制
     property real lastFetchTime: 0
     property string lastFetchID: ""
-    readonly property int cacheDuration: 300000 // 5分钟
 
-    function requestUpdate(steamId) {
+    function requestUpdate(steamId, timeoutMs) {
         if (!steamId) return;
+
         var now = new Date().getTime();
-        if (steamId !== lastFetchID || (now - lastFetchTime > cacheDuration)) {
+        // 如果未提供参数，默认 5 分钟
+        var duration = (timeoutMs !== undefined) ? timeoutMs : 300000;
+
+        if (steamId !== lastFetchID || (now - lastFetchTime > duration)) {
             fetchFromNet(steamId);
             lastFetchTime = now;
             lastFetchID = steamId;
@@ -143,7 +149,7 @@ T.Data {
     T.Value {
         id: valProfile
         name: "profileInfo"
-        title: qsTr("Profile Info Selector")
+        title: qsTr("Profile Info")
         interval: 1000
 
         update.preference: P.PreferenceGroup {
@@ -173,12 +179,22 @@ T.Data {
                     qsTr("Visibility State")         // 15
                 ]
             }
+            P.SpinPreference {
+                name: "cacheTime"
+                label: qsTr("Cache Duration (min)")
+                defaultValue: 5
+                from: 1
+                to: 1440
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+            }
         }
 
         update.execute: function() {
             var cfg = update.configuration;
             if (cfg && cfg.steamId) {
-                root.requestUpdate(cfg.steamId);
+                var duration = (cfg.cacheTime ?? 5) * 60000;
+                root.requestUpdate(cfg.steamId, duration);
                 
                 var d = root.cacheData;
                 var type = cfg.fieldType || 0;
@@ -211,7 +227,7 @@ T.Data {
     T.Value {
         id: valAvatar
         name: "avatar"
-        title: qsTr("Avatar Selector")
+        title: qsTr("Avatar")
         interval: 1000
 
         update.preference: P.PreferenceGroup {
@@ -228,12 +244,22 @@ T.Data {
                     qsTr("Icon (32px)")     // 2
                 ]
             }
+            P.SpinPreference {
+                name: "cacheTime"
+                label: qsTr("Cache Duration (min)")
+                defaultValue: 5
+                from: 1
+                to: 1440
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+            }
         }
 
         update.execute: function() {
             var cfg = update.configuration;
             if (cfg && cfg.steamId) {
-                root.requestUpdate(cfg.steamId);
+                var duration = (cfg.cacheTime ?? 5) * 60000;
+                root.requestUpdate(cfg.steamId, duration);
                 
                 var type = cfg.sizeType || 0;
                 if (type === 1) current = root.cacheData.avatarMedium;
@@ -249,7 +275,7 @@ T.Data {
     T.Value {
         id: valGame
         name: "gameInfo"
-        title: qsTr("Game Info Selector")
+        title: qsTr("Game Info")
         interval: 1000
 
         update.preference: P.PreferenceGroup {
@@ -279,12 +305,22 @@ T.Data {
                     qsTr("Stats Name")           // 7
                 ]
             }
+            P.SpinPreference {
+                name: "cacheTime"
+                label: qsTr("Cache Duration (min)")
+                defaultValue: 5
+                from: 1
+                to: 1440
+                editable: true
+                display: P.TextFieldPreference.ExpandLabel
+            }
         }
 
         update.execute: function() {
             var cfg = update.configuration;
             if (cfg && cfg.steamId) {
-                root.requestUpdate(cfg.steamId);
+                var duration = (cfg.cacheTime ?? 5) * 60000;
+                root.requestUpdate(cfg.steamId, duration);
 
                 var idx = cfg.gameIndex || 0;
                 var type = cfg.infoType || 0;
