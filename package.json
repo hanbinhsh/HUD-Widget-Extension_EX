@@ -116,14 +116,23 @@
             },
             "entry": "qml-adv/elements/StepperElement.qml"
         }, {
-            "location": "/data",
+            "location": "/data/adv",
             "catalog": "data",
             "title": {
                 "en": "ADV Data",
                 "zh": "音频数据",
                 "zh_TW": "音频数据"
             },
-            "entry": "qml-adv/ADVData/ADVData.qml"
+            "entry": "qml-adv/Data/ADVData.qml"
+        }, {
+            "location": "/data/steam",
+            "catalog": "data",
+            "title": {
+                "en": "Steam Data",
+                "zh": "Steam数据",
+                "zh_TW": "Steam数据"
+            },
+            "entry": "qml-adv/Data/SteamData.qml"
         }, {
             "location": "/preset/info",
             "catalog": "preset/widget",
