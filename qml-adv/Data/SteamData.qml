@@ -18,7 +18,7 @@ T.Data {
         id: valProfile
         name: "profileInfo"
         title: qsTr("Profile Info")
-        interval: 300000
+        interval: 3000
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
@@ -99,7 +99,7 @@ T.Data {
         id: valAvatar
         name: "avatar"
         title: qsTr("Avatar")
-        interval: 300000
+        interval: 3000
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
@@ -150,7 +150,7 @@ T.Data {
         id: valGame
         name: "gameInfo"
         title: qsTr("Game Info")
-        interval: 300000
+        interval: 3000
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
