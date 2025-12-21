@@ -5,7 +5,7 @@ QtObject {
     id: service
 
     // ============================================================
-    //  全局唯一的缓存与网络逻辑
+    //  1. 数据存储与状态
     // ============================================================
 
     // 缓存解析后的完整数据对象
@@ -39,13 +39,20 @@ QtObject {
     })
 
     // 游戏名称列表（用于下拉框模型）
-    property var gameListModel: ["Loading..."]
+    property var gameListModel: [qsTr("Loading...")]
 
-    // 缓存控制
-    property real lastFetchTime: 0
-    property string lastFetchID: ""
+    // 使用 Map 记录每个 ID 的最后刷新时间
+    // 结构: { "76561198...": 1690000000000 }
+    property var fetchHistory: ({}) 
 
-    // 暴露给外部调用的请求函数
+    // 记录当前正在请求的 ID，防止并发重复请求
+    // 结构: { "76561198...": true }
+    property var activeRequests: ({}) 
+
+    // ============================================================
+    //  2. 对外接口
+    // ============================================================
+
     function requestUpdate(steamId, timeoutMs) {
         if (!steamId) return;
 
@@ -53,17 +60,29 @@ QtObject {
         // 如果未提供参数，默认 5 分钟
         var duration = (timeoutMs !== undefined) ? timeoutMs : 300000;
 
-        // 只有当 ID 变了，或者缓存过期了，才真正发起网络请求
-        if (steamId !== lastFetchID || (now - lastFetchTime > duration)) {
+        // 获取该 ID 上次的刷新时间 (如果不存在则为 0)
+        var lastTime = fetchHistory[steamId] || 0;
+        
+        // 检查是否正在请求中 (防抖)
+        if (activeRequests[steamId]) {
+            return;
+        }
+
+        // 只有超时才刷新
+        if (now - lastTime > duration) {
             console.log("[SteamService] Fetching data for:", steamId);
-            console.log("[SteamService] duration (ms):", duration);
+            // 标记为正在请求
+            activeRequests[steamId] = true;
+            // 立即更新时间戳，防止其他组件在毫秒级差距内再次触发
+            fetchHistory[steamId] = now;
             fetchFromNet(steamId);
-            lastFetchTime = now;
-            lastFetchID = steamId;
         }
     }
 
-    // 内部解析逻辑 (完全保留你的原逻辑)
+    // ============================================================
+    //  3. 内部逻辑 (解析与网络)
+    // ============================================================
+
     function parseXML(xml) {
         var newData = { games: [] };
         var newGameNames = [];
@@ -132,11 +151,17 @@ QtObject {
         var url = "https://steamcommunity.com/profiles/" + steamId + "/?xml=1";
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
+                
+                // 请求结束，无论成功失败，移除“正在请求”标记
+                delete activeRequests[steamId];
+                // 强制刷新绑定 (QML 有时对 delete 操作不敏感，重新赋值触发信号)
+                activeRequests = activeRequests; 
+
                 if (xhr.status === 200) {
-                    // 解析响应
                     parseXML(xhr.responseText);
                 } else {
                     console.warn("[SteamService] Network error:", xhr.status, xhr.statusText);
+                    // 失败时不重置 fetchHistory，防止因网络问题导致的死循环请求
                 }
             }
         }
