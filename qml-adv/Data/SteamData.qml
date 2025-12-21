@@ -2,145 +2,12 @@ import QtQuick 2.12
 import NERvGear.Templates 1.0 as T
 import NERvGear.Preferences 1.0 as P
 
+import "." 
+
 T.Data {
     id: root
     title: qsTr("Steam Profile Data")
     description: qsTr("Data available only if the user has set their Steam profile to public.")
-
-    // https://partner.steamgames.com/documentation/community_data
-    // https://developer.valvesoftware.com/wiki/Steam_Web_API
-
-    // ============================================================
-    //  1. 核心缓存与网络逻辑
-    // ============================================================
-
-    // 缓存解析后的完整数据对象
-    property var cacheData: ({
-        // 基础信息
-        steamID64: "",
-        steamID: "",            // 昵称
-        onlineState: "",        // 在线状态 (offline, online, in-game)
-        stateMessage: "",       // 状态描述
-        privacyState: "",       // public/private
-        visibilityState: "",    // 3 = public
-        vacBanned: "0",
-        tradeBanState: "",
-        isLimitedAccount: "0",
-        customURL: "",
-        memberSince: "",
-        steamRating: "",
-        hoursPlayed2Wk: "",
-        headline: "",
-        location: "",
-        realname: "",
-        summary: "",
-        
-        // 头像
-        avatarIcon: "",
-        avatarMedium: "",
-        avatarFull: "",
-
-        // 游戏列表
-        games: [] 
-    })
-
-    // 游戏名称列表（用于下拉框模型）
-    property var gameListModel: [qsTr("Loading...")]
-
-    // 缓存控制
-    property real lastFetchTime: 0
-    property string lastFetchID: ""
-
-    function requestUpdate(steamId, timeoutMs) {
-        if (!steamId) return;
-
-        var now = new Date().getTime();
-        // 如果未提供参数，默认 5 分钟
-        var duration = (timeoutMs !== undefined) ? timeoutMs : 300000;
-
-        if (steamId !== lastFetchID || (now - lastFetchTime > duration)) {
-            fetchFromNet(steamId);
-            lastFetchTime = now;
-            lastFetchID = steamId;
-        }
-    }
-
-    function parseXML(xml) {
-        var newData = { games: [] };
-        var newGameNames = [];
-
-        // 通用提取函数 (兼容换行和CDATA)
-        var getValue = function(tag, context) {
-            var searchIn = context ? context : xml;
-            // 匹配 <tag>...</tag>，中间可能包含 <![CDATA[...]]>
-            var pattern = "<" + tag + ">(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/" + tag + ">";
-            var regex = new RegExp(pattern, "i");
-            var match = searchIn.match(regex);
-            return match ? match[1].trim() : "";
-        }
-
-        // --- 1. 解析所有个人资料字段 ---
-        var tags = [
-            "steamID64", "steamID", "onlineState", "stateMessage", "privacyState", "visibilityState",
-            "avatarIcon", "avatarMedium", "avatarFull", "vacBanned", "tradeBanState", "isLimitedAccount",
-            "customURL", "memberSince", "steamRating", "hoursPlayed2Wk", "headline", "location", "realname", "summary"
-        ];
-        
-        for (var i = 0; i < tags.length; i++) {
-            newData[tags[i]] = getValue(tags[i]);
-        }
-
-        // --- 2. 解析所有游戏信息 ---
-        var gamesBlockMatch = xml.match(/<mostPlayedGames>([\s\S]*?)<\/mostPlayedGames>/i);
-        if (gamesBlockMatch) {
-            var gamesContent = gamesBlockMatch[1];
-            var gameRegex = /<mostPlayedGame>([\s\S]*?)<\/mostPlayedGame>/gi;
-            var gameMatch;
-            
-            while ((gameMatch = gameRegex.exec(gamesContent)) !== null) {
-                var gStr = gameMatch[1];
-                var gName = getValue("gameName", gStr);
-                
-                newData.games.push({
-                    gameName: gName,
-                    gameLink: getValue("gameLink", gStr),
-                    gameIcon: getValue("gameIcon", gStr),
-                    gameLogo: getValue("gameLogo", gStr),
-                    gameLogoSmall: getValue("gameLogoSmall", gStr),
-                    hoursPlayed: getValue("hoursPlayed", gStr),
-                    hoursOnRecord: getValue("hoursOnRecord", gStr),
-                    statsName: getValue("statsName", gStr)
-                });
-                
-                newGameNames.push(gName);
-            }
-        }
-
-        // 更新数据
-        root.cacheData = newData;
-        
-        // 更新游戏下拉框列表
-        if (newGameNames.length === 0) {
-            root.gameListModel = [qsTr("No games found")];
-        } else {
-            root.gameListModel = newGameNames;
-        }
-    }
-
-    function fetchFromNet(steamId) {
-        var xhr = new XMLHttpRequest();
-        var url = "https://steamcommunity.com/profiles/" + steamId + "/?xml=1";
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    if(typeof parseXML === "function")
-                        parseXML(xhr.responseText);
-                }
-            }
-        }
-        xhr.open("GET", url);
-        xhr.send();
-    }
 
     // ============================================================
     //  2. 聚合数据项 (T.Value)
@@ -151,7 +18,7 @@ T.Data {
         id: valProfile
         name: "profileInfo"
         title: qsTr("Profile Info")
-        interval: 1000
+        interval: 300000
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
@@ -195,9 +62,12 @@ T.Data {
             var cfg = update.configuration;
             if (cfg && cfg.steamId) {
                 var duration = (cfg.cacheTime ?? 5) * 60000;
-                root.requestUpdate(cfg.steamId, duration);
                 
-                var d = root.cacheData;
+                // [修改] 调用单例的方法
+                SteamService.requestUpdate(cfg.steamId, duration);
+                
+                // [修改] 从单例读取数据
+                var d = SteamService.cacheData;
                 var type = cfg.fieldType || 0;
                 
                 switch(type) {
@@ -229,7 +99,7 @@ T.Data {
         id: valAvatar
         name: "avatar"
         title: qsTr("Avatar")
-        interval: 1000
+        interval: 300000
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
@@ -260,12 +130,15 @@ T.Data {
             var cfg = update.configuration;
             if (cfg && cfg.steamId) {
                 var duration = (cfg.cacheTime ?? 5) * 60000;
-                root.requestUpdate(cfg.steamId, duration);
+                
+                // [修改] 调用单例
+                SteamService.requestUpdate(cfg.steamId, duration);
                 
                 var type = cfg.sizeType || 0;
-                if (type === 1) current = root.cacheData.avatarMedium;
-                else if (type === 2) current = root.cacheData.avatarIcon;
-                else current = root.cacheData.avatarFull;
+                // [修改] 读取单例
+                if (type === 1) current = SteamService.cacheData.avatarMedium;
+                else if (type === 2) current = SteamService.cacheData.avatarIcon;
+                else current = SteamService.cacheData.avatarFull;
                 
                 status = T.Value.Ready;
             } else { status = T.Value.Null; }
@@ -277,7 +150,7 @@ T.Data {
         id: valGame
         name: "gameInfo"
         title: qsTr("Game Info")
-        interval: 1000
+        interval: 300000
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
@@ -287,7 +160,8 @@ T.Data {
             P.SelectPreference {
                 name: "gameIndex"
                 label: qsTr("Select Game")
-                model: root.gameListModel
+                // [修改] 读取单例的模型
+                model: SteamService.gameListModel
                 defaultValue: 0
             }
             // 2. 选择属性 (包含XML中所有游戏相关字段)
@@ -321,11 +195,13 @@ T.Data {
             var cfg = update.configuration;
             if (cfg && cfg.steamId) {
                 var duration = (cfg.cacheTime ?? 5) * 60000;
-                root.requestUpdate(cfg.steamId, duration);
+                // [修改] 调用单例
+                SteamService.requestUpdate(cfg.steamId, duration);
 
                 var idx = cfg.gameIndex || 0;
                 var type = cfg.infoType || 0;
-                var games = root.cacheData.games;
+                // [修改] 读取单例
+                var games = SteamService.cacheData.games;
 
                 if (games && idx >= 0 && idx < games.length) {
                     var g = games[idx];
@@ -341,7 +217,7 @@ T.Data {
                         default: current = "";
                     }
                 } else {
-                    current = ""; // 无数据或索引越界
+                    current = ""; 
                 }
                 status = T.Value.Ready;
             } else { status = T.Value.Null; }
