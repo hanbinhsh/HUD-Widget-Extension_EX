@@ -16,7 +16,7 @@ DataSourceElement {
         readonly property font defaultFont: Qt.font({ family: "Source Han Sans SC", pixelSize: 14 })
         readonly property color defaultTextColor: "#FFFFFF"
         readonly property color defaultStyleColor: "#33000000" // 默认阴影/描边色
-        readonly property bool exposed: widget ? widget.NVG.View.exposed : true
+        readonly property bool exposed: true
     }
 
     // --- 核心配置读取 ---

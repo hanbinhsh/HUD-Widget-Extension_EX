@@ -28,6 +28,9 @@ NVG.View {
     signal dialogClosing
     property NVG.SettingsMap eXLSettings: NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
     readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
+    readonly property var widget: eXLauncherView
+    readonly property bool editing: isVisible
+    
     Component.onCompleted: {
         init()
         ready()
@@ -68,7 +71,8 @@ NVG.View {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.AllButtons
-        hoverEnabled: true
+        // hoverEnabled: false
+        // z: -1
         onClicked: {
             if (mouse.button === Qt.LeftButton) {
                 switch(eXLSettings.leftClickEvent ?? 3){

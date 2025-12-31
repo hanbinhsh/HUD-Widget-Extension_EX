@@ -131,6 +131,7 @@ HUDElementTemplate {
 
     function getHUDItems() {
         if (typeof widget === "undefined" || !widget) return [];
+        if (typeof widget.getHUDItemView !== "function") return [];
         var itemView = widget.getHUDItemView();
         var labels = [];
         if (itemView) {
@@ -143,6 +144,7 @@ HUDElementTemplate {
 
     function getHUDChildItems() {
         if (typeof widget === "undefined" || !widget) return [];
+        if (typeof widget.getHUDItemView !== "function") return [];
         var hudModel = widget.getHUDItemView();
         if (!hudModel || itemIndex_hud < 0 || itemIndex_hud >= hudModel.count) return [];
         var parentItemData = hudModel.get(itemIndex_hud);
@@ -613,6 +615,7 @@ HUDElementTemplate {
 
     function getRawTargetMap() {
         if (controllerDelegate.controlTarget === 0 && typeof widget !== "undefined" && widget) { // HUD Element
+            if (typeof widget.getHUDItemView !== "function") return null;
             var hudModel = widget.getHUDItemView();
             if (hudModel && itemIndex_hud >= 0 && itemIndex_hud < hudModel.count) {
                 var parentData = hudModel.get(itemIndex_hud);
