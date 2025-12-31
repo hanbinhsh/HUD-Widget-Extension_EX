@@ -228,7 +228,9 @@ CraftDelegate {
         z: -1
         
         propagateComposedEvents: true
-        hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover)
+        hoverEnabled: Boolean(settings.moveOnHover||settings.zoomOnHover||settings.spinOnHover||settings.glimmerOnHover||
+                        (effectSettings?.hoveredColor ?? false)||(effectSettings?.pressedColor ?? false))
+        //这里为了让EXL能够正常处理颜色逻辑，这里加上了(effectSettings?.hoveredColor ?? false)||(effectSettings?.pressedColor ?? false))
         acceptedButtons: Qt.NoButton
 
         // --- 悬停进入 ---
