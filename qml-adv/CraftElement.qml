@@ -97,9 +97,10 @@ CraftDelegate {
             readonly property color hoveredColor: effectSettings.hoveredColor ?? normalColor
             readonly property color pressedColor: effectSettings.pressedColor ?? hoveredColor
 
-            readonly property color color: itemBackground.pressed ? pressedColor : 
-                                           itemBackground.hovered ? hoveredColor : 
-                                           normalColor
+            // 为了让EXL能够正常处理颜色逻辑，这里加上了interactionMouseArea.pressed和visualMouseArea.containsMouse
+            readonly property color color: (itemBackground.pressed || interactionMouseArea.pressed) ? pressedColor : 
+                                   (itemBackground.hovered || visualMouseArea.containsMouse) ? hoveredColor : 
+                                   normalColor
 
             readonly property real xOffset: effectSettings.horizon ?? 0
             readonly property real yOffset: effectSettings.vertical ?? 0
