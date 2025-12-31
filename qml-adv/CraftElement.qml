@@ -307,7 +307,7 @@ CraftDelegate {
                     return;
                 }
                 // 1.1 触发涟漪
-                if (widget.defaultSettings.rippleEffectEnabled) {
+                if (widget.defaultSettings && widget.defaultSettings.rippleEffectEnabled) {
                     if (widget) {
                         var mappedPos = mapToItem(widget, mouse.x, mouse.y);
                         widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);

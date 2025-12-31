@@ -29,7 +29,7 @@ NVG.View {
     property NVG.SettingsMap eXLSettings: NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
     readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
     readonly property var widget: eXLauncherView
-    readonly property bool editing: isVisible
+    readonly property bool editing: dialog.item?.visible ?? false
     
     Component.onCompleted: {
         init()
