@@ -31,6 +31,10 @@ DataSourceElement {
     readonly property bool drawAxis: settings.drawAxis ?? true
     readonly property bool axisGlow: settings.axisGlow ?? true
     readonly property int axisCount: settings.axisCount ?? 6
+    
+    // --- 新增：自动归一化开关属性 ---
+    readonly property bool autoScale: settings.autoScale ?? false
+    // ----------------------------
 
     // 动画开关
     readonly property bool enableAnimation: settings.enableAnimation ?? false
@@ -59,7 +63,7 @@ DataSourceElement {
                 valueAnimator.itemAt(i).value = val;
             }
         }
-        canvas.requestPaint()
+        canvas.requestPaint() // 确保数据更新时重绘
     }
 
     dataConfiguration: settings.data ?? undefined
@@ -83,6 +87,10 @@ DataSourceElement {
     onDrawAxisChanged: canvas.requestPaint()
     onAxisColorChanged: canvas.requestPaint()
     onAxisGlowChanged: canvas.requestPaint()
+    
+    // --- 新增：监听自动归一化切换 ---
+    onAutoScaleChanged: canvas.requestPaint()
+    // ----------------------------
 
     preference: P.ObjectPreferenceGroup {
         defaultValue: thiz.settings
@@ -100,10 +108,19 @@ DataSourceElement {
         }
 
         P.Separator {}
+        
+        // --- 新增：自动归一化设置 ---
+        P.SwitchPreference {
+            id: pAutoScale
+            name: "autoScale"
+            label: qsTr("Auto Normalization") // 自动归一化
+            defaultValue: false
+        }
+        // --------------------------
 
         Repeater {
             id: maxRepeater
-            model: thiz.axisCount   // 跟随坐标轴数量
+            model: thiz.axisCount
             P.SpinPreference {
                 name: "maxValue" + index
                 label: qsTr("Axis ") + (index + 1) + qsTr(" Max")
@@ -113,6 +130,8 @@ DataSourceElement {
                 stepSize: 1
                 editable: true
                 display: P.TextFieldPreference.ExpandLabel
+                // 当开启自动归一化时，隐藏手动最大值设置
+                visible: !pAutoScale.value 
             }
         }
 
@@ -176,7 +195,7 @@ DataSourceElement {
 
         P.SwitchPreference {
             name: "polygonGrid"
-            label: qsTr("Polygon Grid") // 多边形网格
+            label: qsTr("Polygon Grid")
             defaultValue: false
             visible: pGridline.value
         }
@@ -256,6 +275,8 @@ DataSourceElement {
                     easing.type: Easing.OutCubic 
                 }
             }
+            // 这里的 onValueChanged 可以移除，统一由 syncData 中的 canvas.requestPaint() 触发，
+            // 但保留它能确保动画过程中的每一帧都重绘。
             onValueChanged: canvas.requestPaint()
         }
     }
@@ -274,7 +295,6 @@ DataSourceElement {
             ctx.save();
             ctx.translate(centerX, centerY);
 
-            // 预先计算角度步长
             const angleStep = (2 * Math.PI) / axisCount;
 
             // Draw grid (Circles or Polygons)
@@ -292,7 +312,6 @@ DataSourceElement {
                     ctx.beginPath();
                     
                     if (thiz.polygonGrid) {
-                        // 绘制多边形
                         for (let j = 0; j <= axisCount; j++) {
                             const angle = angleStep * j - Math.PI / 2;
                             const x = Math.cos(angle) * radius;
@@ -304,7 +323,6 @@ DataSourceElement {
                             }
                         }
                     } else {
-                        // 绘制圆形（原逻辑）
                         ctx.arc(0, 0, radius, 0, 2 * Math.PI);
                     }
                     
@@ -333,16 +351,38 @@ DataSourceElement {
                 }
             }
 
+            // --- 新增：计算动态最大值（用于自动归一化） ---
+            let currentGlobalMax = 0;
+            if (thiz.autoScale) {
+                // 遍历当前动画值，找出所有轴中的最大值
+                for (let k = 0; k < axisCount; k++) {
+                    const item = valueAnimator.itemAt(k);
+                    const val = item ? item.value : 0;
+                    if (val > currentGlobalMax) {
+                        currentGlobalMax = val;
+                    }
+                }
+                // 防止除以0
+                if (currentGlobalMax <= 0) currentGlobalMax = 1;
+            }
+            // ------------------------------------------
+
             // Calculate data points
             const points = [];
-            // const angleStep = (2 * Math.PI) / axisCount; // 已上提
             
             for (let i = 0; i < axisCount; i++) {
                 const item = valueAnimator.itemAt(i);
                 const value = item ? item.value : 0;
 
-                const maxValName = "maxValue" + i;
-                const maxVal = thiz.settings[maxValName] ?? 100;
+                // --- 修改：根据模式选择分母 ---
+                let maxVal;
+                if (thiz.autoScale) {
+                    maxVal = currentGlobalMax; // 使用当前帧的全局最大值
+                } else {
+                    const maxValName = "maxValue" + i;
+                    maxVal = thiz.settings[maxValName] ?? 100; // 使用手动设置的值
+                }
+                // ---------------------------
 
                 const normalizedValue = maxVal > 0 ? Math.min(1, value / maxVal) : 0;
 

@@ -53,6 +53,24 @@
             },
             "entry": "qml-adv/elements/RadarMapElement.qml"
         }, {
+            "location": "/element/pie-chart",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Pie Chart",
+                "zh": "饼图",
+                "zh_TW": "餅圖"
+            },
+            "entry": "qml-adv/elements/PieChartElement.qml"
+        }, {
+            "location": "/element/bar-chart",
+            "catalog": "com.gpbeta.hud-element",
+            "title": {
+                "en": "Bar Chart",
+                "zh": "柱状图",
+                "zh_TW": "柱狀圖"
+            },
+            "entry": "qml-adv/elements/BarChartElement.qml"
+        }, {
             "location": "/element/liquid-wave",
             "catalog": "com.gpbeta.hud-element",
             "title": {
