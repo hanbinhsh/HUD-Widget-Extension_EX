@@ -563,330 +563,87 @@ DataSourceElement {
                             width: parent.width
                             //必须资源
                         //颜色
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: colorOverlay.height; visible: colorOverlay.value }
-                                P.SwitchPreference {
-                                    id: colorOverlay
-                                    name: "colorOverlay"
-                                    label: qsTr("Color Overlay")
-                                    // visible: !(changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                                }
-                                NoDefaultColorPreference {
-                                    name: "color"
-                                    label: qsTr("Color")
-                                    defaultValue: "transparent"
-                                    visible:colorOverlay.value
-                                }
-                                //悬停
-                                NoDefaultColorPreference {
-                                    name: "hoveredColor"
-                                    label: qsTr("Hovered Color")
-                                    defaultValue: "transparent"
-                                    visible:colorOverlay.value
-                                }
-                                //按下
-                                NoDefaultColorPreference {
-                                    name: "pressedColor"
-                                    label: qsTr("Pressed Color")
-                                    defaultValue: "transparent"
-                                    visible:colorOverlay.value
-                                }
+                        //颜色叠加
+                            EffectPreferenceGroup {
+                                id: colorOverlayGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "colorOverlay"
+                                switchLabel: qsTr("Color Overlay")
+                                NoDefaultColorPreference { name: "color"; label: qsTr("Color"); defaultValue: "transparent"; visible: colorOverlayGroup.switchValue }
+                                NoDefaultColorPreference { name: "hoveredColor"; label: qsTr("Hovered Color"); defaultValue: "transparent"; visible: colorOverlayGroup.switchValue }
+                                NoDefaultColorPreference { name: "pressedColor"; label: qsTr("Pressed Color"); defaultValue: "transparent"; visible: colorOverlayGroup.switchValue }
                             }
                         //亮度对比度 -1~1(/100)
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: changeBrightnessContrast.height; visible: changeBrightnessContrast.value }
-                                //开关
-                                P.SwitchPreference {
-                                    id: changeBrightnessContrast
-                                    name: "changeBrightnessContrast"
-                                    label: qsTr("Brightness Contrast")
-                                    //visible: !(colorOverlay.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                                }
-                                P.SliderPreference {
-                                    name: "brightness"
-                                    label: qsTr("Brightness")
-                                    visible:changeBrightnessContrast.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: -100
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                P.SliderPreference {
-                                    name: "contrast"
-                                    label: qsTr("Contrast")
-                                    visible:changeBrightnessContrast.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: -100
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                P.SwitchPreference {
-                                    visible:changeBrightnessContrast.value
-                                    name: "brightnessContrastCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: brightnessContrastGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "changeBrightnessContrast"
+                                switchLabel: qsTr("Brightness Contrast")
+                                EffectSliderPreference { owner: brightnessContrastGroup; name: "brightness"; label: qsTr("Brightness"); defaultValue: 0; from: -100; to: 100 }
+                                EffectSliderPreference { owner: brightnessContrastGroup; name: "contrast"; label: qsTr("Contrast"); defaultValue: 0; from: -100; to: 100 }
+                                EffectSwitchPreference { owner: brightnessContrastGroup; name: "brightnessContrastCached"; label: qsTr("Cached") }
                             }
                         //着色
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: colorize.height; visible: colorize.value }
-                                P.SwitchPreference {
-                                    id: colorize 
-                                    name: "colorize"
-                                    label: qsTr("Colorize")
-                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || desaturate.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                                }
-                                //色调 /100
-                                P.SliderPreference {
-                                    name: "colorizeHue"
-                                    label: qsTr("HUE")
-                                    visible:colorize.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                //亮度 /100
-                                P.SliderPreference {
-                                    name: "colorizeLightness"
-                                    label: qsTr("Lightness")
-                                    visible:colorize.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: -100
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                //饱和度 /100
-                                P.SliderPreference {
-                                    name: "colorizeSaturation"
-                                    label: qsTr("Saturation")
-                                    visible:colorize.value
-                                    displayValue: value
-                                    defaultValue: 100
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                P.SwitchPreference {
-                                    visible:colorize.value
-                                    name: "colorizeCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: colorizeGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "colorize"
+                                switchLabel: qsTr("Colorize")
+                                EffectSliderPreference { owner: colorizeGroup; name: "colorizeHue"; label: qsTr("HUE"); defaultValue: 0; from: 0; to: 100 }
+                                EffectSliderPreference { owner: colorizeGroup; name: "colorizeLightness"; label: qsTr("Lightness"); defaultValue: 0; from: -100; to: 100 }
+                                EffectSliderPreference { owner: colorizeGroup; name: "colorizeSaturation"; label: qsTr("Saturation"); defaultValue: 100; from: 0; to: 100 }
+                                EffectSwitchPreference { owner: colorizeGroup; name: "colorizeCached"; label: qsTr("Cached") }
                             }
                         //去饱和
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: desaturate.height; visible: desaturate.value }
-                                P.SwitchPreference {
-                                    id: desaturate 
-                                    name: "desaturate"
-                                    label: qsTr("Desaturate")
-                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || gammaAdjust.value || hueSaturation.value || levelAdjust.value)
-                                }
-                                P.SliderPreference {
-                                    name: "desaturation"
-                                    label: qsTr("Desaturation")
-                                    visible:desaturate.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                P.SwitchPreference {
-                                    visible:desaturate.value
-                                    name: "desaturateCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: desaturateGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "desaturate"
+                                switchLabel: qsTr("Desaturate")
+                                EffectSliderPreference { owner: desaturateGroup; name: "desaturation"; label: qsTr("Desaturation"); defaultValue: 0; from: 0; to: 100 }
+                                EffectSwitchPreference { owner: desaturateGroup; name: "desaturateCached"; label: qsTr("Cached") }
                             }
                         //伽马调节
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: gammaAdjust.height; visible: gammaAdjust.value }
-                                P.SwitchPreference {
-                                    id: gammaAdjust 
-                                    name: "gammaAdjust"
-                                    label: qsTr("Gamma Adjust")
-                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || hueSaturation.value || levelAdjust.value)
-                                }
-                                P.SliderPreference {
-                                    name: "gamma"
-                                    label: qsTr("Gamma")
-                                    visible:gammaAdjust.value
-                                    displayValue: value
-                                    defaultValue: 1000
-                                    from: 0
-                                    to: 100000
-                                    stepSize: 1
-                                    live: true
-                                }
-                                P.SwitchPreference {
-                                    visible:gammaAdjust.value
-                                    name: "gammaCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: gammaAdjustGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "gammaAdjust"
+                                switchLabel: qsTr("Gamma Adjust")
+                                EffectSliderPreference { owner: gammaAdjustGroup; name: "gamma"; label: qsTr("Gamma"); defaultValue: 1000; from: 0; to: 100000 }
+                                EffectSwitchPreference { owner: gammaAdjustGroup; name: "gammaCached"; label: qsTr("Cached") }
                             }
                         //色相饱和度
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: hueSaturation.height; visible: hueSaturation.value }
-                                P.SwitchPreference {
-                                    id: hueSaturation 
-                                    name: "hueSaturation"
-                                    label: qsTr("Hue Saturation")
-                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || levelAdjust.value)
-                                }
-                                //色调 /100
-                                P.SliderPreference {
-                                    name: "hueSaturationHue"
-                                    label: qsTr("HUE")
-                                    visible:hueSaturation.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: -100
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                //亮度 /100
-                                P.SliderPreference {
-                                    name: "hueSaturationLightness"
-                                    label: qsTr("Lightness")
-                                    visible:hueSaturation.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: -100
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                //饱和度 /100
-                                P.SliderPreference {
-                                    name: "hueSaturationSaturation"
-                                    label: qsTr("Saturation")
-                                    visible:hueSaturation.value
-                                    displayValue: value
-                                    defaultValue: 0
-                                    from: -100
-                                    to: 100
-                                    stepSize: 1
-                                    live: true
-                                }
-                                P.SwitchPreference {
-                                    visible:hueSaturation.value
-                                    name: "hueSaturationCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: hueSaturationGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "hueSaturation"
+                                switchLabel: qsTr("Hue Saturation")
+                                EffectSliderPreference { owner: hueSaturationGroup; name: "hueSaturationHue"; label: qsTr("HUE"); defaultValue: 0; from: -100; to: 100 }
+                                EffectSliderPreference { owner: hueSaturationGroup; name: "hueSaturationLightness"; label: qsTr("Lightness"); defaultValue: 0; from: -100; to: 100 }
+                                EffectSliderPreference { owner: hueSaturationGroup; name: "hueSaturationSaturation"; label: qsTr("Saturation"); defaultValue: 0; from: -100; to: 100 }
+                                EffectSwitchPreference { owner: hueSaturationGroup; name: "hueSaturationCached"; label: qsTr("Cached") }
                             }
                         //电平调节
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: levelAdjust.height; visible: levelAdjust.value }
-                                //开关
-                                P.SwitchPreference {
-                                    id: levelAdjust 
-                                    name: "levelAdjust"
-                                    label: qsTr("Level Adjust")
-                                    //visible: !(colorOverlay.value || changeBrightnessContrast.value || colorize.value || desaturate.value || gammaAdjust.value || hueSaturation.value)
-                                }
-                                //伽马x
-                                P.SliderPreference {
-                                    name: "levelAdjustGammaX"
-                                    label: qsTr("Gamma X")
-                                    visible:levelAdjust.value
-                                    displayValue: value/100
-                                    defaultValue: 100
-                                    from: -10000
-                                    to: 10000
-                                    stepSize: 1
-                                    live: true
-                                }
-                                //伽马y
-                                P.SliderPreference {
-                                    name: "levelAdjustGammaY"
-                                    label: qsTr("Gamma Y")
-                                    visible:levelAdjust.value
-                                    displayValue: value/100
-                                    defaultValue: 100
-                                    from: -100000
-                                    to: 100000
-                                    stepSize: 1
-                                    live: true
-                                }
-                                //伽马z
-                                P.SliderPreference {
-                                    name: "levelAdjustGammaZ"
-                                    label: qsTr("Gamma Z")
-                                    visible:levelAdjust.value
-                                    displayValue: value/100
-                                    defaultValue: 100
-                                    from: -10000
-                                    to: 10000
-                                    stepSize: 1
-                                    live: true
-                                }
-                                NoDefaultColorPreference {
-                                    name: "maximumInputColor"
-                                    label: qsTr("Max Input Color")
-                                    defaultValue: "#ffffffff"
-                                    visible:levelAdjust.value
-                                }
-                                NoDefaultColorPreference {
-                                    name: "maximumOutputColor"
-                                    label: qsTr("Max Output Color")
-                                    defaultValue: "#ffffffff"
-                                    visible:levelAdjust.value
-                                }
-                                NoDefaultColorPreference {
-                                    name: "minimumInputColor"
-                                    label: qsTr("Min Input Color")
-                                    defaultValue: "transparent"
-                                    visible:levelAdjust.value
-                                }
-                                NoDefaultColorPreference {
-                                    name: "minimumOutputColor"
-                                    label: qsTr("Min Output Color")
-                                    defaultValue: "transparent"
-                                    visible:levelAdjust.value
-                                }
-                                P.SwitchPreference {
-                                    visible:levelAdjust.value
-                                    name: "levelAdjustCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: levelAdjustGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "levelAdjust"
+                                switchLabel: qsTr("Level Adjust")
+                                EffectSliderPreference { owner: levelAdjustGroup; name: "levelAdjustGammaX"; label: qsTr("Gamma X"); defaultValue: 100; from: -10000; to: 10000; displayValue: value/100 }
+                                EffectSliderPreference { owner: levelAdjustGroup; name: "levelAdjustGammaY"; label: qsTr("Gamma Y"); defaultValue: 100; from: -100000; to: 100000; displayValue: value/100 }
+                                EffectSliderPreference { owner: levelAdjustGroup; name: "levelAdjustGammaZ"; label: qsTr("Gamma Z"); defaultValue: 100; from: -10000; to: 10000; displayValue: value/100 }
+                                NoDefaultColorPreference { name: "maximumInputColor"; label: qsTr("Max Input Color"); defaultValue: "#ffffffff"; visible: levelAdjustGroup.switchValue }
+                                NoDefaultColorPreference { name: "maximumOutputColor"; label: qsTr("Max Output Color"); defaultValue: "#ffffffff"; visible: levelAdjustGroup.switchValue }
+                                NoDefaultColorPreference { name: "minimumInputColor"; label: qsTr("Min Input Color"); defaultValue: "transparent"; visible: levelAdjustGroup.switchValue }
+                                NoDefaultColorPreference { name: "minimumOutputColor"; label: qsTr("Min Output Color"); defaultValue: "transparent"; visible: levelAdjustGroup.switchValue }
+                                EffectSwitchPreference { owner: levelAdjustGroup; name: "levelAdjustCached"; label: qsTr("Cached") }
                             }
                         //颜色渐变
                             P.ObjectPreferenceGroup {
@@ -1334,653 +1091,156 @@ DataSourceElement {
                             //必须资源
                         //模糊
                             //快速模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: fastBlur.height; visible: fastBlur.value }
-                                P.SwitchPreference {
-                                    id: fastBlur
-                                    name: "fastBlur"
-                                    label: qsTr("Fast Blur")
-                                }
-                                //半径
-                                P.SpinPreference {
-                                    name: "fastBlurRadius"
-                                    label: qsTr("Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: fastBlur.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 500
-                                    stepSize: 1
-                                }
-                                //透明边框
-                                P.SwitchPreference {
-                                    name: "fastBlurTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible: fastBlur.value
-                                }
-                                //缓存
-                                P.SwitchPreference {
-                                    name: "fastBlurCached"
-                                    label: qsTr("Cached")
-                                    visible: fastBlur.value
-                                }
+                            EffectPreferenceGroup {
+                                id: fastBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "fastBlur"
+                                switchLabel: qsTr("Fast Blur")
+                                EffectSpinPreference { owner: fastBlurGroup; name: "fastBlurRadius"; label: qsTr("Radius"); defaultValue: 5; from: 0; to: 500 }
+                                EffectSwitchPreference { owner: fastBlurGroup; name: "fastBlurTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: fastBlurGroup; name: "fastBlurCached"; label: qsTr("Cached") }
                             }
                             //高斯模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: gaussianBlur.height; visible: gaussianBlur.value }
-                                P.SwitchPreference {
-                                    id: gaussianBlur
-                                    name: "gaussianBlur"
-                                    label: qsTr("Gaussian Blur")
-                                }
-                                //半径
-                                P.SpinPreference {
-                                    name: "gaussianBlurRadius"
-                                    label: qsTr("Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: gaussianBlur.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 500
-                                    stepSize: 1
-                                }
-                                //偏差值
-                                P.SpinPreference {
-                                    name: "gaussianBlurDeviation"
-                                    label: qsTr("Deviation")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: gaussianBlur.value
-                                    defaultValue: 3
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //样本数
-                                P.SpinPreference {
-                                    name: "gaussianBlurSamples"
-                                    label: qsTr("Samples")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: gaussianBlur.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                }
-                                //透明边框
-                                P.SwitchPreference {
-                                    name: "dropShadowTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible: gaussianBlur.value
-                                }
-                                //缓存
-                                P.SwitchPreference {
-                                    name: "gaussianBlurCached"
-                                    label: qsTr("Cached")
-                                    visible: gaussianBlur.value
-                                }
+                            EffectPreferenceGroup {
+                                id: gaussianBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "gaussianBlur"
+                                switchLabel: qsTr("Gaussian Blur")
+                                EffectSpinPreference { owner: gaussianBlurGroup; name: "gaussianBlurRadius"; label: qsTr("Radius"); defaultValue: 5; from: 0; to: 500 }
+                                EffectSpinPreference { owner: gaussianBlurGroup; name: "gaussianBlurDeviation"; label: qsTr("Deviation"); defaultValue: 3; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: gaussianBlurGroup; name: "gaussianBlurSamples"; label: qsTr("Samples"); defaultValue: 5; from: 0; to: 100 }
+                                // [修复] 原误写为 dropShadowTransparentBorder，与外阴影键相撞
+                                EffectSwitchPreference { owner: gaussianBlurGroup; name: "gaussianBlurTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: gaussianBlurGroup; name: "gaussianBlurCached"; label: qsTr("Cached") }
                             }
                             //蒙版模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: maskedBlur.height; visible: maskedBlur.value }
-                                P.SwitchPreference {
-                                    id: maskedBlur
-                                    name: "maskedBlur"
-                                    label: qsTr("Masked Blur")
-                                }
+                            EffectPreferenceGroup {
+                                id: maskedBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "maskedBlur"
+                                switchLabel: qsTr("Masked Blur")
                                 //遮罩图片
                                 P.ImagePreference {
                                     name: "maskedBlurMaskSource"
                                     label: qsTr("Mask Source")
-                                    visible:maskedBlur.value&&!blendMaskedBlurDataEnabled.value
+                                    visible: maskedBlurGroup.switchValue && !blendMaskedBlurDataEnabled.value
                                 }
-                                //半径
-                                P.SpinPreference {
-                                    name: "maskedBlurRadius"
-                                    label: qsTr("Radius")
-                                    visible:maskedBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //采样数
-                                P.SpinPreference {
-                                    name: "maskedBlurSamples"
-                                    label: qsTr("Samples")
-                                    visible:maskedBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 9
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                    editable: true
-                                }
+                                EffectSpinPreference { owner: maskedBlurGroup; name: "maskedBlurRadius"; label: qsTr("Radius"); defaultValue: 0; from: 0; to: 100 }
+                                EffectSpinPreference { owner: maskedBlurGroup; name: "maskedBlurSamples"; label: qsTr("Samples"); defaultValue: 9; from: 0; to: 100 }
                                 //启用数据源
-                                P.SwitchPreference {
+                                EffectSwitchPreference {
                                     id: blendMaskedBlurDataEnabled
+                                    owner: maskedBlurGroup
                                     name: "blendDataEnabled"
                                     label: qsTr("Enable Data Source")
-                                    visible: maskedBlur.value
                                 }
-                                //缓存
-                                P.SwitchPreference {
-                                    visible:maskedBlur.value
-                                    name: "maskedBlurCached"
-                                    label: qsTr("Cached")
-                                }
+                                EffectSwitchPreference { owner: maskedBlurGroup; name: "maskedBlurCached"; label: qsTr("Cached") }
                             }
                             //递归模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: recursiveBlur.height; visible: recursiveBlur.value }
-                                P.SwitchPreference {
-                                    id: recursiveBlur
-                                    name: "recursiveBlur"
-                                    label: qsTr("Recursive Blur")
-                                }
-                                //半径
-                                P.SpinPreference {
-                                name: "recursiveBlurRadius"
-                                label: qsTr("Radius")
-                                visible:recursiveBlur.value
-                                display: P.TextFieldPreference.ExpandLabel
-                                defaultValue: 0
-                                from: 0
-                                to: 160
-                                stepSize: 1
-                                editable: true
-                                }
-                                //循环次数
-                                P.SpinPreference {
-                                    name: "recursiveBlurLoops"
-                                    label: qsTr("Loops")
-                                    visible:recursiveBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 10000
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //进度
-                                P.SpinPreference {
-                                    name: "recursiveBlurProgress"
-                                    label: qsTr("Progress")
-                                    visible:recursiveBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 1
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //透明边框
-                                P.SwitchPreference {
-                                    visible:recursiveBlur.value
-                                    name: "recursiveBlurTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                }
-                                //缓存
-                                P.SwitchPreference {
-                                    visible:recursiveBlur.value
-                                    name: "recursiveBlurCached"
-                                    label: qsTr("Cached")
-                                }
+                            EffectPreferenceGroup {
+                                id: recursiveBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "recursiveBlur"
+                                switchLabel: qsTr("Recursive Blur")
+                                EffectSpinPreference { owner: recursiveBlurGroup; name: "recursiveBlurRadius"; label: qsTr("Radius"); defaultValue: 0; from: 0; to: 160 }
+                                EffectSpinPreference { owner: recursiveBlurGroup; name: "recursiveBlurLoops"; label: qsTr("Loops"); defaultValue: 0; from: 0; to: 10000 }
+                                EffectSpinPreference { owner: recursiveBlurGroup; name: "recursiveBlurProgress"; label: qsTr("Progress"); defaultValue: 1; from: 0; to: 100 }
+                                EffectSwitchPreference { owner: recursiveBlurGroup; name: "recursiveBlurTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: recursiveBlurGroup; name: "recursiveBlurCached"; label: qsTr("Cached") }
                             }
                             P.Separator{}
                         //动态模糊
                             //方向模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: directionalBlur.height; visible: directionalBlur.value }
-                                P.SwitchPreference {
-                                    id: directionalBlur
-                                    name: "directionalBlur"
-                                    label: qsTr("Directional Blur")
-                                }
-                                //长度
-                                P.SpinPreference {
-                                name: "directionalBlurLength"
-                                label: qsTr("Length")
-                                visible:directionalBlur.value
-                                display: P.TextFieldPreference.ExpandLabel
-                                defaultValue: 0
-                                from: 0
-                                to: 1000
-                                stepSize: 1
-                                editable: true
-                                }
-                                //角度
-                                P.SpinPreference {
-                                    name: "directionalBlurAngle"
-                                    label: qsTr("Angle")
-                                    visible:directionalBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: -180
-                                    to: 180
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //采样
-                                P.SpinPreference {
-                                    name: "directionalBlurSamples"
-                                    label: qsTr("Samples")
-                                    visible:directionalBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 250
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                P.SwitchPreference {
-                                    name: "directionalBlurTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible:directionalBlur.value
-                                }
-                                P.SwitchPreference {
-                                    name: "directionalBlurCached"
-                                    label: qsTr("Cached")
-                                    visible:directionalBlur.value
-                                }
+                            EffectPreferenceGroup {
+                                id: directionalBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "directionalBlur"
+                                switchLabel: qsTr("Directional Blur")
+                                EffectSpinPreference { owner: directionalBlurGroup; name: "directionalBlurLength"; label: qsTr("Length"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: directionalBlurGroup; name: "directionalBlurAngle"; label: qsTr("Angle"); defaultValue: 0; from: -180; to: 180 }
+                                EffectSpinPreference { owner: directionalBlurGroup; name: "directionalBlurSamples"; label: qsTr("Samples"); defaultValue: 0; from: 0; to: 250 }
+                                EffectSwitchPreference { owner: directionalBlurGroup; name: "directionalBlurTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: directionalBlurGroup; name: "directionalBlurCached"; label: qsTr("Cached") }
                             }
                             //径向模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: radialBlur.height; visible: radialBlur.value }
-                                P.SwitchPreference {
-                                    id: radialBlur
-                                    name: "radialBlur"
-                                    label: qsTr("Radial Blur")
-                                }
-                                //水平偏移
-                                P.SpinPreference {
-                                    name: "radialBlurHorizontalOffset"
-                                    label: qsTr("Horizontal Offset")
-                                    visible: radialBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //垂直偏移
-                                P.SpinPreference {
-                                    name: "radialBlurVerticalOffset"
-                                    label: qsTr("Vertical Offset")
-                                    visible: radialBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //角度
-                                P.SpinPreference {
-                                    name: "radialBlurAngle"
-                                    label: qsTr("Angle")
-                                    visible: radialBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 360
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //采样
-                                P.SpinPreference {
-                                    name: "radialBlurSamples"
-                                    label: qsTr("Samples")
-                                    visible: radialBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 250
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                P.SwitchPreference {
-                                    name: "radialBlurTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible: radialBlur.value
-                                }
-                                P.SwitchPreference {
-                                    name: "radialBlurCached"
-                                    label: qsTr("Cached")
-                                    visible: radialBlur.value
-                                }
+                            EffectPreferenceGroup {
+                                id: radialBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "radialBlur"
+                                switchLabel: qsTr("Radial Blur")
+                                EffectSpinPreference { owner: radialBlurGroup; name: "radialBlurHorizontalOffset"; label: qsTr("Horizontal Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: radialBlurGroup; name: "radialBlurVerticalOffset"; label: qsTr("Vertical Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: radialBlurGroup; name: "radialBlurAngle"; label: qsTr("Angle"); defaultValue: 0; from: 0; to: 360 }
+                                EffectSpinPreference { owner: radialBlurGroup; name: "radialBlurSamples"; label: qsTr("Samples"); defaultValue: 0; from: 0; to: 250 }
+                                EffectSwitchPreference { owner: radialBlurGroup; name: "radialBlurTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: radialBlurGroup; name: "radialBlurCached"; label: qsTr("Cached") }
                             }
                             //缩放模糊
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: zoomBlur.height; visible: zoomBlur.value }
-                                P.SwitchPreference {
-                                    id: zoomBlur
-                                    name: "zoomBlur"
-                                    label: qsTr("Zoom Blur")
-                                }
-                                //水平偏移
-                                P.SpinPreference {
-                                    name: "zoomBlurHorizontalOffset"
-                                    label: qsTr("Horizontal Offset")
-                                    visible: zoomBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //垂直偏移
-                                P.SpinPreference {
-                                    name: "zoomBlurVerticalOffset"
-                                    label: qsTr("Vertical Offset")
-                                    visible: zoomBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //长度
-                                P.SpinPreference {
-                                    name: "zoomBlurrLength"
-                                    label: qsTr("Length")
-                                    visible: zoomBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                //采样
-                                P.SpinPreference {
-                                    name: "zoomBlurSamples"
-                                    label: qsTr("Samples")
-                                    visible: zoomBlur.value
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 250
-                                    stepSize: 1
-                                    editable: true
-                                }
-                                P.SwitchPreference {
-                                    name: "zoomBlurTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible: zoomBlur.value
-                                }
-                                P.SwitchPreference {
-                                    name: "zoomBlurCached"
-                                    label: qsTr("Cached")
-                                    visible: zoomBlur.value
-                                }
+                            EffectPreferenceGroup {
+                                id: zoomBlurGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "zoomBlur"
+                                switchLabel: qsTr("Zoom Blur")
+                                EffectSpinPreference { owner: zoomBlurGroup; name: "zoomBlurHorizontalOffset"; label: qsTr("Horizontal Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: zoomBlurGroup; name: "zoomBlurVerticalOffset"; label: qsTr("Vertical Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: zoomBlurGroup; name: "zoomBlurrLength"; label: qsTr("Length"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: zoomBlurGroup; name: "zoomBlurSamples"; label: qsTr("Samples"); defaultValue: 0; from: 0; to: 250 }
+                                EffectSwitchPreference { owner: zoomBlurGroup; name: "zoomBlurTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: zoomBlurGroup; name: "zoomBlurCached"; label: qsTr("Cached") }
                             }
                             P.Separator{}
                         //阴影
-                            //外
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: enableDropShadow.height; visible: enableDropShadow.value }
-                                P.SwitchPreference {
-                                        id: enableDropShadow
-                                        name: "enableDropShadow"
-                                        label: qsTr("Drop Shadow")
-                                }
-                                //颜色
-                                NoDefaultColorPreference {
-                                    name: "dropShadowColor"
-                                    label: qsTr("Color")
-                                    defaultValue: "white"
-                                    visible: enableDropShadow.value
-                                }
-                                //半径
-                                P.SpinPreference {
-                                    name: "dropShadowRadius"
-                                    label: qsTr("Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableDropShadow.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 500
-                                    stepSize: 1
-                                }
-                                //采样率
-                                P.SpinPreference {
-                                    name: "dropShadowSamples"
-                                    label: qsTr("Samples")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableDropShadow.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //水平位移
-                                P.SpinPreference {
-                                    name: "dropShadowHorizontalOffset"
-                                    label: qsTr("Horizontal Offset")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableDropShadow.value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //垂直位移
-                                P.SpinPreference {
-                                    name: "dropShadowVerticalOffset"
-                                    label: qsTr("Vertical Offset")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableDropShadow.value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //透明边框
-                                P.SwitchPreference {
-                                    name: "dropShadowTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible: enableDropShadow.value
-                                }
-                                //缓存
-                                P.SwitchPreference {
-                                    name: "dropShadowCache"
-                                    label: qsTr("Cached")
-                                    visible: enableDropShadow.value
-                                }
+                            //外阴影
+                            EffectPreferenceGroup {
+                                id: dropShadowGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "enableDropShadow"
+                                switchLabel: qsTr("Drop Shadow")
+                                NoDefaultColorPreference { name: "dropShadowColor"; label: qsTr("Color"); defaultValue: "white"; visible: dropShadowGroup.switchValue }
+                                EffectSpinPreference { owner: dropShadowGroup; name: "dropShadowRadius"; label: qsTr("Radius"); defaultValue: 5; from: 0; to: 500 }
+                                EffectSpinPreference { owner: dropShadowGroup; name: "dropShadowSamples"; label: qsTr("Samples"); defaultValue: 5; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: dropShadowGroup; name: "dropShadowHorizontalOffset"; label: qsTr("Horizontal Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: dropShadowGroup; name: "dropShadowVerticalOffset"; label: qsTr("Vertical Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSwitchPreference { owner: dropShadowGroup; name: "dropShadowTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: dropShadowGroup; name: "dropShadowCache"; label: qsTr("Cached") }
                             }
-                            //内
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: enableInnerShadow.height; visible: enableInnerShadow.value }
-                                P.SwitchPreference {
-                                        id: enableInnerShadow
-                                        name: "enableInnerShadow"
-                                        label: qsTr("Inner Shadow")
-                                }
-                                //颜色
-                                NoDefaultColorPreference {
-                                    name: "innerShadowColor"
-                                    label: qsTr("Color")
-                                    defaultValue: "white"
-                                    visible: enableInnerShadow.value
-                                }
-                                //半径
-                                P.SpinPreference {
-                                    name: "innerShadowRadius"
-                                    label: qsTr("Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableInnerShadow.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 500
-                                    stepSize: 1
-                                }
-                                //采样率
-                                P.SpinPreference {
-                                    name: "innerShadowSamples"
-                                    label: qsTr("Samples")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableInnerShadow.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 33
-                                    stepSize: 1
-                                }
-                                //水平位移
-                                P.SpinPreference {
-                                    name: "innerShadowHorizontalOffset"
-                                    label: qsTr("Horizontal Offset")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableInnerShadow.value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //垂直位移
-                                P.SpinPreference {
-                                    name: "innerShadowVerticalOffset"
-                                    label: qsTr("Vertical Offset")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableInnerShadow.value
-                                    defaultValue: 0
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //快速渲染
-                                P.SwitchPreference {
-                                    name: "innerShadowFastAlgorithm"
-                                    label: qsTr("Fast Algorithm")
-                                    visible: enableInnerShadow.value
-                                }
-                                //缓存
-                                P.SwitchPreference {
-                                    name: "innerShadowCache"
-                                    label: qsTr("Cached")
-                                    visible: enableInnerShadow.value
-                                }
+                            //内阴影
+                            EffectPreferenceGroup {
+                                id: innerShadowGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "enableInnerShadow"
+                                switchLabel: qsTr("Inner Shadow")
+                                NoDefaultColorPreference { name: "innerShadowColor"; label: qsTr("Color"); defaultValue: "white"; visible: innerShadowGroup.switchValue }
+                                EffectSpinPreference { owner: innerShadowGroup; name: "innerShadowRadius"; label: qsTr("Radius"); defaultValue: 5; from: 0; to: 500 }
+                                EffectSpinPreference { owner: innerShadowGroup; name: "innerShadowSamples"; label: qsTr("Samples"); defaultValue: 5; from: 0; to: 33 }
+                                EffectSpinPreference { owner: innerShadowGroup; name: "innerShadowHorizontalOffset"; label: qsTr("Horizontal Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSpinPreference { owner: innerShadowGroup; name: "innerShadowVerticalOffset"; label: qsTr("Vertical Offset"); defaultValue: 0; from: 0; to: 1000 }
+                                EffectSwitchPreference { owner: innerShadowGroup; name: "innerShadowFastAlgorithm"; label: qsTr("Fast Algorithm") }
+                                EffectSwitchPreference { owner: innerShadowGroup; name: "innerShadowCache"; label: qsTr("Cached") }
                             }
                             P.Separator{}
                         //发光效果
-                            P.ObjectPreferenceGroup {
-                                defaultValue: thiz.settings
-                                syncProperties: true
-                                enabled: currentItem
-                                width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: enableGlow.height; visible: enableGlow.value }
-                                P.SwitchPreference {
-                                    id: enableGlow
-                                    name: "enableGlow"
-                                    label: qsTr("Glow")
-                                }
-                                //颜色
-                                NoDefaultColorPreference {
-                                    name: "glowColor"
-                                    label: qsTr("Color")
-                                    defaultValue: "white"
-                                    visible: enableGlow.value
-                                }
-                                //作用范围(半径)
-                                P.SpinPreference {
-                                    name: "glowRadius"
-                                    label: qsTr("Radius")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableGlow.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 500
-                                    stepSize: 1
-                                }
-                                //强度  范围0~1  值除以100
-                                P.SpinPreference {
-                                    name: "glowSpread"
-                                    label: qsTr("Spread")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableGlow.value
-                                    defaultValue: 50
-                                    from: 0
-                                    to: 100
-                                    stepSize: 1
-                                }
-                                //采样率
-                                P.SpinPreference {
-                                    name: "glowSamples"
-                                    label: qsTr("Samples")
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
-                                    visible: enableGlow.value
-                                    defaultValue: 5
-                                    from: 0
-                                    to: 1000
-                                    stepSize: 1
-                                }
-                                //透明边框
-                                P.SwitchPreference {
-                                    name: "glowTransparentBorder"
-                                    label: qsTr("Transparent Border")
-                                    visible: enableGlow.value
-                                }
-                                //缓存
-                                P.SwitchPreference {
-                                    name: "glowCache"
-                                    label: qsTr("Cached")
-                                    visible: enableGlow.value
-                                }
+                            EffectPreferenceGroup {
+                                id: glowGroup
+                                settingsTarget: thiz.settings
+                                groupEnabled: currentItem
+                                switchName: "enableGlow"
+                                switchLabel: qsTr("Glow")
+                                NoDefaultColorPreference { name: "glowColor"; label: qsTr("Color"); defaultValue: "white"; visible: glowGroup.switchValue }
+                                EffectSpinPreference { owner: glowGroup; name: "glowRadius"; label: qsTr("Radius"); defaultValue: 5; from: 0; to: 500 }
+                                EffectSpinPreference { owner: glowGroup; name: "glowSpread"; label: qsTr("Spread"); defaultValue: 50; from: 0; to: 100 }
+                                EffectSpinPreference { owner: glowGroup; name: "glowSamples"; label: qsTr("Samples"); defaultValue: 5; from: 0; to: 1000 }
+                                EffectSwitchPreference { owner: glowGroup; name: "glowTransparentBorder"; label: qsTr("Transparent Border") }
+                                EffectSwitchPreference { owner: glowGroup; name: "glowCache"; label: qsTr("Cached") }
                             }
                         }
                     }
@@ -2237,411 +1497,19 @@ DataSourceElement {
             }
             "
         }
-//颜色
-    //颜色
-    ColorOverlay{
-        visible:settings.colorOverlay ?? false
-        anchors.fill: imageSource
-        source: settings.colorOverlay ? imageSource : null
-        color: {
-        if (thiz.itemPressed && pressedColor.a)
-            return pressedColor;
-        if (thiz.itemHovered && hoveredColor.a)
-            return hoveredColor;
-        return normalColor;
-        }
-    }
-    //亮度对比度
-    BrightnessContrast {
-        anchors.fill: imageSource
-        source: settings.changeBrightnessContrast ? imageSource : null
-        visible: settings.changeBrightnessContrast ?? false
-        brightness: (settings.brightness ?? 0)/100//亮度
-        contrast: (settings.contrast ?? 0)/100//对比度
-        cached:settings.brightnessContrastCached ?? false//缓存
-    }
-    //着色
-    Colorize {
-        anchors.fill: imageSource
-        source: settings.colorize ? imageSource : null
-        visible: settings.colorize ?? false
-        hue: (settings.colorizeHue ?? 0)/100
-        saturation: (settings.colorizeSaturation ?? 100)/100
-        lightness: (settings.colorizeLightness ?? 0)/100
-        cached:settings.brightnessContrastCached ?? false
-    }
-    //去饱和
-    Desaturate {
-        anchors.fill: imageSource
-        source: settings.desaturate ? imageSource : null
-        visible: settings.desaturate ?? false
-        desaturation: (settings.desaturation ?? 0)/100
-        cached: settings.desaturateCached ?? false
-    }
-    //伽马调节
-    GammaAdjust {
-        anchors.fill: imageSource
-        source: settings.gammaAdjust ? imageSource : null
-        visible: settings.gammaAdjust ?? false
-        gamma: (settings.gamma ?? 1000)/1000
-        cached: settings.gammaCached ?? false
-    }
-    //色相饱和度
-    HueSaturation {
-        anchors.fill: imageSource
-        source: settings.hueSaturation ? imageSource : null
-        visible: settings.hueSaturation ?? false
-        hue: (settings.hueSaturationHue ?? 0)/100
-        saturation: (settings.hueSaturationSaturation ?? 0)/100
-        lightness: (settings.hueSaturationLightness ?? 0)/100
-        cached: settings.hueSaturationCached ?? false
-    }
-    //电平调节
-    LevelAdjust {
-        anchors.fill: imageSource
-        source: settings.levelAdjust ? imageSource : null
-        visible: settings.levelAdjust ?? false
-        gamma : Qt.vector3d((settings.levelAdjustGammaX ?? 100)/100, (settings.levelAdjustGammaY ?? 100)/100, (settings.levelAdjustGammaZ ?? 100)/100)
-        maximumInput : maxInput
-        maximumOutput : maxOutput
-        minimumInput : minInput
-        minimumOutput : minOutput
-        cached : settings.levelAdjustCached ?? false
-    }
-//动画
-    //颜色动画
-        //颜色动画选项0~3 , 6
-        LinearGradient {
-            anchors.fill: imageSource
-            cached: settings.enableColorAnimationCached ?? false
-            source: (enableColorGradient && (settings.animationDirect >= 0 && settings.animationDirect <= 3 || settings.animationDirect == 6)) ? imageSource : null
-            visible: (enableColorGradient && (settings.animationDirect >= 0 && settings.animationDirect <= 3 || settings.animationDirect == 6))
-            
-            // [优化] 绑定常驻对象
-            gradient: dynamicGradient
-            
-            start: {
-                switch (settings.animationDirect ?? 0) {
-                    case 0 : 
-                    case 1 : 
-                    case 2 : 
-                    case 3 : return Qt.point(0, 0); break; 
-                    case 6 : return Qt.point(settings.animationAdvancedStartX ?? 0, settings.animationAdvancedStartY ?? 0); break;
-                    default: return Qt.point(0, 0); break;
-                }
-                return Qt.point(0, 0);
-            }
-            end: {
-                switch (settings.animationDirect ?? 0) {
-                    case 0 : return Qt.point(imageSource.width, 0); break;
-                    case 1 : return Qt.point(0, imageSource.height); break;
-                    case 2 : return Qt.point(imageSource.width, imageSource.height); break;
-                    case 3 : return Qt.point(0, 0); break;
-                    case 6 : return Qt.point(settings.animationAdvancedEndX ?? 100, settings.animationAdvancedEndY ?? 100); break;
-                    default: return Qt.point(imageSource.width, 0); break; 
-                }
-                return Qt.point(imageSource.width, 0);
-            }
-        }
-
-        // 颜色动画选项 4 (Radial)
-        RadialGradient {
-            anchors.fill: imageSource
-            angle: settings.animationAngle ?? 0
-            cached: settings.enableColorAnimationCached ?? false
-            horizontalOffset: settings.animationHorizontal ?? 0
-            verticalOffset: settings.animationVertical ?? 0
-            horizontalRadius: settings.animationHorizontalRadius ?? 50
-            verticalRadius: settings.animationVerticalRadius ?? 50
-            source: (enableColorGradient && (settings.animationDirect == 4)) ? imageSource : null
-            visible: (enableColorGradient && (settings.animationDirect == 4))
-            
-            // [优化] 绑定常驻对象
-            gradient: dynamicGradient
-        }
-
-        // 颜色动画选项 5 (Conical)
-        ConicalGradient {
-            anchors.fill: imageSource
-            cached: settings.enableColorAnimationCached ?? false
-            angle: settings.animationAngle ?? 0
-            horizontalOffset: settings.animationHorizontal ?? 0
-            verticalOffset: settings.animationVertical ?? 0
-            source: (enableColorGradient && (settings.animationDirect == 5)) ? imageSource : null
-            visible: (enableColorGradient && (settings.animationDirect == 5))
-            
-            // [优化] 绑定常驻对象
-            gradient: dynamicGradient
-        }
-//发光
-    Glow {
-        anchors.fill: imageSource
-        source: settings.enableGlow ? imageSource : null
-        visible: settings.enableGlow ?? false
-        cached: settings.glowCache ?? false//缓存
-        radius: settings.glowRadius ?? 5//作用范围
-        samples: settings.glowSamples ?? 5//采样数
-        spread: (settings.glowSpread ?? 50)/100//强度
-        color: settings.glowColor ?? "white"//颜色
-        transparentBorder: allowGlowTransparentBorder ?? false//透明边框 bool
-    }
-//阴影
-    //外阴影
-    DropShadow {
-        anchors.fill: imageSource
-        source: settings.enableDropShadow ? imageSource : null
-        visible: settings.enableDropShadow ?? false
-        color: settings.dropShadowColor ?? "white"//颜色
-        radius: settings.dropShadowRadius ?? 5//半径
-        samples: settings.dropShadowSamples ?? 5//样本数
-        horizontalOffset: settings.dropShadowHorizontalOffset ?? 0//水平位移
-        verticalOffset: settings.dropShadowVerticalOffset ?? 0//垂直位移
-        transparentBorder: settings.dropShadowTransparentBorder ?? false//透明边框
-        cached: settings.dropShadowCache ?? false//缓存
-    }
-    //内阴影
-    InnerShadow {
-        anchors.fill: imageSource
-        source: settings.enableInnerShadow ? imageSource : null
-        visible: settings.enableInnerShadow ?? false
-        color: settings.innerShadowColor ?? "white"//颜色
-        radius: settings.innerShadowRadius ?? 5//半径
-        samples: settings.innerShadowSamples ?? 5//样本数
-        horizontalOffset: settings.innerShadowHorizontalOffset ?? 0//水平位移
-        verticalOffset: settings.innerShadowVerticalOffset ?? 0//垂直位移
-        fast: settings.innerShadowFastAlgorithm ?? false//快速渲染
-        cached: settings.innerShadowCache ?? false//缓存
-    }
-//模糊
-    //快速模糊
-        FastBlur {
-            anchors.fill: imageSource
-            source: settings.fastBlur ? imageSource : null
-            visible: settings.fastBlur ?? false
-            radius: settings.fastBlurRadius ?? 5//半径
-            transparentBorder: settings.fastBlurTransparentBorder ?? false//透明边框
-            cached: settings.fastBlurCached ?? false//缓存
-        }
-    //高斯模糊
-        GaussianBlur {
-            anchors.fill: imageSource
-            source: settings.gaussianBlur ? imageSource : null
-            visible: settings.gaussianBlur ?? false
-            radius: settings.gaussianBlurRadius ?? 5//半径
-            deviation: settings.gaussianBlurDeviation ?? 3//偏差值
-            samples: settings.gaussianBlurSamples ?? 5//样本数
-            transparentBorder: settings.dropShadowTransparentBorder ?? false//透明边框
-            cached: settings.gaussianBlurCached ?? false//缓存
-        }
-    //蒙版模糊
-        NVG.ImageSource {
-            visible: settings.maskedBlur ?? false
-            id: maskedBlurIamge
-            anchors.fill: parent
-            fillMode: thiz.settings.fill ?? Image.PreserveAspectFit
-            playing: status === Image.Ready
-            configuration: {
-                if (blendMaskedBlurDataEnabled)//启用数据源
-                    return maskedBluroutput.result;
-                return maskedBlurIamge;
-            }
-        }
-        MaskedBlur {
-            anchors.fill: imageSource
-            source: settings.maskedBlur ? imageSource : null
-            visible: settings.maskedBlur ?? false
-            maskSource: maskedBlurIamge//遮罩源
-            radius: settings.maskedBlurRadius ?? 0
-            samples: settings.maskedBlurSamples ?? 9
-            cached: settings.maskedBlurCached ?? false
-        }
-    //递归模糊
-        RecursiveBlur {
-            anchors.fill: imageSource
-            source: settings.recursiveBlur ? imageSource : null
-            visible: settings.recursiveBlur ?? false
-            loops : settings.recursiveBlurLoops ?? 0
-            progress : settings.recursiveBlurProgress ?? 1
-            radius : (settings.recursiveBlurRadius ?? 0)/10
-            transparentBorder : settings.recursiveBlurTransparentBorder ?? false
-            cached : settings.recursiveBlurCached ?? false
-        }
-//动态模糊
-    //方向模糊
-        DirectionalBlur {
-            anchors.fill: imageSource
-            source : settings.directionalBlur ? imageSource : null
-            visible: settings.directionalBlur ?? false
-            angle : settings.directionalBlurAngle ?? 0//角度
-            length : settings.directionalBlurLength ?? 0//长度 
-            samples : settings.directionalBlurSamples ?? 0//采样数
-            transparentBorder : settings.directionalBlurTransparentBorder ?? false
-            cached : settings.directionalBlurCached ?? false
-        }
-    //径向模糊
-        RadialBlur {
-            anchors.fill: imageSource
-            source: settings.radialBlur ? imageSource : null
-            visible: settings.radialBlur ?? false
-            angle: settings.radialBlurAngle ?? 0
-            horizontalOffset: settings.radialBlurHorizontalOffset ?? 0
-            verticalOffset: settings.radialBlurVerticalOffset ?? 0
-            samples: settings.radialBlurSamples ?? 0
-            transparentBorder: settings.radialBlurTransparentBorder ?? false
-            cached: settings.radialBlurCached ?? 0
-        }
-    //缩放模糊
-        ZoomBlur {
-            anchors.fill: imageSource
-            source: settings.zoomBlur ? imageSource : null
-            visible: settings.zoomBlur ?? false
-            horizontalOffset: settings.zoomBlurHorizontalOffset ?? 0
-            verticalOffset: settings.zoomBlurVerticalOffset ?? 0
-            length: settings.zoomBlurrLength ?? 0
-            samples: settings.zoomBlurSamples ?? 0
-            transparentBorder: settings.zoomBlurTransparentBorder ?? false
-            cached: settings.zoomBlurCached ?? false
-        }
-//遮罩和取代
-    NVG.ImageSource {
-        visible: settings.enableBlend ?? false
-        id: blendImageSource
-        anchors.fill: parent
-        fillMode: thiz.settings.fill ?? Image.PreserveAspectFit
-        playing: status === Image.Ready
-        configuration: {
-            if (blendDataEnabled)//启用数据源
-                return blendOutput.result;
-            return blendImage;
-        }
-    }
-    Blend {
-        anchors.fill: imageSource
-        source: settings.enableBlend ? imageSource : null
-        visible: settings.enableBlend ?? false
-        //遮罩图像
-        foregroundSource: blendImageSource
-        //模式 
-        mode: { 
-            switch(settings.blendMode) {
-                case 0: return "normal";
-                case 1: return "addition";
-                case 2: return "average";
-                case 3: return "color";
-                case 4: return "colorBurn";
-                case 5: return "colorDodge";
-                case 6: return "darken";
-                case 7: return "darkerColor";
-                case 8: return "difference";
-                case 9: return "divide";
-                case 10: return "exclusion";
-                case 11: return "hardLight";
-                case 12: return "hue";
-                case 13: return "lighten";
-                case 14: return "lighterColor";
-                case 15: return "lightness";
-                case 16: return "multiply";
-                case 17: return "negation";
-                case 18: return "saturation";
-                case 19: return "screen";
-                case 20: return "subtract";
-                case 21: return "softLight";
-            }
-            return "normal";
-        }
-        //缓存
-        cached: settings.enableBlendCached ?? false
-    }
-    //不透明遮罩
-    NVG.ImageSource {
-        visible: settings.enableOpacityMask ?? false
-        id: opacityMaskImageSource
-        anchors.fill: parent
-        //mirror : mirrorEnabled//镜像
-        fillMode: thiz.settings.fill ?? Image.PreserveAspectFit
-        playing: status === Image.Ready
-        configuration: {
-            if (opacityMaskDataEnabled)//启用数据源
-                return opacityMaskOutput.result;
-            return opacityMaskImage;
-        }
-    }
-    OpacityMask {
-        anchors.fill: imageSource
-        source: settings.enableOpacityMask ? imageSource : null
-        visible: settings.enableOpacityMask ?? false
-        maskSource: opacityMaskImageSource//遮罩来源
-        invert: settings.opacityMaskInvert ?? false//反转
-        cached: settings.enableOpacityMaskCached ?? false//缓存
-    }
-    //覆盖遮罩
-    NVG.ImageSource {
-        visible: settings.enableThresholdMask ?? false
-        id: thresholdMaskImageSource
-        anchors.fill: parent
-        //mirror : mirrorEnabled//镜像
-        fillMode: thiz.settings.fill ?? Image.PreserveAspectFit
-        playing: status === Image.Ready
-        configuration: {
-            if (thresholdMaskDataEnabled)//启用数据源
-                return thresholdMaskOutput.result;
-            return thresholdMaskImage;
-        }
-    }
-    ThresholdMask {
-        anchors.fill: imageSource
-        source: settings.enableThresholdMask ? imageSource : null
-        visible: settings.enableThresholdMask ?? false
-        maskSource: thresholdMaskImageSource//来源
-        threshold: (settings.thresholdMaskSourceThreshold ?? 50)/100//阔值
-        spread: (settings.thresholdMaskSpread ?? 50)/100//强度
-        cached: settings.enableThresholdMaskCached ?? false//缓存
-    }
-    //取代
-    NVG.ImageSource {
-        id: displaceImageSource
-        anchors.fill: parent
-        visible: settings.enableDisplace ?? false
-        fillMode: thiz.settings.fill ?? Image.PreserveAspectFit
-        playing: status === Image.Ready
-        configuration: {
-            if (displaceDataEnabled)//启用数据源
-                return displaceOutput.result;
-            return displaceImage;
-        }
-    }
-    Displace {
-        anchors.fill: imageSource
-        source: settings.enableDisplace ? imageSource : null
-        visible: settings.enableDisplace ?? false
-        displacementSource: displaceImageSource
-        displacement: settings.displacement ?? 50
-        cached: settings.enableDisplaceCached ?? false
+//图形特效叠加层（已迁出至 ImageEffectStack.qml）
+    ImageEffectStack {
+        sourceItem: imageSource
+        settings: thiz.settings
+        dataSource: thiz.dataSource
+        itemPressed: thiz.itemPressed
+        itemHovered: thiz.itemHovered
+        gradient: dynamicGradient
     }
 //数据源
     NVG.DataSourceRawOutput {
         id: output
         source: dataEnabled ? thiz.dataSource : null
-    }
-    NVG.DataSourceRawOutput {
-        id: maskedBluroutput
-        source: blendMaskedBlurDataEnabled ? thiz.dataSource : null
-    }
-    NVG.DataSourceRawOutput {
-        id: blendOutput
-        source: blendDataEnabled ? thiz.dataSource : null
-    }
-    NVG.DataSourceRawOutput {
-        id: opacityMaskOutput
-        source: opacityMaskDataEnabled ? thiz.dataSource : null
-    }
-    NVG.DataSourceRawOutput {
-        id: thresholdMaskOutput
-        source: thresholdMaskDataEnabled ? thiz.dataSource : null
-    }
-    NVG.DataSourceRawOutput {
-        id: displaceOutput
-        source: displaceDataEnabled ? thiz.dataSource : null
     }
 
 //幻灯片部分

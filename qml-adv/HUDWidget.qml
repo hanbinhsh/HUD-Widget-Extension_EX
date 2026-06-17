@@ -46,201 +46,18 @@ T.Widget {
     signal hideHUDItem(int i)
     signal toggleHUDItem(int i)
     function getHUDItemView(){return itemView.model}
-    // --- 颜色渐变
-    // 默认渐变
-    property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
-    
-    // 动画时长更新
-    property var overallGradientAnimDuration: defaultSettings.overallGradientAnimDuration ?? 5000
-    onOverallGradientAnimDurationChanged: {
-        gradientAnimPhaseAnimation.restart();
-    }
-
-    // --- 动画驱动器 ---
-    property real gradientAnimPhase: 0.0
-    NumberAnimation on gradientAnimPhase {
-        id: gradientAnimPhaseAnimation
-        running: (defaultSettings.enableOverallGradientEffect ?? false) && (defaultSettings.enableOverallGradientAnim ?? false)
-        from: 0.0
-        to: 1.0
-        duration: overallGradientAnimDuration
-        loops: Animation.Infinite
-    }
-
-    // --- 变量定义 ---
-    // 1. 缓存数组 (持有 Stop 对象的引用)
-    property var topLevelStopCache: []
-    // 2. 动态 Gradient 对象容器
-    property var customGradObject: null
-    // 3. 当前使用的 Gradient (用于绑定到 LinearGradient)
-    property var currentGradient: defaultSettings.useFillGradient ? customGradObject : simpleGrad
-
-    // --- 核心逻辑 1: 高频动画更新 ---
-    // 每一帧只运行这个，不创建对象，不排序，只做加法
-    onGradientAnimPhaseChanged: {
-        if (defaultSettings.useFillGradient && defaultSettings.enableOverallGradientAnim) {
-            GradientUtils.updateGradientPositions(gradientAnimPhase, topLevelStopCache);
-        }
-    }
-
-    // --- 核心逻辑 2: 初始化/设置改变 ---
-    Connections {
-        target: defaultSettings
-        // 任何相关设置改变，触发重建
-        onFillStopsChanged: initCustomGradient()
-        onUseFillGradientChanged: initCustomGradient()
-        onEnableOverallGradientAnimChanged: initCustomGradient()
-
-        onOverallGradientColor0Changed: initCustomGradient()
-        onOverallGradientColor1Changed: initCustomGradient()
-    }
-
-    function initCustomGradient() {
-        // 1. 清理旧数据引用
-        GradientUtils.clearGradientCache(topLevelStopCache);
-        topLevelStopCache = [];
-
-        // 2. 销毁旧的 Gradient 对象 (强制刷新渲染的关键)
-        if (customGradObject) {
-            customGradObject.destroy();
-            customGradObject = null;
-        }
-
-        // 3. 如果启用了自定义颜色，创建新对象
-        if (defaultSettings.useFillGradient) {
-            // 3.1 动态创建 Gradient 容器，父对象设为 linearG 以跟随生命周期
-            customGradObject = customGradComponent.createObject(linearG);
-
-            if (customGradObject) {
-                // 3.2 调用 JS 生成 3 倍数量的 Stops
-                var result = GradientUtils.rebuildGradientStops(
-                    defaultSettings, 
-                    gradientStopComponent, 
-                    customGradObject // Parent
-                );
-
-                if (result.qmlStops.length > 0) {
-                    customGradObject.stops = result.qmlStops;
-                    topLevelStopCache = result.cache; // 保存缓存供动画使用
-                } else {
-                    // 出错回退
-                    customGradObject.stops = defaultGradientComponent.createObject(customGradObject).stops;
-                }
-            }
-        }
-        // currentGradient 属性会自动更新，因为 customGradObject 变了
-    }
-
-    // --- 组件定义 ---
-
-    // A. 简易模式渐变 (Simple Gradient)
-    Gradient {
-        id: simpleGrad
-        GradientStop { 
-            position: 0.0; 
-            color: GradientUtils.adjustGradientColor(defaultSettings.overallGradientColor0 ?? "#a18cd1", gradientAnimPhase, defaultSettings) 
-        }
-        GradientStop { 
-            position: 1.0; 
-            color: GradientUtils.adjustGradientColor(defaultSettings.overallGradientColor1 ?? "#fbc2eb", gradientAnimPhase, defaultSettings) 
-        }
-    }
-
-    // B. 高级模式渐变组件 (Component)
-    Component {
-        id: customGradComponent
-        Gradient {
-            // 空容器，Stops 由 JS 注入
-        }
-    }
-
-    // C. 基础 Stop 组件 (Component)
-    Component { 
-        id: gradientStopComponent; 
-        GradientStop { } 
-    }
-    
-    // D. 默认 Stops 组件 (Component)
-    Component {
-        id: defaultGradientComponent
-        Gradient {
-            GradientStop { position: 0.0; color: "#a18cd1" }
-            GradientStop { position: 1.0; color: "#fbc2eb" }
-        }
-    }
-
-    // --- 渐变组件应用 ---
-    LinearGradient {
-        id: linearG
-        anchors.fill: widget
-        visible: false
-        
-        // [优化] 绑定属性，而非函数调用
-        gradient: currentGradient
-        
-        start: {
-            switch (defaultSettings.overallGradientDirect ?? 1) {
-                case 0 : 
-                case 1 : 
-                case 2 : 
-                case 3 : return Qt.point(0, 0); break; 
-                case 5 : return Qt.point(defaultSettings.overallGradientStartX ?? 0, defaultSettings.overallGradientStartY ?? 0); break;
-                default: return Qt.point(0, 0); break;
-            }
-            return Qt.point(0, 0);
-        }
-        end: {
-            switch (defaultSettings.overallGradientDirect ?? 1) {
-                case 0 : return Qt.point(widget.width, 0); break;
-                case 1 : return Qt.point(0, widget.height); break;
-                case 2 : return Qt.point(widget.width, widget.height); break;
-                case 5 : return Qt.point(defaultSettings.overallGradientEndX ?? 100, defaultSettings.overallGradientEndY ?? 100); break;
-                default: return Qt.point(widget.width, 0); break; 
-            }
-            return Qt.point(widget.width, 0);
-        }
-        cached: defaultSettings.overallGradientCached ?? false
-    }
-
-    // 3. 径向渐变
-    RadialGradient {
-        id: radialG
-        visible: false
-        anchors.fill: widget
-        gradient: currentGradient
-        angle: defaultSettings.overallGradientAngle ?? 0
-        horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
-        verticalOffset: defaultSettings.overallGradientVertical ?? 0
-        horizontalRadius: defaultSettings.overallGradientHorizontalRadius ?? 50
-        verticalRadius: defaultSettings.overallGradientVerticalRadius ?? 50
-        cached: defaultSettings.overallGradientCached ?? false
-    }
-
-    // 4. 锥形渐变
-    ConicalGradient {
-        id: conicalG
-        visible: false
-        anchors.fill: widget
-        gradient: currentGradient
-        angle: defaultSettings.overallGradientAngle ?? 0
-        horizontalOffset: defaultSettings.overallGradientHorizontal ?? 0
-        verticalOffset: defaultSettings.overallGradientVertical ?? 0
-        cached: defaultSettings.overallGradientCached ?? false
+    // --- 整体颜色渐变（机制已抽到 GradientAnimationLayer.qml）---
+    GradientAnimationLayer {
+        id: gradLayerTop
+        settings: widget.defaultSettings
+        sourceItem: widget
     }
 
     layer {
         enabled: defaultSettings.enableOverallGradientEffect ?? false
         effect: OpacityMask {
             anchors.fill: widget;
-            source: switch(defaultSettings.overallGradientDirect ?? 1){
-                case 0:
-                case 1:
-                case 2:
-                case 5: return linearG;
-                case 3: return radialG;
-                case 4: return conicalG;
-                default: return linearG;
-            }
+            source: gradLayerTop.activeGradient
             maskSource: widget
         }
     }
@@ -544,7 +361,6 @@ T.Widget {
     }
 
     Component.onCompleted: { // upgrade settings
-        initCustomGradient()
         if (settings.font !== undefined) {
             defaultSettings.font = settings.font;
             settings.font = undefined;
@@ -715,247 +531,19 @@ T.Widget {
             //控制挂件是否显示
             // TODO 显示时的动画效果
             // TODO 外层挂件的悬浮动作
-            //移动动画
-            NumberAnimation on animationX {
-                id: moveAnimationX
-                running: false
-                duration: settings.moveHover_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on animationY {
-                id: moveAnimationY
-                running: false
-                duration: settings.moveHover_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: settings.moveOnHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            //数据移动
-            NVG.DataSource {
-                id: distanceDataSource
-                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Distance_data) ? modelData.distanceData : null
-            }
-            NVG.DataSource {
-                id: directionDataSource
-                configuration: (modelData.dataAnimation&&modelData.dataAnimation_move&&modelData.moveData_Direction_data) ? modelData.directionData : null
-            }
-            NVG.DataSourceRawOutput {
-                id: distanceData
-                source: distanceDataSource
-            }
-            NVG.DataSourceRawOutput {
-                id: directionData
-                source: directionDataSource
-            }
-            NumberAnimation on moveDataX {
-                id: moveDataX
-                running: false
-                duration: modelData.moveData_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: modelData.moveData_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on moveDataY {
-                id: moveDataY
-                running: false
-                duration: modelData.moveData_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: modelData.moveData_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            Timer {
-                repeat: true
-                interval: modelData.moveData_Trigger ?? 300
-                running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_move)&&thiz.NVG.View.exposed
-                onTriggered: {
-                    moveDataX.stop()
-                    moveDataX.to = Number(modelData.moveData_Distance_data ? distanceData.result??0 : modelData.moveData_Distance ?? 10) 
-                    * Math.cos(Number(modelData.moveData_Direction_data ? directionData.result??0 : modelData.moveData_Direction ?? 0) * Math.PI / 180)
-                    moveDataX.start()
-                }
-            }
-            Timer {
-                repeat: true
-                interval: modelData.moveData_Trigger ?? 300
-                running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_move)&&thiz.NVG.View.exposed
-                onTriggered: {
-                    moveDataY.stop()
-                    moveDataY.to = -Number(modelData.moveData_Distance_data ? distanceData.result??0 : modelData.moveData_Distance ?? 10)
-                    * Math.sin(Number(modelData.moveData_Direction_data ? directionData.result??0 : modelData.moveData_Direction ?? 0) * Math.PI / 180)
-                    moveDataY.start()
-                }
-            }
-            //数据旋转
-            NVG.DataSource {
-                id: spinDataSource
-                configuration: (modelData.dataAnimation&&modelData.dataAnimation_spin) ? modelData.spinData : null
-            }
-            NVG.DataSourceRawOutput {
-                id: spinData
-                source: spinDataSource
-            }
-            NumberAnimation on spinDataA {
-                id: spinDataAnimation
-                running: false
-                duration: modelData.spinData_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: modelData.spinData_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            Timer {
-                repeat: true
-                interval: modelData.spinData_Trigger ?? 300
-                running: Boolean(modelData.dataAnimation&&modelData.dataAnimation_spin)&&thiz.NVG.View.exposed
-                onTriggered: {
-                    spinDataAnimation.stop()
-                    spinDataAnimation.to = spinData.result ?? 0
-                    spinDataAnimation.start()
-                }
-            }
-            //点击移动
-            property bool isAnimationRunning: false // 标志变量，控制动画状态
-            NumberAnimation on clickAnimationX {
-                id: moveClickAnimationX
-                running: false
-                duration: settings.moveClick_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: settings.moveClick_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on clickAnimationY {
-                id: moveClickAnimationY
-                running: false
-                duration: settings.moveClick_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: settings.moveClick_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            Connections {
-                target: moveClickAnimationX
-                onStopped: {
-                    if(!settings.moveBackAfterClick && isAnimationRunning) {
-                        isAnimationRunning = false // 动画结束，重置标志
-                        moveClickAnimationX.stop()
-                        moveClickAnimationY.stop()
-                        moveClickAnimationX.to = 0
-                        moveClickAnimationY.to = 0
-                        moveClickAnimationX.running = true
-                        moveClickAnimationY.running = true
-                    }
-                    isAnimationRunning = false // 动画结束，重置标志
-                }
-            }
-            //缩放动画
-            NumberAnimation on animationZoomX {
-                id: animationZoomX
-                running: false
-                duration: settings.zoomHover_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on animationZoomY {
-                id: animationZoomY
-                running: false
-                duration: settings.zoomHover_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on animationZoomX {
-                id: animationZoomX_Click
-                running: false
-                duration: settings.zoomClick_Duration ?? 300// 动画持续时间，单位为毫秒
-                easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on animationZoomY {
-                id: animationZoomY_Click
-                running: false
-                duration: settings.zoomClick_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: settings.zoomHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            //旋转动画
-            NumberAnimation on animationSpin {
-                id: animationSpin_Normal
-                running: false
-                duration: settings.spinHover_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: settings.spinHover_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            NumberAnimation on animationSpin {
-                id: animationSpin_Click
-                running: false
-                duration: settings.spinClick_Duration ?? 300 // 动画持续时间，单位为毫秒
-                easing.type: settings.spinClick_Easing ?? 3 // 使用缓动函数使动画更平滑
-            }
-            //闪烁动画
-            SequentialAnimation {
-                id: animationGlimmer
-                running: false
-                loops:Animation.Infinite
-                NumberAnimation{
-                    target: thiz
-                    property: "opacity"
-                    from: 1
-                    to: (settings.glimmerHover_MinOpacity ?? 0)/100
-                    duration: settings.glimmerHover_Duration ?? 300
-                    easing.type: settings.glimmerHover_Easing ?? 3
-                }   
-                NumberAnimation{
-                    target: thiz
-                    property: "opacity"
-                    from: (settings.glimmerHover_MinOpacity ?? 0)/100
-                    to: 1
-                    duration: settings.glimmerHover_Duration ?? 300
-                    easing.type: settings.glimmerHover_Easing ?? 3
-                }
-            }
-            NumberAnimation{
-                id: recoverOpacity
-                running: false
+            //移动/缩放/旋转/闪烁/数据驱动动画（已抽到 CraftAnimator.qml）
+            CraftAnimator {
+                id: animator
                 target: thiz
-                property: "opacity"
-                from: thiz.opacity
-                to: 1
-                duration: 100 // 动画持续时间，单位为毫秒
-                easing.type: settings.glimmerHover_Easing ?? 3 // 使用缓动函数使动画更平滑
+                settings: modelData
+                viewExposed: thiz.NVG.View.exposed
             }
             onEntered: {
                 if (!widget.editing) itemView.currentTarget = thiz
-                if(settings.moveOnHover){
-                    moveAnimationX.stop()
-                    moveAnimationY.stop()
-                    moveAnimationX.to =  Number(settings.moveHover_Distance??10) * Math.cos(Number(settings.moveHover_Direction??0) * Math.PI / 180)
-                    moveAnimationY.to = -Number(settings.moveHover_Distance??10) * Math.sin(Number(settings.moveHover_Direction??0) * Math.PI / 180)
-                    moveAnimationX.running = true
-                    moveAnimationY.running = true
-                }
-                if(settings.zoomOnHover){
-                    animationZoomX.stop()
-                    animationZoomY.stop()
-                    animationZoomX.to = Number(settings.zoomHover_XSize??100)
-                    animationZoomY.to = Number(settings.zoomHover_YSize??100)
-                    animationZoomX.running = true
-                    animationZoomY.running = true
-                }
-                if(settings.spinOnHover){
-                    animationSpin_Normal.stop()
-                    animationSpin_Normal.to = Number(settings.spinHover_Direction??360)
-                    animationSpin_Normal.running = true
-                }
-                if(settings.glimmerOnHover){
-                    animationGlimmer.running = true
-                }
+                animator.hoverEnter()
             }
             onExited: {
-                if(settings.moveOnHover){
-                    moveAnimationX.stop()
-                    moveAnimationY.stop()
-                    moveAnimationX.to = 0
-                    moveAnimationY.to = 0
-                    moveAnimationX.running = true
-                    moveAnimationY.running = true
-                }
-                if(settings.zoomOnHover){
-                    animationZoomX.stop()
-                    animationZoomY.stop()
-                    animationZoomX.to = 0
-                    animationZoomY.to = 0
-                    animationZoomX.running = true
-                    animationZoomY.running = true
-                }
-                if(settings.spinOnHover){
-                    animationSpin_Normal.stop()
-                    animationSpin_Normal.to = 0
-                    animationSpin_Normal.running = true
-                }
-                if(settings.glimmerOnHover){
-                    animationGlimmer.running = false
-                    recoverOpacity.start()
-                }
+                animator.hoverExit()
             }
             onClicked: {
                 if (!widget.editing) {// TODO 2级界面加入此行
@@ -966,44 +554,11 @@ T.Widget {
                     if(settings.showOriMenu)
                         LC.LauncherCore.showOriMenu()
                 }
-                if(settings.moveOnClick && !isAnimationRunning){
-                    isAnimationRunning = true // 标记动画已经开始
-                    if(settings.moveBackAfterClick){
-                        clickMoveStatus = !clickMoveStatus
-                    }
-                    moveClickAnimationX.stop()
-                    moveClickAnimationY.stop()
-                    moveClickAnimationX.to =  Number(settings.moveClick_Distance??10) * Math.cos(Number(settings.moveClick_Direction??0) * Math.PI / 180)
-                    moveClickAnimationY.to = -Number(settings.moveClick_Distance??10) * Math.sin(Number(settings.moveClick_Direction??0) * Math.PI / 180)
-                    moveClickAnimationX.running = true
-                    moveClickAnimationY.running = true
-                    if(settings.moveBackAfterClick){
-                        if(!clickMoveStatus){
-                            moveClickAnimationX.stop()
-                            moveClickAnimationY.stop()
-                            moveClickAnimationX.to = 0
-                            moveClickAnimationY.to = 0
-                            moveClickAnimationX.running = true
-                            moveClickAnimationY.running = true
-                        }
-                    }
-                }
+                animator.clickMove()
             }
             onPressed: {
                 if (actionSource.status) NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
-                if(settings.zoomOnClick){
-                    animationZoomX_Click.stop()
-                    animationZoomY_Click.stop()
-                    animationZoomX_Click.to = Number(settings.zoomClick_XSize ?? 100)
-                    animationZoomY_Click.to = Number(settings.zoomClick_YSize ?? 100)
-                    animationZoomX_Click.running = true
-                    animationZoomY_Click.running = true
-                }
-                if(settings.spinOnClick){
-                    animationSpin_Click.stop()
-                    animationSpin_Click.to += Number(settings.spinClick_Direction??360)
-                    animationSpin_Click.running = true
-                }
+                animator.clickZoomSpinPress()
                 if (widget.defaultSettings.rippleEffectEnabled) {
                     var enableGlobal = widget.defaultSettings.rippleEffectEnabled;
                     if (enableGlobal) {
@@ -1017,19 +572,7 @@ T.Widget {
                 }
             }
             onReleased:{
-                if(settings.zoomOnClick){
-                    animationZoomX_Click.stop()
-                    animationZoomY_Click.stop()
-                    animationZoomX_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_XSize ?? 100) : 0
-                    animationZoomY_Click.to = settings.zoomOnHover ? Number(settings.zoomHover_YSize ?? 100) : 0
-                    animationZoomX_Click.running = true
-                    animationZoomY_Click.running = true
-                }
-                if(settings.spinOnClick&&!settings.spinOnClickInstantRecuvery){
-                    animationSpin_Click.stop()
-                    animationSpin_Click.to = 0
-                    animationSpin_Click.running = true
-                }
+                animator.clickZoomSpinRelease()
             }
             NVG.DataSource {
                 id: dataSource
@@ -1251,175 +794,11 @@ T.Widget {
                    }
                 }
 
-                // --- 颜色渐变逻辑 ---
-                property var defaultStops: [{ position: 0.0, color: "#a18cd1" },{ position: 0.5, color: "#fbc2eb" }]
-                property var innerLevelStopCache: []
-                property var customGradObject_item: null
-                property var currentGradient_item: settings.useFillGradient ? customGradObject_item : simpleGrad_item
-
-                property var overallGradientAnimDurationItem: settings.overallGradientAnimDuration ?? 5000
-                property real itemGradientAnimPhase: 0.0
-
-                onOverallGradientAnimDurationItemChanged: {
-                    gradientAnimPhaseAnimation_item.restart();
-                }
-
-                // 动画驱动器
-                NumberAnimation on itemGradientAnimPhase {
-                    id: gradientAnimPhaseAnimation_item
-                    running: (settings.enableOverallGradientEffect ?? false) && (settings.enableOverallGradientAnim ?? false)
-                    from: 0.0
-                    to: 1.0
-                    duration: itemContent.overallGradientAnimDurationItem
-                    loops: Animation.Infinite
-                }
-
-                onItemGradientAnimPhaseChanged: {
-                    if (settings.useFillGradient && settings.enableOverallGradientAnim) {
-                        // 将本地缓存 innerLevelStopCache 传给 JS
-                        GradientUtils.updateGradientPositions(itemContent.itemGradientAnimPhase, itemContent.innerLevelStopCache);
-                    }
-                }
-
-                Connections {
-                    target: settings
-                    onFillStopsChanged: itemContent.initCustomGradient_item()
-                    onUseFillGradientChanged: itemContent.initCustomGradient_item()
-                    onEnableOverallGradientAnimChanged: itemContent.initCustomGradient_item()
-
-                    onOverallGradientColor0Changed: itemContent.initCustomGradient_item()
-                    onOverallGradientColor1Changed: itemContent.initCustomGradient_item()
-                }
-
-                Component.onCompleted: itemContent.initCustomGradient_item()
-
-                function initCustomGradient_item() {
-                    // console.log("Initializing custom gradient for item at index" + settings.fillStops);
-                    // 1. 清理旧数据引用
-                    GradientUtils.clearGradientCache(itemContent.innerLevelStopCache);
-                    itemContent.innerLevelStopCache = [];
-
-                    // 2. 销毁旧的 Gradient 对象 (强制刷新渲染)
-                    if (itemContent.customGradObject_item) {
-                        itemContent.customGradObject_item.destroy();
-                        itemContent.customGradObject_item = null;
-                    }
-
-                    // 3. 如果需要使用自定义渐变，则创建新的对象
-                    if (settings.useFillGradient) {
-                        // 3.1 动态创建 Gradient 容器，父对象设为 linearG (或其他存在的对象)
-                        itemContent.customGradObject_item = customGradComponent_item.createObject(linearG);
-
-                        if (itemContent.customGradObject_item) {
-                            // 3.2 调用 JS 生成 Stops
-                            var result = GradientUtils.rebuildGradientStops(
-                                settings, 
-                                itemGradientStopComponent, 
-                                itemContent.customGradObject_item // Parent
-                            );
-
-                            if (result.qmlStops.length > 0) {
-                                itemContent.customGradObject_item.stops = result.qmlStops;
-                                itemContent.innerLevelStopCache = result.cache; // 保存到本地缓存
-                            } else {
-                                // 回退
-                                itemContent.customGradObject_item.stops = defaultGradientComponent_item.createObject(itemContent.customGradObject_item).stops;
-                            }
-                        }
-                    }
-                }
-
-                // --- 组件定义 ---
-
-                // A. 简易模式渐变
-                Gradient {
-                    id: simpleGrad_item
-                    GradientStop { 
-                        position: 0.0; 
-                        color: GradientUtils.adjustGradientColor(settings.overallGradientColor0 ?? "#a18cd1", itemContent.itemGradientAnimPhase, settings) 
-                    }
-                    GradientStop { 
-                        position: 1.0; 
-                        color: GradientUtils.adjustGradientColor(settings.overallGradientColor1 ?? "#fbc2eb", itemContent.itemGradientAnimPhase, settings) 
-                    }
-                }
-
-                // B. 高级模式渐变组件 (Component)
-                Component {
-                    id: customGradComponent_item
-                    Gradient { }
-                }
-
-                // C. 基础 Stop 组件
-                Component { 
-                    id: itemGradientStopComponent; 
-                    GradientStop { } 
-                }
-                
-                // D. 默认 Stops 组件
-                Component {
-                    id: defaultGradientComponent_item
-                    Gradient {
-                        GradientStop { position: 0.0; color: "#a18cd1" }
-                        GradientStop { position: 1.0; color: "#fbc2eb" }
-                    }
-                }
-
-                // --- 渐变组件应用 ---
-                
-                LinearGradient {
-                    id: linearG
-                    anchors.fill: itemContent
-                    visible: false
-                    // [优化] 绑定属性
-                    gradient: itemContent.currentGradient_item
-                    
-                    start: {
-                        switch (settings.overallGradientDirect ?? 1) {
-                            case 0 : 
-                            case 1 : 
-                            case 2 : 
-                            case 3 : return Qt.point(0, 0); break; 
-                            case 5 : return Qt.point(settings.overallGradientStartX ?? 0, settings.overallGradientStartY ?? 0); break;
-                            default: return Qt.point(0, 0); break;
-                        }
-                        return Qt.point(0, 0);
-                    }
-                    end: {
-                        switch (settings.overallGradientDirect ?? 1) {
-                            case 0 : return Qt.point(itemContent.width, 0); break;
-                            case 1 : return Qt.point(0, itemContent.height); break;
-                            case 2 : return Qt.point(itemContent.width, itemContent.height); break;
-                            case 5 : return Qt.point(settings.overallGradientEndX ?? 100, settings.overallGradientEndY ?? 100); break;
-                            default: return Qt.point(itemContent.width, 0); break; 
-                        }
-                        return Qt.point(itemContent.width, 0);
-                    }
-                    cached: settings.overallGradientCached ?? false
-                }
-
-                RadialGradient {
-                    id: radialG
-                    visible: false
-                    anchors.fill: itemContent
-                    gradient: itemContent.currentGradient_item
-                    angle: settings.overallGradientAngle ?? 0
-                    horizontalOffset: settings.overallGradientHorizontal ?? 0
-                    verticalOffset: settings.overallGradientVertical ?? 0
-                    horizontalRadius: settings.overallGradientHorizontalRadius ?? 50
-                    verticalRadius: settings.overallGradientVerticalRadius ?? 50
-                    cached: settings.overallGradientCached ?? false
-                }
-
-                ConicalGradient {
-                    id: conicalG
-                    visible: false
-                    anchors.fill: itemContent
-                    gradient: itemContent.currentGradient_item
-                    angle: settings.overallGradientAngle ?? 0
-                    horizontalOffset: settings.overallGradientHorizontal ?? 0
-                    verticalOffset: settings.overallGradientVertical ?? 0
-                    cached: settings.overallGradientCached ?? false
+                // --- 整体颜色渐变（机制已抽到 GradientAnimationLayer.qml）---
+                GradientAnimationLayer {
+                    id: gradLayerItem
+                    settings: thiz.settings
+                    sourceItem: itemContent
                 }
 
                 layer {
@@ -1427,15 +806,7 @@ T.Widget {
                     samplerName: "maskSource" 
                     effect: OpacityMask {
                         anchors.fill: itemContent
-                        source: switch(settings.overallGradientDirect ?? 1){
-                            case 0:
-                            case 1:
-                            case 2:
-                            case 5: return linearG;
-                            case 3: return radialG;
-                            case 4: return conicalG;
-                            default: return linearG;
-                        }
+                        source: gradLayerItem.activeGradient
                     }
                 }
 
