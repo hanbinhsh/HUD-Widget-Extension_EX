@@ -7,6 +7,8 @@ import NERvGear 1.0 as NVG
 
 import "utils.js" as Utils
 
+import "elements"
+
 import "Launcher" as LC
 
 import "./Utils/ColorAnimation.js" as GradientUtils
@@ -18,6 +20,9 @@ CraftDelegate {
 
     readonly property Component preference: loader.item?.preference ?? null
     readonly property NVG.SettingsMap effectSettings: settings.effect ?? null
+    // 高级特效（独立于上面的基础 layer 特效）
+    readonly property NVG.SettingsMap advancedEffectSettings: settings.advancedEffect ?? null
+    readonly property bool advancedEffectEnabled: Boolean(advancedEffectSettings?.enabled)
 
     property NVG.SettingsMap itemSettings
     property NVG.DataSource itemData
@@ -218,6 +223,39 @@ CraftDelegate {
 
                     readonly property var source: sourceProxy.output
                 }
+            }
+        }
+    }
+
+    // 高级特效叠加层（完整 QtGraphicalEffects 集，复用 ImageEffectStack）。
+    // 把元素内容(loader)捕获为纹理，叠加完整特效；仅在 advancedEffect.enabled 时实例化/渲染。
+    ShaderEffectSource {
+        id: advFxSource
+        anchors.fill: parent
+        sourceItem: loader
+        live: craftElement.advancedEffectEnabled
+        hideSource: false   // 保留原内容可见，特效在其上叠加
+        visible: false
+    }
+    Loader {
+        id: advFxLoader
+        anchors.fill: advFxSource
+        active: craftElement.advancedEffectEnabled && Boolean(craftElement.advancedEffectSettings)
+        sourceComponent: Item {
+            anchors.fill: parent
+            // cycleColor 颜色循环渐变驱动器（为下面的 ImageEffectStack 提供 gradient）
+            ColorCycleGradient {
+                id: advColorCycle
+                settings: craftElement.advancedEffectSettings
+                viewExposed: craftElement.NVG.View.exposed
+            }
+            ImageEffectStack {
+                sourceItem: advFxSource
+                settings: craftElement.advancedEffectSettings
+                dataSource: craftElement.itemData
+                itemPressed: (craftElement.itemBackground?.pressed ?? false) || interactionMouseArea.pressed
+                itemHovered: (craftElement.itemBackground?.hovered ?? false) || visualMouseArea.containsMouse
+                gradient: advColorCycle.gradient
             }
         }
     }

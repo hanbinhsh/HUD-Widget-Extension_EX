@@ -463,6 +463,7 @@ NVG.Window {
                                 case 1: return layoutTransformSetting.contentHeight + 56;
                                 case 2: return layoutActionSetting.contentHeight + 56;
                                 case 3: return layoutColorSetting.contentHeight + 56;
+                                case 4: return layoutAdvanced.height + 56;
                                 return 0;
                             }
                             header:TabBar {
@@ -470,7 +471,7 @@ NVG.Window {
                                 width: parent.width
                                 clip:true//超出父项直接裁剪
                                 Repeater {//效果，变换(平移，镜像，透明度，旋转)
-                                    model: [qsTr("Effects"),qsTr("Transform"),qsTr("Action"),qsTr("Color")]
+                                    model: [qsTr("Effects"),qsTr("Transform"),qsTr("Action"),qsTr("Color"),qsTr("Advanced")]
                                     TabButton {
                                         text: modelData
                                         width: Math.max(108, elemBar.width / 3)
@@ -610,8 +611,48 @@ NVG.Window {
                                         id: layoutColorSetting
                                     }
                                 }
+                                //高级特效（独立开关 + 完整特效面板）
+                                Item {
+                                    Flickable {
+                                        anchors.fill: parent
+                                        contentWidth: width
+                                        contentHeight: layoutAdvanced.height
+                                        topMargin: 16
+                                        bottomMargin: 16
+                                        Column {
+                                            id: layoutAdvanced
+                                            width: parent.width
+                                            P.ObjectPreferenceGroup {
+                                                syncProperties: true
+                                                enabled: currentElement
+                                                width: parent.width
+                                                defaultValue: currentElement?.advancedEffect ?? null
+                                                //主开关：启用高级特效
+                                                P.SwitchPreference {
+                                                    id: pAdvEffect
+                                                    name: "enabled"
+                                                    label: qsTr("Enable Advanced Effects")
+                                                    onPreferenceEdited: {
+                                                        if (!currentElement.advancedEffect) {
+                                                            const map = NVG.Settings.createMap(currentElement);
+                                                            map.enabled = value;
+                                                            currentElement.advancedEffect = map;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            //完整特效面板（颜色/特效/混合遮罩）
+                                            EffectPreferencePanel {
+                                                width: parent.width
+                                                visible: pAdvEffect.value
+                                                settingsTarget: currentElement?.advancedEffect ?? null
+                                                groupEnabled: currentElement
+                                            }
+                                        }
+                                    }
+                                }
                             }
-                        } 
+                        }
                     }
                     Heading {
                         Layout.fillWidth: true

@@ -25,8 +25,11 @@ Item {
     property bool itemHovered: false
     property Gradient gradient: null
 
-    // 该层与原图等大、等位（sourceItem 为同级兄弟项，可直接锚定）
-    anchors.fill: sourceItem
+    // 该层填充其父项；调用方需保证父项与 sourceItem 等大、等位
+    // （ImageElementAdvanced 中父项=元素根、sourceItem=imageSource 均填充元素根；
+    //   CraftElement 中本层置于一个 anchors.fill 到纹理源的 Loader 内）。
+    // 用 parent 而非 sourceItem，避免 sourceItem 非父/兄弟项时的锚定限制。
+    anchors.fill: parent
 
     // ===== 由 settings 推导的内部取值（对应原 thiz 上的派生属性）=====
     readonly property bool blendDataEnabled: settings.blendDataEnabled ?? false
