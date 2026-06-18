@@ -25,7 +25,7 @@ Flickable {
             enabled: item
             defaultValue: item
             width: parent.width
-            data: PreferenceGroupIndicator { anchors.topMargin: enableADV.height; visible: enableADV.value }
+            data: PreferenceGroupIndicator { toggle: enableADV }
             //必须资源
             P.SwitchPreference {
                 id: enableADV
@@ -87,7 +87,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: useADVGaussian.height; visible: useADVGaussian.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: useADVGaussian; level: 2 }
                 P.SwitchPreference {
                     id: useADVGaussian
                     name: "useADVGaussian"

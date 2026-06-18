@@ -25,7 +25,7 @@ Flickable {
             enabled: item
             defaultValue: item
             width: parent.width
-            data: PreferenceGroupIndicator { anchors.topMargin: enableAction.height; visible: enableAction.value }
+            data: PreferenceGroupIndicator { toggle: enableAction }
             //必须资源
             //动作
             P.SwitchPreference {
@@ -78,7 +78,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: moveOnHover.height; visible: moveOnHover.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: moveOnHover; level: 2 }
                 P.SwitchPreference {
                     id: moveOnHover
                     name: "moveOnHover"
@@ -131,7 +131,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: zoomOnHover.height; visible: zoomOnHover.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: zoomOnHover; level: 2 }
                 P.SwitchPreference {
                     id: zoomOnHover
                     name: "zoomOnHover"
@@ -183,7 +183,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: spinOnHover.height; visible: spinOnHover.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: spinOnHover; level: 2 }
                 P.SwitchPreference {
                     id: spinOnHover
                     name: "spinOnHover"
@@ -228,7 +228,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: glimmerOnHover.height; visible: glimmerOnHover.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: glimmerOnHover; level: 2 }
                 P.SwitchPreference {
                     id: glimmerOnHover
                     name: "glimmerOnHover"
@@ -272,7 +272,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: zoomOnClick.height; visible: zoomOnClick.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: zoomOnClick; level: 2 }
                 P.SwitchPreference {
                     id: zoomOnClick
                     name: "zoomOnClick"
@@ -324,7 +324,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: spinOnClick.height; visible: spinOnClick.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: spinOnClick; level: 2 }
                 P.SwitchPreference {
                     id: spinOnClick
                     name: "spinOnClick"
@@ -373,7 +373,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: moveOnClick.height; visible: moveOnClick.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                data: PreferenceGroupIndicator { toggle: moveOnClick; level: 2 }
                 P.SwitchPreference {
                     id: moveOnClick
                     name: "moveOnClick"

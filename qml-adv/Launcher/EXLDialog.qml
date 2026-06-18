@@ -294,11 +294,9 @@ NVG.Window {
                         label: qsTr("Name")
                         display: P.TextFieldPreference.ExpandControl
                     }
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "viewItemZ"
                         label: qsTr("Item Z")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         defaultValue: 0
                         from: -9999
                         to: 9999

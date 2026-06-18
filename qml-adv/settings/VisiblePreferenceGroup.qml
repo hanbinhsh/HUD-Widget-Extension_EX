@@ -113,7 +113,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: enableShowAnimation.height; visible: enableShowAnimation.value }
+                data: PreferenceGroupIndicator { toggle: enableShowAnimation }
                 P.SwitchPreference {
                     id: enableShowAnimation
                     name: "enableShowAnimation"
@@ -165,7 +165,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: enableFadeTransition.height; visible: enableFadeTransition.value }
+                data: PreferenceGroupIndicator { toggle: enableFadeTransition }
                 P.SwitchPreference {
                     id: enableFadeTransition
                     name: "enableFadeTransition"
@@ -176,7 +176,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: fadeTransitionDirect.height; visible: fadeTransitionDirect.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: fadeTransitionDirect; level: 2 }
                     P.SelectPreference {
                         id: fadeTransitionDirect
                         name: "fadeTransitionDirect"

@@ -25,32 +25,26 @@ Flickable {
             syncProperties: true
             width: parent.width
             //必须资源
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "showPause"
                 label: qsTr("Show Pause")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 0
                 from: 0
                 to: 99999
                 stepSize: 50
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "hidePause"
                 label: qsTr("Hide Pause")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 0
                 from: 0
                 to: 99999
                 stepSize: 50
             }
             //时间
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "showhideDuration"
                 label: qsTr("Duration")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 300
                 from: 0
                 to: 10000
@@ -62,7 +56,7 @@ Flickable {
                 defaultValue: current_default
                 syncProperties: true
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: enableShowAnimation.height; visible: enableShowAnimation.value; color: "#4a4a4a" }
+                data: PreferenceGroupIndicator { toggle: enableShowAnimation; color: "#4a4a4a" }
                 P.SwitchPreference {
                     id: enableShowAnimation
                     name: "enableShowAnimation"
@@ -70,11 +64,9 @@ Flickable {
                     visible: !is_default
                 }
                 //角度
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_Direction"
                     label: qsTr("Direction")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableShowAnimation.value&&!is_default
                     defaultValue: 0
                     from: -360
@@ -82,11 +74,9 @@ Flickable {
                     stepSize: 10
                 }
                 //距离
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_Distance"
                     label: qsTr("Distance")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableShowAnimation.value&&!is_default
                     defaultValue: 10
                     from: -99999
@@ -94,11 +84,9 @@ Flickable {
                     stepSize: 10
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableShowAnimation.value&&!is_default
                     defaultValue: 300
                     from: 0
@@ -120,7 +108,7 @@ Flickable {
                 defaultValue: current_default
                 syncProperties: true
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: enableMoveAnimation.height; visible: enableMoveAnimation.value; color: "#4a4a4a" }
+                data: PreferenceGroupIndicator { toggle: enableMoveAnimation; color: "#4a4a4a" }
                 P.SwitchPreference {
                     id: enableMoveAnimation
                     name: "enableMoveAnimation"
@@ -139,19 +127,15 @@ Flickable {
                         P.ObjectPreferenceGroup {
                             syncProperties: true
                             defaultValue: current_default
-                            P.SpinPreference {
+                            SpinPreferenceEx {
                                 name: "moveAnimation_XFrom"
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
                                 defaultValue: 0
                                 from: -99999
                                 to: 99999
                                 stepSize: 10
                             }
-                            P.SpinPreference {
+                            SpinPreferenceEx {
                                 name: "moveAnimation_XTo"
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
                                 defaultValue: 0
                                 from: -99999
                                 to: 99999
@@ -167,19 +151,15 @@ Flickable {
                         P.ObjectPreferenceGroup {
                             syncProperties: true
                             defaultValue: current_default
-                            P.SpinPreference {
+                            SpinPreferenceEx {
                                 name: "moveAnimation_YFrom"
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
                                 defaultValue: 0
                                 from: -99999
                                 to: 99999
                                 stepSize: 10
                             }
-                            P.SpinPreference {
+                            SpinPreferenceEx {
                                 name: "moveAnimation_YTo"
-                                editable: true
-                                display: P.TextFieldPreference.ExpandLabel
                                 defaultValue: 0
                                 from: -99999
                                 to: 99999
@@ -189,22 +169,18 @@ Flickable {
                     }
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveAnimation_DurationX"
                     label: qsTr("Duration X")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableMoveAnimation.value&&!is_default
                     defaultValue: 3000
                     from: 0
                     to: 99999
                     stepSize: 10
                 }
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveAnimation_DurationY"
                     label: qsTr("Duration Y")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableMoveAnimation.value&&!is_default
                     defaultValue: 3000
                     from: 0

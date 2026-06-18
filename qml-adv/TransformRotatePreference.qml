@@ -54,7 +54,7 @@ PreferenceGroup {
         }
     }
 
-    data: PreferenceGroupIndicator { anchors.topMargin: pEnabled.height; visible: pEnabled.value }
+    data: PreferenceGroupIndicator { toggle: pEnabled }
 
     SwitchPreference {
         id: pEnabled

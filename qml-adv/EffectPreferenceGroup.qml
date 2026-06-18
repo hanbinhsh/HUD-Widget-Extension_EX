@@ -42,7 +42,7 @@ P.ObjectPreferenceGroup {
     enabled: groupEnabled
 
     // 指示条放进 data（与内容列表分离，仅作左侧装饰）
-    data: PreferenceGroupIndicator { anchors.topMargin: enableSwitch.height; visible: enableSwitch.value }
+    data: PreferenceGroupIndicator { toggle: enableSwitch }
 
     // 启用开关作为内容列表的第一项；调用方追加的子项会接在其后
     P.SwitchPreference {

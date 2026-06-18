@@ -28,7 +28,7 @@ P.ObjectPreferenceGroup {
         value: itemIn !== null && itemIn !== undefined && itemIn !== false
     }
 
-    data: PreferenceGroupIndicator { anchors.topMargin: enableOverallGradientEffect.height; visible: enableOverallGradientEffect.value }
+    data: PreferenceGroupIndicator { toggle: enableOverallGradientEffect }
     //必须资源
     P.SwitchPreference {
         id: enableOverallGradientEffect
@@ -40,7 +40,7 @@ P.ObjectPreferenceGroup {
     P.ObjectPreferenceGroup {
         syncProperties: true
         defaultValue: itemIn
-        data: PreferenceGroupIndicator { anchors.topMargin: useFillGradient.height; visible: useFillGradient.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: useFillGradient; level: 2 }
         P.SwitchPreference {
             id: useFillGradient
             name: "useFillGradient"
@@ -71,7 +71,7 @@ P.ObjectPreferenceGroup {
     P.ObjectPreferenceGroup {
         syncProperties: true
         defaultValue: itemIn
-        data: PreferenceGroupIndicator { anchors.topMargin: overallGradientDirection.height; visible: overallGradientDirection.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: overallGradientDirection; level: 2 }
         P.SelectPreference {
             id: overallGradientDirection
             name: "overallGradientDirect"
@@ -195,7 +195,7 @@ P.ObjectPreferenceGroup {
     P.ObjectPreferenceGroup {
         syncProperties: true
         defaultValue: itemIn
-        data: PreferenceGroupIndicator { anchors.topMargin: enableGradientAnim.height; visible: enableGradientAnim.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: enableGradientAnim; level: 2 }
         P.SwitchPreference {
             id: enableGradientAnim
             name: "enableOverallGradientAnim"

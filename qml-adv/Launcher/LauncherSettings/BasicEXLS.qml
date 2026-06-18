@@ -32,19 +32,15 @@ Flickable {
                     P.ObjectPreferenceGroup {
                         syncProperties: true
                         defaultValue: current_default
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "viewX"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
                             from: -99999
                             to: 99999
                             stepSize: 5
                         }
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "viewY"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 0
                             from: -99999
                             to: 99999
@@ -60,19 +56,15 @@ Flickable {
                     P.ObjectPreferenceGroup {
                         syncProperties: true
                         defaultValue: current_default
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "viewW"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 2048
                             from: -99999
                             to: 99999
                             stepSize: 5
                         }
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "viewH"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             defaultValue: 1152
                             from: -99999
                             to: 99999
@@ -81,21 +73,17 @@ Flickable {
                     }
                 }
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "viewZ"
                 label: qsTr("EXL Z")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 0
                 from: -9999
                 to: 9999
                 stepSize: 1
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "viewO"
                 label: qsTr("Max Opacity")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 defaultValue: 100
                 from: 0
                 to: 100
@@ -110,7 +98,7 @@ Flickable {
                 defaultValue: current_default
                 syncProperties: true
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: aDVConnection.height; visible: aDVConnection.value; color: "#4a4a4a" }
+                data: PreferenceGroupIndicator { toggle: aDVConnection; color: "#4a4a4a" }
                 P.SwitchPreference {
                     id: aDVConnection
                     name: "aDVConnection"

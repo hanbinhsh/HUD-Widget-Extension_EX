@@ -32,11 +32,11 @@ P.ObjectPreferenceGroup {
         value: item !== null && item !== undefined && item !== false
     }
 
-    data: PreferenceGroupIndicator { 
-        anchors.topMargin: pEasingType.height
-        visible: pEasingType.value
-        color: level == 1 ? "#4a4a4a" : (level == 2 ? "#662196f3" : "#66f48fb1")
-        anchors.leftMargin: (level - 1) * 4
+    data: PreferenceGroupIndicator {
+        toggle: pEasingType
+        // 以 root.level 限定，避免与指示条自身的 level 属性同名遮蔽；保持原有 level1=#4a4a4a 配色
+        color: root.level == 1 ? "#4a4a4a" : (root.level == 2 ? "#662196f3" : "#66f48fb1")
+        anchors.leftMargin: (root.level - 1) * 4
     }
 
     // 缓动类型模型

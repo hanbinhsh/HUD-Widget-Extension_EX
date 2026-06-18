@@ -155,7 +155,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: opacitySettings.height; visible: opacitySettings.value }
+                data: PreferenceGroupIndicator { toggle: opacitySettings }
                 //透明度设置开关
                 P.SwitchPreference {
                     id: opacitySettings
@@ -179,7 +179,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: enableOpacityAnimation.height; visible: enableOpacityAnimation.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: enableOpacityAnimation; level: 2 }
                     P.SwitchPreference {
                         id: enableOpacityAnimation
                         name: "enableOpacityAnimation"
@@ -205,7 +205,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: rotationSettings.height; visible: rotationSettings.value }
+                data: PreferenceGroupIndicator { toggle: rotationSettings }
                 //旋转设置开关
                 P.SwitchPreference {
                     id: rotationSettings
@@ -229,7 +229,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: rotationDisplay.height; visible: rotationDisplay.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: rotationDisplay; level: 2 }
                     P.SwitchPreference {
                         id: rotationDisplay
                         name: "rotationDisplay"
@@ -267,7 +267,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: enableAdvancedRotation.height; visible: enableAdvancedRotation.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: enableAdvancedRotation; level: 2 }
                     P.SwitchPreference {
                         id: enableAdvancedRotation
                         name: "enableAdvancedRotation"
@@ -358,7 +358,7 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         width: parent.width
-                        data: PreferenceGroupIndicator { anchors.topMargin: enableAdvancedRotationAnimation.height; visible: enableAdvancedRotationAnimation.value; color: "#66f48fb1"; anchors.leftMargin: 8 }
+                        data: PreferenceGroupIndicator { toggle: enableAdvancedRotationAnimation; level: 3 }
                         P.SwitchPreference {
                             id: enableAdvancedRotationAnimation
                             name: "enableAdvancedRotationAnimation"
@@ -395,7 +395,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: cycleAnimation.height; visible: cycleAnimation.value }
+                data: PreferenceGroupIndicator { toggle: cycleAnimation }
                 P.SwitchPreference {
                     id: cycleAnimation
                     name: "cycleAnimation"
@@ -407,7 +407,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: cycleMove.height; visible: cycleMove.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: cycleMove; level: 2 }
                     P.SwitchPreference {
                         id: cycleMove
                         name: "cycleMove"
@@ -481,7 +481,7 @@ Flickable {
                 enabled: item
                 defaultValue: item
                 width: parent.width
-                data: PreferenceGroupIndicator { anchors.topMargin: dataAnimation.height; visible: dataAnimation.value }
+                data: PreferenceGroupIndicator { toggle: dataAnimation }
                 P.SwitchPreference {
                     id: dataAnimation
                     name: "dataAnimation"
@@ -493,7 +493,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: dataAnimation_move.height; visible: dataAnimation_move.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: dataAnimation_move; level: 2 }
                     P.SwitchPreference {
                         id: dataAnimation_move
                         name: "dataAnimation_move"
@@ -515,7 +515,7 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         width: parent.width
-                        data: PreferenceGroupIndicator { anchors.topMargin: moveData_Distance_data.height; visible: moveData_Distance_data.value; color: "#66f48fb1"; anchors.leftMargin: 8 }
+                        data: PreferenceGroupIndicator { toggle: moveData_Distance_data; level: 3 }
                         P.SwitchPreference {
                             id: moveData_Distance_data
                             name: "moveData_Distance_data"
@@ -543,7 +543,7 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         width: parent.width
-                        data: PreferenceGroupIndicator { anchors.topMargin: moveData_Direction_data.height; visible: moveData_Direction_data.value; color: "#66f48fb1"; anchors.leftMargin: 8 }
+                        data: PreferenceGroupIndicator { toggle: moveData_Direction_data; level: 3 }
                         P.SwitchPreference {
                             id: moveData_Direction_data
                             name: "moveData_Direction_data"
@@ -591,7 +591,7 @@ Flickable {
                     enabled: item
                     defaultValue: item
                     width: parent.width
-                    data: PreferenceGroupIndicator { anchors.topMargin: dataAnimation_spin.height; visible: dataAnimation_spin.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                    data: PreferenceGroupIndicator { toggle: dataAnimation_spin; level: 2 }
                     P.SwitchPreference {
                         id: dataAnimation_spin
                         name: "dataAnimation_spin"

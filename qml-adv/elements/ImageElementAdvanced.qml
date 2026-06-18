@@ -88,7 +88,7 @@ DataSourceElement {
                                 syncProperties: true
                                 enabled: currentItem
                                 width: parent.width
-                                data: PreferenceGroupIndicator { anchors.topMargin: enableGalleryMode.height; visible: enableGalleryMode.value }
+                                data: PreferenceGroupIndicator { toggle: enableGalleryMode }
                                 P.SwitchPreference {
                                     id: enableGalleryMode
                                     name: "enableGalleryMode"
@@ -191,7 +191,7 @@ DataSourceElement {
                                     syncProperties: true
                                     enabled: currentItem
                                     width: parent.width
-                                    data: PreferenceGroupIndicator { anchors.topMargin: enableAutoPaly.height; visible: enableAutoPaly.value; color: "#662196f3"; anchors.leftMargin: 4 }
+                                    data: PreferenceGroupIndicator { toggle: enableAutoPaly; level: 2 }
                                     P.SwitchPreference {
                                         id: enableAutoPaly
                                         name: "enableAutoPaly"

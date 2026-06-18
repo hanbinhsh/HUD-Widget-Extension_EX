@@ -30,7 +30,7 @@ P.ObjectPreferenceGroup {
     defaultValue: settingsTarget
     enabled: groupEnabled
 
-    data: PreferenceGroupIndicator { anchors.topMargin: colorGradient.height; visible: colorGradient.value }
+    data: PreferenceGroupIndicator { toggle: colorGradient }
 
     //开启颜色渐变
     P.SwitchPreference {
@@ -44,7 +44,7 @@ P.ObjectPreferenceGroup {
         syncProperties: true
         enabled: root.groupEnabled
         width: parent.width
-        data: PreferenceGroupIndicator { anchors.topMargin: animationDirect.height; visible: animationDirect.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: animationDirect; level: 2 }
         P.SelectPreference {
             id: animationDirect
             name: "animationDirect"
@@ -161,7 +161,7 @@ P.ObjectPreferenceGroup {
         syncProperties: true
         enabled: root.groupEnabled
         width: parent.width
-        data: PreferenceGroupIndicator { anchors.topMargin: cycleColor.height; visible: cycleColor.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: cycleColor; level: 2 }
         P.SelectPreference {
             id: cycleColor
             name: "cycleColor"
@@ -286,7 +286,7 @@ P.ObjectPreferenceGroup {
         syncProperties: true
         enabled: root.groupEnabled
         width: parent.width
-        data: PreferenceGroupIndicator { anchors.topMargin: enableColorAnimation.height; visible: enableColorAnimation.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: enableColorAnimation; level: 2 }
         P.SwitchPreference {
             id: enableColorAnimation
             name: "enableColorAnimation"

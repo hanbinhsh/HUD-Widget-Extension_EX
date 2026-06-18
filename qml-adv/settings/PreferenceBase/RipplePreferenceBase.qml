@@ -31,7 +31,7 @@ P.ObjectPreferenceGroup {
         value: itemIn !== null && itemIn !== undefined && itemIn !== false
     }
 
-    data: PreferenceGroupIndicator { anchors.topMargin: rippleEffectEnabled.height; visible: rippleEffectEnabled.value }
+    data: PreferenceGroupIndicator { toggle: rippleEffectEnabled }
     // --- 基础开关 ---
     P.SwitchPreference {
         id: rippleEffectEnabled
@@ -48,7 +48,7 @@ P.ObjectPreferenceGroup {
     
     // --- [新增] 颜色设置 ---
     P.ObjectPreferenceGroup {
-        data: PreferenceGroupIndicator { anchors.topMargin: rippleColorMode.height; visible: rippleColorMode.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: rippleColorMode; level: 2 }
         defaultValue: widget.defaultSettings
         syncProperties: true
         P.SelectPreference {
@@ -76,7 +76,7 @@ P.ObjectPreferenceGroup {
         visible: rippleEffectEnabled.value
     }
     P.ObjectPreferenceGroup {
-        data: PreferenceGroupIndicator { anchors.topMargin: rippleShape.height; visible: rippleShape.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: rippleShape; level: 2 }
         defaultValue: widget.defaultSettings
         syncProperties: true
         P.SelectPreference { 
@@ -127,7 +127,7 @@ P.ObjectPreferenceGroup {
     }
     // --- 样式 (实心/圆环) ---
     P.ObjectPreferenceGroup {
-        data: PreferenceGroupIndicator { anchors.topMargin: rippleStyle.height; visible: rippleStyle.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: rippleStyle; level: 2 }
         defaultValue: widget.defaultSettings
         syncProperties: true
         P.SelectPreference { 
@@ -148,7 +148,7 @@ P.ObjectPreferenceGroup {
         }
     }
     P.ObjectPreferenceGroup {
-        data: PreferenceGroupIndicator { anchors.topMargin: rippleBurstMode.height; visible: rippleBurstMode.value; color: "#662196f3"; anchors.leftMargin: 4 }
+        data: PreferenceGroupIndicator { toggle: rippleBurstMode; level: 2 }
         defaultValue: widget.defaultSettings
         syncProperties: true
         // --- 多重触发 (Burst Mode) ---
