@@ -274,7 +274,7 @@ CraftDelegate {
         // --- 悬停进入 ---
         onEntered: {
             if (widget.editing) {
-                if(thiz_ce ?? false) elementView.currentTarget = thiz_ce
+                if (view) view.currentTarget = craftElement
                 return;
             }
             animator.hoverEnter()

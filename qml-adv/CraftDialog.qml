@@ -522,7 +522,7 @@ NVG.Window {
                                                     visible: pEffect.value
                                                 }
                                                 //模糊半径
-                                                P.SliderPreference {
+                                                SliderPreferenceEx {
                                                     name: "blur"
                                                     label: " - " + qsTr("Blur Radius")
                                                     displayValue: value + " px"
@@ -530,11 +530,10 @@ NVG.Window {
                                                     from: 0
                                                     to: 64
                                                     stepSize: 1
-                                                    live: true
                                                     visible: pEffect.value
                                                 }
                                                 //扩展量
-                                                P.SliderPreference {
+                                                SliderPreferenceEx {
                                                     name: "spread"
                                                     label: " - " + qsTr("Spread Amount")
                                                     displayValue: Math.round(value * 100) + " %"
@@ -542,32 +541,27 @@ NVG.Window {
                                                     from: 0
                                                     to: 1
                                                     stepSize: 0.01
-                                                    live: true
                                                     visible: pEffect.value
                                                 }
                                                 //水平偏移
-                                                P.SpinPreference {
+                                                SpinPreferenceEx {
                                                     name: "horizon"
                                                     label: " - " + qsTr("Horizontal Offset")
                                                     defaultValue: 0
                                                     from: -999
                                                     to: 999
                                                     stepSize: 1
-                                                    editable: true
                                                     visible: pEffect.value
-                                                    display: P.TextFieldPreference.ExpandLabel
                                                 }
                                                 //垂直偏移
-                                                P.SpinPreference {
+                                                SpinPreferenceEx {
                                                     name: "vertical"
                                                     label: " - " + qsTr("Vertical Offset")
                                                     defaultValue: 0
                                                     from: -999
                                                     to: 999
                                                     stepSize: 1
-                                                    editable: true
                                                     visible: pEffect.value
-                                                    display: P.TextFieldPreference.ExpandLabel
                                                 }
                                                 NoDefaultColorPreference {
                                                     name: "color"

@@ -56,22 +56,18 @@ Flickable {
                 defaultValue: "white"
                 visible: enableADV.value
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "aDVZ"
                 label: qsTr("Z")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 visible: enableADV.value
                 defaultValue: -1
                 from: -999
                 to: 999
                 stepSize: 1
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "aDVDecrease"
                 label: qsTr("Decrease")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 visible: enableADV.value
                 defaultValue: 1000
                 from: 100
@@ -99,11 +95,9 @@ Flickable {
                     visible: enableADV.value
                 }
                 //半径
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "aDVGaussianBlurRadius"
                     label: qsTr("Radius")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: useADVGaussian.value&&enableADV.value
                     defaultValue: 5
                     from: 0
@@ -111,11 +105,9 @@ Flickable {
                     stepSize: 1
                 }
                 //偏差值
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "aDVGaussianBlurDeviation"
                     label: qsTr("Deviation")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: useADVGaussian.value&&enableADV.value
                     defaultValue: 3
                     from: 0
@@ -123,11 +115,9 @@ Flickable {
                     stepSize: 1
                 }
                 //样本数
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "aDVGaussianBlurSamples"
                     label: qsTr("Samples")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: useADVGaussian.value&&enableADV.value
                     defaultValue: 5
                     from: 0

@@ -53,26 +53,22 @@ Flickable {
                 defaultValue: 1
                 visible: usedisplayMask.value
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "maskOpacity"
                 label: qsTr("Mask Opacity")
-                editable: true
                 defaultValue: 100
                 from: 0
                 to: 100
                 stepSize: 5
-                display: P.TextFieldPreference.ExpandLabel
                 visible: usedisplayMask.value
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "maskRotation"
                 label: qsTr("Mask Rotation")
-                editable: true
                 defaultValue: 0
                 from: -360
                 to: 360
                 stepSize: 1
-                display: P.TextFieldPreference.ExpandLabel
                 visible: usedisplayMask.value
             }
             Row{
@@ -87,23 +83,19 @@ Flickable {
                         syncProperties: true
                         enabled: item
                         defaultValue: item
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "displayMaskTranslateX"
-                            editable: true
                             defaultValue: 0
                             from: -10000
                             to: 10000
                             stepSize: 1
-                            display: P.TextFieldPreference.ExpandLabel
                         }
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "displayMaskTranslateY"
-                            editable: true
                             defaultValue: 0
                             from: -10000
                             to: 10000
                             stepSize: 1
-                            display: P.TextFieldPreference.ExpandLabel
                         }
                     }
                 }
@@ -116,47 +108,39 @@ Flickable {
                         syncProperties: true
                         enabled: item
                         defaultValue: item
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "displayMaskTranslateScaleHeight"
-                            editable: true
                             defaultValue: 54
                             from: 0
                             to: 10000
                             stepSize: 1
-                            display: P.TextFieldPreference.ExpandLabel
                         }
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "displayMaskTranslateScaleWidth"
-                            editable: true
                             defaultValue: 54
                             from: 0
                             to: 10000
                             stepSize: 1
-                            display: P.TextFieldPreference.ExpandLabel
                         }
                     }
                 }
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "displayMaskTime"
                 label: qsTr("Display Mask Time")
-                editable: true
                 defaultValue: 250
                 from: 0
                 to: 10000
                 stepSize: 50
-                display: P.TextFieldPreference.ExpandLabel
                 visible: usedisplayMask.value
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "hideMaskTime"
                 label: qsTr("Hide Mask Time")
-                editable: true
                 defaultValue: 250
                 from: 0
                 to: 10000
                 stepSize: 50
-                display: P.TextFieldPreference.ExpandLabel
                 visible: usedisplayMask.value
             }
         }

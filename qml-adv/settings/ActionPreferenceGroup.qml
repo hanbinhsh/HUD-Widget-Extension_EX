@@ -53,22 +53,18 @@ Flickable {
             }
             // TODO 悬停动作 （移动，缩放）
             //中心
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "zoomMouse_OriginX"
                 label: qsTr("Origin X")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value
                 defaultValue: 0
                 from: -10000
                 to: 10000
                 stepSize: 10
             }
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "zoomMouse_OriginY"
                 label: qsTr("Origin Y")
-                editable: true
-                display: P.TextFieldPreference.ExpandLabel
                 visible: enableAction.value
                 defaultValue: 0
                 from: -10000
@@ -90,11 +86,9 @@ Flickable {
                     visible: enableAction.value
                 }
                 //距离
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveHover_Distance"
                     label: qsTr("Distance")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&moveOnHover.value
                     defaultValue: 10
                     from: -1000
@@ -102,11 +96,9 @@ Flickable {
                     stepSize: 10
                 }
                 //方向
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveHover_Direction"
                     label: qsTr("Direction")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&moveOnHover.value
                     defaultValue: 0
                     from: -180
@@ -114,11 +106,9 @@ Flickable {
                     stepSize: 5
                 }
                 //持续时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveHover_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&moveOnHover.value
                     defaultValue: 300
                     from: 0
@@ -149,22 +139,18 @@ Flickable {
                     visible: enableAction.value
                 }
                 //大小
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "zoomHover_XSize"
                     label: qsTr("X Scale")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&zoomOnHover.value
                     defaultValue: 100
                     from: -100000
                     to: 100000
                     stepSize: 10
                 }
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "zoomHover_YSize"
                     label: qsTr("Y Scale")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&zoomOnHover.value
                     defaultValue: 100
                     from: -100000
@@ -172,11 +158,9 @@ Flickable {
                     stepSize: 10
                 }
                 //持续时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "zoomHover_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&zoomOnHover.value
                     defaultValue: 300
                     from: 0
@@ -207,11 +191,9 @@ Flickable {
                     visible: enableAction.value
                 }
                 //角度
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "spinHover_Direction"
                     label: qsTr("Direction")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&spinOnHover.value
                     defaultValue: 360
                     from: -3600
@@ -219,11 +201,9 @@ Flickable {
                     stepSize: 180
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "spinHover_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&spinOnHover.value
                     defaultValue: 300
                     from: 0
@@ -256,11 +236,9 @@ Flickable {
                     visible: enableAction.value
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "glimmerHover_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&glimmerOnHover.value
                     defaultValue: 300
                     from: 0
@@ -268,11 +246,9 @@ Flickable {
                     stepSize: 10
                 }
                 //最小透明度
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "glimmerHover_MinOpacity"
                     label: qsTr("Min Opacity")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&glimmerOnHover.value
                     defaultValue: 0
                     from: 0
@@ -304,22 +280,18 @@ Flickable {
                     visible: enableAction.value
                 }
                 //大小
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "zoomClick_XSize"
                     label: qsTr("X Scale")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&zoomOnClick.value
                     defaultValue: 100
                     from: -100000
                     to: 100000
                     stepSize: 10
                 }
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "zoomClick_YSize"
                     label: qsTr("Y Scale")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&zoomOnClick.value
                     defaultValue: 100
                     from: -100000
@@ -327,11 +299,9 @@ Flickable {
                     stepSize: 10
                 }
                 //持续时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "zoomClick_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&zoomOnClick.value
                     defaultValue: 300
                     from: 0
@@ -368,11 +338,9 @@ Flickable {
                     visible: enableAction.value&&spinOnClick.value
                 }
                 //角度
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "spinClick_Direction"
                     label: qsTr("Direction")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&spinOnClick.value
                     defaultValue: 360
                     from: -3600
@@ -380,11 +348,9 @@ Flickable {
                     stepSize: 180
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "spinClick_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&spinOnClick.value
                     defaultValue: 300
                     from: 0
@@ -421,11 +387,9 @@ Flickable {
                     visible: enableAction.value&&moveOnClick.value
                 }
                 //角度
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveClick_Direction"
                     label: qsTr("Direction")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&moveOnClick.value
                     defaultValue: 0
                     from: -360
@@ -433,11 +397,9 @@ Flickable {
                     stepSize: 10
                 }
                 //距离
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveClick_Distance"
                     label: qsTr("Distance")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&moveOnClick.value
                     defaultValue: 10
                     from: -1000
@@ -445,11 +407,9 @@ Flickable {
                     stepSize: 10
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "moveClick_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableAction.value&&moveOnClick.value
                     defaultValue: 300
                     from: 0

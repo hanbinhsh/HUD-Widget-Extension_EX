@@ -48,10 +48,8 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         //缩放原点X
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "scaleOriginX"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: scaleSetting.value
                             defaultValue: 0
                             from: -10000
@@ -59,10 +57,8 @@ Flickable {
                             stepSize: 10
                         }
                         //缩放原点Y
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "scaleOriginY"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: scaleSetting.value
                             defaultValue: 0
                             from: -10000
@@ -81,10 +77,8 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         //x比例 /1000
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "scaleX"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: scaleSetting.value
                             defaultValue: 1000
                             from: -100000
@@ -92,10 +86,8 @@ Flickable {
                             stepSize: 50
                         }
                         //y比例 /1000
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "scaleY"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: scaleSetting.value
                             defaultValue: 1000
                             from: -100000
@@ -125,10 +117,8 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         //X偏移量
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "translateX"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: translateSetting.value
                             defaultValue: 0
                             from: -10000
@@ -147,10 +137,8 @@ Flickable {
                         enabled: item
                         defaultValue: item
                         //Y偏移量
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "translateY"
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: translateSetting.value
                             defaultValue: 0
                             from: -10000
@@ -175,7 +163,7 @@ Flickable {
                     label: qsTr("Opacity Setting")
                 }
                 //透明度
-                P.SliderPreference {
+                SliderPreferenceEx {
                     name: "opacity"
                     label: qsTr("Opacity")
                     displayValue: Math.round(value * 100) + " %"
@@ -183,7 +171,6 @@ Flickable {
                     from: 0
                     to: 1
                     stepSize: 0.01
-                    live: true
                     visible: opacitySettings.value&&!enableOpacityAnimation.value
                 }
                 //透明度动画
@@ -200,11 +187,9 @@ Flickable {
                         visible: opacitySettings.value
                     }
                     //速度
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "opacityAnimationSpeed"
                         label: qsTr("Speed")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: enableOpacityAnimation.value&&opacitySettings.value
                         defaultValue: 500
                         from: 0
@@ -228,7 +213,7 @@ Flickable {
                     label: qsTr("Rotation Setting")
                 }
                 //旋转
-                P.SliderPreference {
+                SliderPreferenceEx {
                     name: "rotation"
                     label: qsTr("Rotation")
                     displayValue: value + " °"
@@ -236,7 +221,6 @@ Flickable {
                     from: -360
                     to: 360
                     stepSize: 1
-                    live: true
                     visible: !rotationDisplay.value&&rotationSettings.value
                 }
                 //旋转动画开关
@@ -253,7 +237,7 @@ Flickable {
                         visible: rotationSettings.value
                     }
                     //转速
-                    P.SliderPreference {
+                    SliderPreferenceEx {
                         id:rotationSpeed
                         name: "rotationSpeed"
                         label: qsTr("Spin Speed")
@@ -262,11 +246,10 @@ Flickable {
                         to: 500
                         stepSize: 1
                         displayValue: value + " RPM"
-                        live: true
                         visible: rotationDisplay.value&&rotationSettings.value
                     }
                     //旋转FPS
-                    P.SliderPreference {
+                    SliderPreferenceEx {
                         id:rotationFPS
                         name: "rotationFPS"
                         label: qsTr("FPS")
@@ -275,7 +258,6 @@ Flickable {
                         to: 240
                         stepSize: 1
                         displayValue: value + " FPS"
-                        live: true
                         visible: rotationDisplay.value&&rotationSettings.value
                     }
                 }
@@ -305,10 +287,8 @@ Flickable {
                                 enabled: item
                                 defaultValue: item
                                 //旋转原点X
-                                P.SpinPreference {
+                                SpinPreferenceEx {
                                     name: "advancedRotationOriginX"
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
                                     visible: enableAdvancedRotation.value&&rotationSettings.value
                                     defaultValue: 0
                                     from: -10000
@@ -316,10 +296,8 @@ Flickable {
                                     stepSize: 1
                                 }
                                 //旋转原点Y
-                                P.SpinPreference {
+                                SpinPreferenceEx {
                                     name: "advancedRotationOriginY"
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
                                     visible: enableAdvancedRotation.value&&rotationSettings.value
                                     defaultValue: 0
                                     from: -10000
@@ -327,10 +305,8 @@ Flickable {
                                     stepSize: 1
                                 }
                                 //角度
-                                P.SpinPreference {
+                                SpinPreferenceEx {
                                     name: "advancedRotationAngle"
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
                                     visible: enableAdvancedRotation.value&&!enableAdvancedRotationAnimation.value&&rotationSettings.value
                                     defaultValue: 0
                                     from: -360
@@ -349,30 +325,24 @@ Flickable {
                                 enabled: item
                                 defaultValue: item
                                 //axis x,y,z
-                                P.SpinPreference {
+                                SpinPreferenceEx {
                                     name: "advancedRotationAxisX"
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
                                     visible: enableAdvancedRotation.value&&rotationSettings.value
                                     defaultValue: 0
                                     from: -10000
                                     to: 10000
                                     stepSize: 1
                                 }
-                                P.SpinPreference {
+                                SpinPreferenceEx {
                                     name: "advancedRotationAxisY"
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
                                     visible: enableAdvancedRotation.value&&rotationSettings.value
                                     defaultValue: 0
                                     from: -10000
                                     to: 10000
                                     stepSize: 1
                                 }
-                                P.SpinPreference {
+                                SpinPreferenceEx {
                                     name: "advancedRotationAxisZ"
-                                    editable: true
-                                    display: P.TextFieldPreference.ExpandLabel
                                     visible: enableAdvancedRotation.value&&rotationSettings.value
                                     defaultValue: 0
                                     from: -10000
@@ -396,11 +366,9 @@ Flickable {
                             visible: enableAdvancedRotation.value&&rotationSettings.value
                         }
                         //速度
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "advancedRotationSpeed"
                             label: qsTr("Speed")
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value
                             defaultValue: 20
                             from: -100
@@ -408,11 +376,9 @@ Flickable {
                             stepSize: 5
                         }
                         //FPS
-                        P.SpinPreference {
+                        SpinPreferenceEx {
                             name: "advancedRotationFPS"
                             label: qsTr("FPS")
-                            editable: true
-                            display: P.TextFieldPreference.ExpandLabel
                             visible: enableAdvancedRotationAnimation.value&&enableAdvancedRotation.value&&rotationSettings.value
                             defaultValue: 20
                             from: 1
@@ -449,11 +415,9 @@ Flickable {
                         visible:cycleAnimation.value
                     }
                     //距离
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveCycle_Distance"
                         label: qsTr("Distance")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: cycleAnimation.value&&cycleMove.value
                         defaultValue: 10
                         from: -1000
@@ -461,11 +425,9 @@ Flickable {
                         stepSize: 10
                     }
                     //方向
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveCycle_Direction"
                         label: qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: cycleAnimation.value&&cycleMove.value
                         defaultValue: 0
                         from: -180
@@ -473,11 +435,9 @@ Flickable {
                         stepSize: 5
                     }
                     //持续时间
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveCycle_Duration"
                         label: qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: cycleAnimation.value&&cycleMove.value
                         defaultValue: 300
                         from: 0
@@ -485,11 +445,9 @@ Flickable {
                         stepSize: 10
                     }
                     //延时
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveCycle_Delay"
                         label: qsTr("Delay")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: cycleAnimation.value&&cycleMove.value
                         defaultValue: 300
                         from: 0
@@ -497,11 +455,9 @@ Flickable {
                         stepSize: 10
                     }
                     //等待时间
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveCycle_Waiting"
                         label: qsTr("Waiting")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: cycleAnimation.value&&cycleMove.value
                         defaultValue: 300
                         from: 0
@@ -545,11 +501,9 @@ Flickable {
                         visible: dataAnimation.value
                     }
                     //距离
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveData_Distance"
                         label: qsTr("Distance")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: dataAnimation.value&&dataAnimation_move.value&&!moveData_Distance_data.value
                         defaultValue: 10
                         from: -1000
@@ -575,11 +529,9 @@ Flickable {
                         }
                     }
                     //方向
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveData_Direction"
                         label: qsTr("Direction")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: dataAnimation.value&&dataAnimation_move.value&&!moveData_Direction_data.value
                         defaultValue: 0
                         from: -180
@@ -605,11 +557,9 @@ Flickable {
                         }
                     }
                     //检测时间
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveData_Trigger"
                         label: qsTr("Trigger Cycle")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: dataAnimation.value&&dataAnimation_move.value
                         defaultValue: 300
                         from: 0
@@ -617,11 +567,9 @@ Flickable {
                         stepSize: 10
                     }
                     //持续时间
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "moveData_Duration"
                         label: qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: dataAnimation.value&&dataAnimation_move.value
                         defaultValue: 300
                         from: 0
@@ -657,11 +605,9 @@ Flickable {
                         visible: dataAnimation.value&&dataAnimation_spin.value
                     }
                     //检测时间
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "spinData_Trigger"
                         label: qsTr("Trigger Cycle")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: dataAnimation.value&&dataAnimation_spin.value
                         defaultValue: 300
                         from: 0
@@ -669,11 +615,9 @@ Flickable {
                         stepSize: 10
                     }
                     //持续时间
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "spinData_Duration"
                         label: qsTr("Duration")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: dataAnimation.value&&dataAnimation_spin.value
                         defaultValue: 300
                         from: 0

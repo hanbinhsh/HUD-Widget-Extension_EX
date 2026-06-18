@@ -86,11 +86,9 @@ P.ObjectPreferenceGroup {
         }
         //方向为3,4时提供的垂直水平角度选项,为4时提供水平/垂直半径
         //水平
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "overallGradientHorizontal"
             label: qsTr("Horizontal")
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: (overallGradientDirection.value==4||overallGradientDirection.value==3)&&enableOverallGradientEffect.value
             defaultValue: 0
             from: -10000
@@ -98,11 +96,9 @@ P.ObjectPreferenceGroup {
             stepSize: 5
         }
         //垂直
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "overallGradientVertical"
             label: qsTr("Vertical")
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: (overallGradientDirection.value==4||overallGradientDirection.value==3)&&enableOverallGradientEffect.value
             defaultValue: 0
             from: -10000
@@ -110,11 +106,9 @@ P.ObjectPreferenceGroup {
             stepSize: 5
         }
         //角度
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "overallGradientAngle"
             label: qsTr("Angle")
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: (overallGradientDirection.value==4||overallGradientDirection.value==3)&&enableOverallGradientEffect.value
             defaultValue: 0
             from: -10000
@@ -122,11 +116,9 @@ P.ObjectPreferenceGroup {
             stepSize: 5
         }
         //水平半径 3
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "overallGradientHorizontalRadius"
             label: qsTr("Horizontal Radius")
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: overallGradientDirection.value==3&&enableOverallGradientEffect.value
             defaultValue: 50
             from: -10000
@@ -134,11 +126,9 @@ P.ObjectPreferenceGroup {
             stepSize: 5
         }
         //垂直半径 3
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "overallGradientVerticalRadius"
             label: qsTr("Vertical Radius")
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: overallGradientDirection.value==3&&enableOverallGradientEffect.value
             defaultValue: 50
             from: -10000
@@ -157,20 +147,16 @@ P.ObjectPreferenceGroup {
                     syncProperties: true
                     defaultValue: itemIn
                     //s.y x轴起始值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "overallGradientStartX"
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         defaultValue: 0
                         from: -10000
                         to: 10000
                         stepSize: 5
                     }
                     //s.y y轴起始值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "overallGradientStartY"
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         defaultValue: 0
                         from: -10000
                         to: 10000
@@ -187,20 +173,16 @@ P.ObjectPreferenceGroup {
                     syncProperties: true
                     defaultValue: itemIn
                     //e.x x轴结束值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "overallGradientEndX"
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         defaultValue: 100
                         from: -10000
                         to: 10000
                         stepSize: 5
                     }
                     //e.y y轴结束值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "overallGradientEndY"
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         defaultValue: 100
                         from: -10000
                         to: 10000
@@ -221,11 +203,9 @@ P.ObjectPreferenceGroup {
             visible: enableOverallGradientEffect.value
             defaultValue: false
         }
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "overallGradientAnimDuration"
             label: qsTr("Duration (ms)") // 动画周期(毫秒)
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: enableOverallGradientEffect.value && enableGradientAnim.value
             defaultValue: 5000 // 默认5秒一圈
             from: 100

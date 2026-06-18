@@ -20,6 +20,11 @@ Item {
     property NVG.SettingsMap settingsTarget
     // 各分组的 enabled 门控（通常 = currentElement / currentItem）
     property var groupEnabled: true
+    // 可选的前置页签：[{ label, component }, ...]。宿主可在内置四页之前插入自有页签（如 Basic），
+    // 从而把宿主特有内容与共享特效页拼成同一行扁平页签，避免再嵌一层 TabBar。
+    property var leadingTabs: []
+    readonly property int leadingCount: leadingTabs.length
+    readonly property var builtinTabLabels: [qsTr("Color"), qsTr("Effects"), qsTr("Blend"), qsTr("Gradient")]
 
     width: parent ? parent.width : 400
     implicitHeight: tabBar.height + contentLoader.height
@@ -32,10 +37,11 @@ Item {
             width: parent.width
             clip: true
             Repeater {
-                model: [qsTr("Color"), qsTr("Effects"), qsTr("Blend"), qsTr("Gradient")]
+                model: panel.leadingTabs.map(function(t){ return t.label; }).concat(panel.builtinTabLabels)
                 TabButton {
                     text: modelData
-                    width: tabBar.width / 4
+                    // 至少按文字本身的宽度撑开（避免被截断成 COL···），有富余时再均分填满
+                    width: Math.max(implicitWidth, tabBar.width / Math.max(1, panel.leadingCount + panel.builtinTabLabels.length))
                 }
             }
         }
@@ -43,10 +49,17 @@ Item {
         Loader {
             id: contentLoader
             width: parent.width
-            sourceComponent: tabBar.currentIndex === 0 ? colorComp
-                           : tabBar.currentIndex === 1 ? effectsComp
-                           : tabBar.currentIndex === 2 ? blendComp
-                           : gradientComp
+            sourceComponent: {
+                var i = tabBar.currentIndex;
+                if (i < panel.leadingCount)
+                    return panel.leadingTabs[i].component;
+                switch (i - panel.leadingCount) {
+                    case 0: return colorComp;
+                    case 1: return effectsComp;
+                    case 2: return blendComp;
+                    default: return gradientComp;
+                }
+            }
         }
     }
 

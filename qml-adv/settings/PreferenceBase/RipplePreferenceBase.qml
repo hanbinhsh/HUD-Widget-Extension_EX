@@ -67,14 +67,12 @@ P.ObjectPreferenceGroup {
             visible: rippleEffectEnabled.value && rippleColorMode.value === 0
         }
     }
-    P.SpinPreference { 
+    SpinPreferenceEx { 
         name: "maxRadius"
         label: qsTr("Max Size (px)")
         from: 0
         to: 10000
         defaultValue: 200
-        editable: true
-        display: P.TextFieldPreference.ExpandLabel
         visible: rippleEffectEnabled.value
     }
     P.ObjectPreferenceGroup {
@@ -91,16 +89,16 @@ P.ObjectPreferenceGroup {
         }
         
         // 多边形专用参数
-        P.SpinPreference { 
+        SpinPreferenceEx {
             name: "ripplePolygonSides"
             label: qsTr("Sides")
             from: 3
             to: 12
             defaultValue: 5
+            editable: false // 原本未设 editable（默认不可手输），基类默认 true，这里覆盖以保持原行为
             visible: rippleEffectEnabled.value && rippleShape.value === 1
-            display: P.TextFieldPreference.ExpandLabel
         }
-        P.SliderPreference { 
+        SliderPreferenceEx { 
             name: "rippleRotation"
             label: qsTr("Rotation")
             from: 0
@@ -108,7 +106,6 @@ P.ObjectPreferenceGroup {
             defaultValue: 0
             visible: rippleEffectEnabled.value && rippleShape.value === 1 && !randomizeRippleRotation.value
             displayValue: value + " °"
-            live: true
             stepSize: 1
         }
         P.SwitchPreference {
@@ -118,16 +115,14 @@ P.ObjectPreferenceGroup {
             defaultValue: false
             visible: rippleEffectEnabled.value && rippleShape.value === 1
         }
-        P.SpinPreference { 
+        SpinPreferenceEx { 
             name: "rippleRotationSpeed"
             label: qsTr("Anim Angle (°)") // 动画期间旋转的角度
             from: -3600
             to: 3600
             defaultValue: 0
-            editable: true
             visible: rippleEffectEnabled.value && rippleShape.value === 1
             stepSize: 5
-            display: P.TextFieldPreference.ExpandLabel
         }
     }
     // --- 样式 (实心/圆环) ---
@@ -143,15 +138,13 @@ P.ObjectPreferenceGroup {
             defaultValue: 0
             visible: rippleEffectEnabled.value
         }
-        P.SpinPreference { 
+        SpinPreferenceEx { 
             name: "strokeWidth"
             label: qsTr("Ring Width")
-            editable: true
             from: 0
             to: 1000
             defaultValue: 2
             visible: rippleStyle.value === 1 && rippleEffectEnabled.value
-            display: P.TextFieldPreference.ExpandLabel
         }
     }
     P.ObjectPreferenceGroup {
@@ -167,39 +160,33 @@ P.ObjectPreferenceGroup {
             visible: rippleEffectEnabled.value
         }
         // 次数
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "rippleBurstCount"
             label: qsTr("Count")
             from: 1
             to: 30
             defaultValue: 3
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: rippleEffectEnabled.value && rippleBurstMode.value
         }
         // 间隔
-        P.SpinPreference {
+        SpinPreferenceEx {
             name: "rippleBurstInterval"
             label: qsTr("Interval (ms)")
             from: 0
             to: 1000
             stepSize: 50
             defaultValue: 150
-            editable: true
-            display: P.TextFieldPreference.ExpandLabel
             visible: rippleEffectEnabled.value && rippleBurstMode.value
         }
     }
     // --- 动画 ---
-    P.SpinPreference { 
+    SpinPreferenceEx { 
         name: "duration"
         label: qsTr("Duration (ms)")
         defaultValue: 600
         from: 0
         to: 10000
         stepSize: 100
-        editable: true
-        display: P.TextFieldPreference.ExpandLabel
         visible: rippleEffectEnabled.value
     }
     P.SwitchPreference {

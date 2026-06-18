@@ -268,13 +268,12 @@ NVG.Window {
                         defaultValue: widget.craftSettings
                         syncProperties: true
                         //部件设置界面的网格大小设置
-                        P.SliderPreference {
+                        SliderPreferenceEx {
                             name: "grid"
                             label: qsTr("Grid Size")
                             stepSize: 1
                             from: 5                      //5
                             to: 100                      //20
-                            live: true
                             defaultValue: 10
                             displayValue: value + " px"
                         }

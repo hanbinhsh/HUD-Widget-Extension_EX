@@ -71,48 +71,40 @@ Flickable {
             }
             P.Separator{}
             //显示时间
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "displayTime"
                 label: qsTr("Display Time")
-                editable: true
                 defaultValue: 250
                 from: 0
                 to: 10000
                 stepSize: 50
-                display: P.TextFieldPreference.ExpandLabel
             }
             //隐藏时间
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "hideTime"
                 label: qsTr("Hide Time")
-                editable: true
                 defaultValue: 250
                 from: 0
                 to: 10000
                 stepSize: 50
-                display: P.TextFieldPreference.ExpandLabel
             }
             //显示前暂停
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "showPauseTime"
                 label: qsTr("Display Pause Time")
-                editable: true
                 defaultValue: 0
                 from: 0
                 to: 10000
                 stepSize: 50
-                display: P.TextFieldPreference.ExpandLabel
             }
             //隐藏前暂停
-            P.SpinPreference {
+            SpinPreferenceEx {
                 name: "hidePauseTime"
                 label: qsTr("Hide Pause Time")
-                editable: true
                 defaultValue: 0
                 from: 0
                 to: 10000
                 stepSize: 50
-                display: P.TextFieldPreference.ExpandLabel
             }
             P.Separator{}
         //显示动画
@@ -128,11 +120,9 @@ Flickable {
                     label: qsTr("Enable Show Animation")
                 }
                 //角度
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_Direction"
                     label: qsTr("Direction")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableShowAnimation.value
                     defaultValue: 0
                     from: -360
@@ -140,11 +130,9 @@ Flickable {
                     stepSize: 10
                 }
                 //距离
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_Distance"
                     label: qsTr("Distance")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableShowAnimation.value
                     defaultValue: 10
                     from: -1000
@@ -152,11 +140,9 @@ Flickable {
                     stepSize: 10
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_Duration"
                     label: qsTr("Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableShowAnimation.value
                     defaultValue: 300
                     from: 0
@@ -205,11 +191,9 @@ Flickable {
                     }
                     //高级设置 5
                     //s.x x轴起始值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionAdvancedStartX"
                         label: qsTr("Start X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
                         defaultValue: 0
                         from: -10000
@@ -217,11 +201,9 @@ Flickable {
                         stepSize: 5
                     }
                     //s.y y轴起始值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionAdvancedStartY"
                         label: qsTr("Start Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
                         defaultValue: 0
                         from: -10000
@@ -229,11 +211,9 @@ Flickable {
                         stepSize: 5
                     }
                     //e.x x轴结束值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionAdvancedEndX"
                         label: qsTr("End X")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
                         defaultValue: 100
                         from: -10000
@@ -241,11 +221,9 @@ Flickable {
                         stepSize: 5
                     }
                     //e.y y轴结束值
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionAdvancedEndY"
                         label: qsTr("End Y")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: fadeTransitionDirect.value==5&&enableFadeTransition.value
                         defaultValue: 100
                         from: -10000
@@ -254,11 +232,9 @@ Flickable {
                     }
                     //方向为3,4时提供的垂直水平角度选项,为4时提供水平/垂直半径
                     //水平
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionHorizontal"
                         label: qsTr("Horizontal")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: (fadeTransitionDirect.value==4||fadeTransitionDirect.value==3)&&enableFadeTransition.value
                         defaultValue: 0
                         from: -10000
@@ -266,11 +242,9 @@ Flickable {
                         stepSize: 5
                     }
                     //垂直
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionVertical"
                         label: qsTr("Vertical")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: (fadeTransitionDirect.value==4||fadeTransitionDirect.value==3)&&enableFadeTransition.value
                         defaultValue: 0
                         from: -10000
@@ -278,11 +252,9 @@ Flickable {
                         stepSize: 5
                     }
                     //角度
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionAngle"
                         label: qsTr("Angle")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: (fadeTransitionDirect.value==4||fadeTransitionDirect.value==3)&&enableFadeTransition.value
                         defaultValue: 0
                         from: -10000
@@ -290,11 +262,9 @@ Flickable {
                         stepSize: 5
                     }
                     //水平半径 3
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionHorizontalRadius"
                         label: qsTr("Horizontal Radius")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: fadeTransitionDirect.value==3&&enableFadeTransition.value
                         defaultValue: 50
                         from: -10000
@@ -302,11 +272,9 @@ Flickable {
                         stepSize: 5
                     }
                     //垂直半径 3
-                    P.SpinPreference {
+                    SpinPreferenceEx {
                         name: "fadeTransitionVerticalRadius"
                         label: qsTr("Vertical Radius")
-                        editable: true
-                        display: P.TextFieldPreference.ExpandLabel
                         visible: fadeTransitionDirect.value==3&&enableFadeTransition.value
                         defaultValue: 50
                         from: -10000
@@ -316,11 +284,9 @@ Flickable {
                 }
                 //上方控制动画形状
                 //渐变开始 开始值
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "fadeTransition_sta_start"
                     label: qsTr("Start Edge Start")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 0
                     from: -100000
@@ -328,11 +294,9 @@ Flickable {
                     stepSize: 100
                 }
                 //渐变开始 结束值
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "fadeTransition_sta_end"
                     label: qsTr("Start Edge End")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 0
                     from: -100000
@@ -340,11 +304,9 @@ Flickable {
                     stepSize: 100
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_sta_Duration"
                     label: qsTr("Start Edge Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 250
                     from: 0
@@ -352,11 +314,9 @@ Flickable {
                     stepSize: 50
                 }
                 //渐变结束 开始值
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "fadeTransition_end_start"
                     label: qsTr("End Edge Start")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 1500
                     from: -100000
@@ -364,11 +324,9 @@ Flickable {
                     stepSize: 100
                 }
                 //渐变开始 结束值
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "fadeTransition_end_end"
                     label: qsTr("End Edge End")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 0
                     from: -100000
@@ -376,11 +334,9 @@ Flickable {
                     stepSize: 100
                 }
                 //时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_end_Duration"
                     label: qsTr("End Edge Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 250
                     from: 0
@@ -388,11 +344,9 @@ Flickable {
                     stepSize: 50
                 }
                 //动画结束时间
-                P.SpinPreference {
+                SpinPreferenceEx {
                     name: "showAnimation_fade_Duration"
                     label: qsTr("End Duration")
-                    editable: true
-                    display: P.TextFieldPreference.ExpandLabel
                     visible: enableFadeTransition.value
                     defaultValue: 100
                     from: 0
