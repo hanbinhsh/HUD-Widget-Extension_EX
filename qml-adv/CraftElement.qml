@@ -273,10 +273,8 @@ CraftDelegate {
 
         // --- 悬停进入 ---
         onEntered: {
-            if (widget.editing) {
-                if (view) view.currentTarget = craftElement
-                return;
-            }
+            // 编辑态：仅抑制悬停动画，不在悬停时选中（选中走点击，避免带悬停特效的元素一划过就被选中）
+            if (widget.editing) return;
             animator.hoverEnter()
         }
 

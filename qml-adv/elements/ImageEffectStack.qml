@@ -65,6 +65,7 @@ Item {
         visible:settings.colorOverlay ?? false
         anchors.fill: parent
         source: settings.colorOverlay ? sourceItem : null
+        opacity: (settings.colorOverlayOpacity ?? 100)/100
         color: {
         if (stack.itemPressed && pressedColor.a)
             return pressedColor;
@@ -77,6 +78,7 @@ Item {
     BrightnessContrast {
         anchors.fill: parent
         source: settings.changeBrightnessContrast ? sourceItem : null
+        opacity: (settings.changeBrightnessContrastOpacity ?? 100)/100
         visible: settings.changeBrightnessContrast ?? false
         brightness: (settings.brightness ?? 0)/100//亮度
         contrast: (settings.contrast ?? 0)/100//对比度
@@ -86,6 +88,7 @@ Item {
     Colorize {
         anchors.fill: parent
         source: settings.colorize ? sourceItem : null
+        opacity: (settings.colorizeOpacity ?? 100)/100
         visible: settings.colorize ?? false
         hue: (settings.colorizeHue ?? 0)/100
         saturation: (settings.colorizeSaturation ?? 100)/100
@@ -96,6 +99,7 @@ Item {
     Desaturate {
         anchors.fill: parent
         source: settings.desaturate ? sourceItem : null
+        opacity: (settings.desaturateOpacity ?? 100)/100
         visible: settings.desaturate ?? false
         desaturation: (settings.desaturation ?? 0)/100
         cached: settings.desaturateCached ?? false
@@ -104,6 +108,7 @@ Item {
     GammaAdjust {
         anchors.fill: parent
         source: settings.gammaAdjust ? sourceItem : null
+        opacity: (settings.gammaAdjustOpacity ?? 100)/100
         visible: settings.gammaAdjust ?? false
         gamma: (settings.gamma ?? 1000)/1000
         cached: settings.gammaCached ?? false
@@ -112,6 +117,7 @@ Item {
     HueSaturation {
         anchors.fill: parent
         source: settings.hueSaturation ? sourceItem : null
+        opacity: (settings.hueSaturationOpacity ?? 100)/100
         visible: settings.hueSaturation ?? false
         hue: (settings.hueSaturationHue ?? 0)/100
         saturation: (settings.hueSaturationSaturation ?? 0)/100
@@ -122,6 +128,7 @@ Item {
     LevelAdjust {
         anchors.fill: parent
         source: settings.levelAdjust ? sourceItem : null
+        opacity: (settings.levelAdjustOpacity ?? 100)/100
         visible: settings.levelAdjust ?? false
         gamma : Qt.vector3d((settings.levelAdjustGammaX ?? 100)/100, (settings.levelAdjustGammaY ?? 100)/100, (settings.levelAdjustGammaZ ?? 100)/100)
         maximumInput : maxInput
@@ -141,6 +148,7 @@ Item {
 
             // [优化] 绑定常驻对象
             gradient: stack.gradient
+            opacity: (settings.colorGradientOpacity ?? 100)/100
 
             start: {
                 switch (settings.animationDirect ?? 0) {
@@ -180,6 +188,7 @@ Item {
 
             // [优化] 绑定常驻对象
             gradient: stack.gradient
+            opacity: (settings.colorGradientOpacity ?? 100)/100
         }
 
         // 颜色动画选项 5 (Conical)
@@ -194,11 +203,13 @@ Item {
 
             // [优化] 绑定常驻对象
             gradient: stack.gradient
+            opacity: (settings.colorGradientOpacity ?? 100)/100
         }
 //发光
     Glow {
         anchors.fill: parent
         source: settings.enableGlow ? sourceItem : null
+        opacity: (settings.enableGlowOpacity ?? 100)/100
         visible: settings.enableGlow ?? false
         cached: settings.glowCache ?? false//缓存
         radius: settings.glowRadius ?? 5//作用范围
@@ -212,6 +223,7 @@ Item {
     DropShadow {
         anchors.fill: parent
         source: settings.enableDropShadow ? sourceItem : null
+        opacity: (settings.enableDropShadowOpacity ?? 100)/100
         visible: settings.enableDropShadow ?? false
         color: settings.dropShadowColor ?? "white"//颜色
         radius: settings.dropShadowRadius ?? 5//半径
@@ -225,6 +237,7 @@ Item {
     InnerShadow {
         anchors.fill: parent
         source: settings.enableInnerShadow ? sourceItem : null
+        opacity: (settings.enableInnerShadowOpacity ?? 100)/100
         visible: settings.enableInnerShadow ?? false
         color: settings.innerShadowColor ?? "white"//颜色
         radius: settings.innerShadowRadius ?? 5//半径
@@ -239,6 +252,7 @@ Item {
         FastBlur {
             anchors.fill: parent
             source: settings.fastBlur ? sourceItem : null
+            opacity: (settings.fastBlurOpacity ?? 100)/100
             visible: settings.fastBlur ?? false
             radius: settings.fastBlurRadius ?? 5//半径
             transparentBorder: settings.fastBlurTransparentBorder ?? false//透明边框
@@ -248,6 +262,7 @@ Item {
         GaussianBlur {
             anchors.fill: parent
             source: settings.gaussianBlur ? sourceItem : null
+            opacity: (settings.gaussianBlurOpacity ?? 100)/100
             visible: settings.gaussianBlur ?? false
             radius: settings.gaussianBlurRadius ?? 5//半径
             deviation: settings.gaussianBlurDeviation ?? 3//偏差值
@@ -271,6 +286,7 @@ Item {
         MaskedBlur {
             anchors.fill: parent
             source: settings.maskedBlur ? sourceItem : null
+            opacity: (settings.maskedBlurOpacity ?? 100)/100
             visible: settings.maskedBlur ?? false
             maskSource: maskedBlurIamge//遮罩源
             radius: settings.maskedBlurRadius ?? 0
@@ -281,6 +297,7 @@ Item {
         RecursiveBlur {
             anchors.fill: parent
             source: settings.recursiveBlur ? sourceItem : null
+            opacity: (settings.recursiveBlurOpacity ?? 100)/100
             visible: settings.recursiveBlur ?? false
             loops : settings.recursiveBlurLoops ?? 0
             progress : settings.recursiveBlurProgress ?? 1
@@ -293,6 +310,7 @@ Item {
         DirectionalBlur {
             anchors.fill: parent
             source : settings.directionalBlur ? sourceItem : null
+            opacity: (settings.directionalBlurOpacity ?? 100)/100
             visible: settings.directionalBlur ?? false
             angle : settings.directionalBlurAngle ?? 0//角度
             length : settings.directionalBlurLength ?? 0//长度
@@ -304,6 +322,7 @@ Item {
         RadialBlur {
             anchors.fill: parent
             source: settings.radialBlur ? sourceItem : null
+            opacity: (settings.radialBlurOpacity ?? 100)/100
             visible: settings.radialBlur ?? false
             angle: settings.radialBlurAngle ?? 0
             horizontalOffset: settings.radialBlurHorizontalOffset ?? 0
@@ -316,6 +335,7 @@ Item {
         ZoomBlur {
             anchors.fill: parent
             source: settings.zoomBlur ? sourceItem : null
+            opacity: (settings.zoomBlurOpacity ?? 100)/100
             visible: settings.zoomBlur ?? false
             horizontalOffset: settings.zoomBlurHorizontalOffset ?? 0
             verticalOffset: settings.zoomBlurVerticalOffset ?? 0
@@ -340,6 +360,7 @@ Item {
     Blend {
         anchors.fill: parent
         source: settings.enableBlend ? sourceItem : null
+        opacity: (settings.enableBlendOpacity ?? 100)/100
         visible: settings.enableBlend ?? false
         //遮罩图像
         foregroundSource: blendImageSource
@@ -391,6 +412,7 @@ Item {
     OpacityMask {
         anchors.fill: parent
         source: settings.enableOpacityMask ? sourceItem : null
+        opacity: (settings.enableOpacityMaskOpacity ?? 100)/100
         visible: settings.enableOpacityMask ?? false
         maskSource: opacityMaskImageSource//遮罩来源
         invert: settings.opacityMaskInvert ?? false//反转
@@ -413,6 +435,7 @@ Item {
     ThresholdMask {
         anchors.fill: parent
         source: settings.enableThresholdMask ? sourceItem : null
+        opacity: (settings.enableThresholdMaskOpacity ?? 100)/100
         visible: settings.enableThresholdMask ?? false
         maskSource: thresholdMaskImageSource//来源
         threshold: (settings.thresholdMaskSourceThreshold ?? 50)/100//阔值
@@ -435,6 +458,7 @@ Item {
     Displace {
         anchors.fill: parent
         source: settings.enableDisplace ? sourceItem : null
+        opacity: (settings.enableDisplaceOpacity ?? 100)/100
         visible: settings.enableDisplace ?? false
         displacementSource: displaceImageSource
         displacement: settings.displacement ?? 50

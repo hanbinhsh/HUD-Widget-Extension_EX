@@ -38,6 +38,16 @@ P.ObjectPreferenceGroup {
         name: "colorGradient"
         label: qsTr("Color Gradient")
     }
+    //渐变效果图层透明度（与其他特效的 Opacity 一致；区别于下方 cycleColor 颜色自身的 alpha）
+    SliderPreferenceEx {
+        name: "colorGradientOpacity"
+        label: qsTr("Opacity")
+        defaultValue: 100
+        from: 0
+        to: 100
+        displayValue: value + " %"
+        visible: colorGradient.value
+    }
     //渐变方向
     P.ObjectPreferenceGroup {
         defaultValue: root.settingsTarget

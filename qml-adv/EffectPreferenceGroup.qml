@@ -51,4 +51,16 @@ P.ObjectPreferenceGroup {
         label: group.switchLabel
         defaultValue: group.switchDefault
     }
+    // 统一的特效图层透明度（0~100%）。键名固定为 <switchName>Opacity，
+    // 渲染侧 ImageEffectStack 对每个特效按 (settings.<switchName>Opacity ?? 100)/100 应用。
+    // 默认 100% 不改变原观感；调低则让该特效与下方图层/原图混合而非完全覆盖。
+    EffectSliderPreference {
+        owner: group
+        name: group.switchName + "Opacity"
+        label: qsTr("Opacity")
+        defaultValue: 100
+        from: 0
+        to: 100
+        displayValue: value + " %"
+    }
 }
