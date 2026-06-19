@@ -292,6 +292,11 @@ NVG.Window {
                     RipplePreferenceGroupW{
                         item: widget.defaultSettings
                     }
+                    // 完整图形特效（widget 层，写入 defaultSettings.advancedEffect）
+                    AdvancedEffectPreferenceContent {
+                        width: parent.width
+                        item: widget.defaultSettings
+                    }
                 }
                 //选择编辑的部件
                 CraftDelegateSelector {
@@ -342,6 +347,7 @@ NVG.Window {
                                     case 0: return layoutColorSetting.contentHeight + baseH;
                                     case 1: return displayMaskSetting.contentHeight + baseH;
                                     case 2: return layoutADVSetting.contentHeight + baseH;
+                                    case 3: return advancedSetting.contentHeight + baseH;
                                 }
                             } else {
                                 // 第一行 Tab 的高度计算
@@ -382,10 +388,10 @@ NVG.Window {
                                 visible: elemBar.currentIndex === 4
                                 clip: true
                                 Repeater {
-                                    model: [qsTr("Color"), qsTr("Display Mask"), qsTr("ADV")]
+                                    model: [qsTr("Color"), qsTr("Display Mask"), qsTr("ADV"), qsTr("Advanced")]
                                     TabButton {
                                         text: modelData
-                                        width: Math.max(100, othersBar.width / 3)
+                                        width: Math.max(100, othersBar.width / 4)
                                     }
                                 }
                             }
@@ -453,6 +459,13 @@ NVG.Window {
                                         ADVPreferenceGroup {
                                             item: currentItem
                                             id: layoutADVSetting
+                                        }
+                                    }
+                                    // Others -> Index 3: Advanced (完整图形特效，物品层)
+                                    Item {
+                                        AdvancedEffectPreferenceGroup {
+                                            item: currentItem
+                                            id: advancedSetting
                                         }
                                     }
                                 }

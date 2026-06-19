@@ -301,12 +301,14 @@ CraftDelegate {
                     mouse.accepted = false;
                     return;
                 }
-                // 1.1 触发涟漪
-                if (widget.defaultSettings && widget.defaultSettings.rippleEffectEnabled) {
-                    if (widget) {
-                        var mappedPos = mapToItem(widget, mouse.x, mouse.y);
-                        widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);
+                // 1.1 触发涟漪（涟漪仅为视觉效果，任何异常都不得中断点击/动作触发）
+                try {
+                    if (widget.defaultSettings && widget.defaultSettings.rippleEffectEnabled
+                            && typeof widget.triggerGlobalRipple === "function") {
+                        widget.triggerGlobalRipple(interactionMouseArea, mouse.x, mouse.y);
                     }
+                } catch (rippleErr) {
+                    console.log("[CraftElement] ripple trigger skipped:", rippleErr);
                 }
             }
 

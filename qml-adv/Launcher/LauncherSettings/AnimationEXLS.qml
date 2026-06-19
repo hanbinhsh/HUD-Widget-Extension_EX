@@ -8,6 +8,7 @@ import NERvGear.Preferences 1.0 as P
 import QtQuick.Window 2.2
 
 import "../.."
+import "../../settings"
 
 Flickable {
     property var current_default: eXLauncherView.eXLSettings
@@ -188,6 +189,12 @@ Flickable {
                     stepSize: 10
                 }
             }
+        }
+        // 点击涟漪效果（仅启动器级动画页显示，写入 eXLSettings；供 CraftElement 触发）
+        RipplePreferenceGroupW {
+            visible: is_default
+            width: parent.width
+            item: current_default
         }
     }
 }

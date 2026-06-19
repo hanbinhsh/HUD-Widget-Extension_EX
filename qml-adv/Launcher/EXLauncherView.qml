@@ -29,6 +29,8 @@ NVG.View {
     property NVG.SettingsMap eXLSettings: NVG.Settings.load("com.hanbinhsh.widget.hud_edit", "eXLSettings", eXLauncherView);
     readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
     readonly property var widget: eXLauncherView
+    // 涟漪等 widget 级设置统一指向 eXLSettings（供 CraftElement 的 widget.defaultSettings 检查 + 涟漪面板写入）
+    readonly property var defaultSettings: eXLSettings
     readonly property bool editing: dialog.item?.visible ?? false
     
     Component.onCompleted: {
@@ -67,6 +69,14 @@ NVG.View {
         readonly property bool exposed: isVisible
         readonly property bool editing: isVisible
     }
+    //////////////////////////////////Ripple//////////////////////////////////
+    // 复用 HUD 的全局涟漪控制器，使启动器也能触发涟漪（CraftElement 会调用 widget.triggerGlobalRipple）
+    GlobalRippleController {
+        id: globalRipple
+        settings: eXLauncherView.defaultSettings
+        maskItem: eXLItemView
+    }
+    function triggerGlobalRipple(srcItem, x, y) { globalRipple.triggerFromItem(srcItem, x, y) }
     //////////////////////////////////Actions//////////////////////////////////
     MouseArea {
         anchors.fill: parent

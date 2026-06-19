@@ -49,7 +49,7 @@ P.ObjectPreferenceGroup {
     // --- [新增] 颜色设置 ---
     P.ObjectPreferenceGroup {
         data: PreferenceGroupIndicator { toggle: rippleColorMode; level: 2 }
-        defaultValue: widget.defaultSettings
+        defaultValue: control.itemIn
         syncProperties: true
         P.SelectPreference {
             id: rippleColorMode
@@ -77,7 +77,7 @@ P.ObjectPreferenceGroup {
     }
     P.ObjectPreferenceGroup {
         data: PreferenceGroupIndicator { toggle: rippleShape; level: 2 }
-        defaultValue: widget.defaultSettings
+        defaultValue: control.itemIn
         syncProperties: true
         P.SelectPreference { 
             id: rippleShape
@@ -128,7 +128,7 @@ P.ObjectPreferenceGroup {
     // --- 样式 (实心/圆环) ---
     P.ObjectPreferenceGroup {
         data: PreferenceGroupIndicator { toggle: rippleStyle; level: 2 }
-        defaultValue: widget.defaultSettings
+        defaultValue: control.itemIn
         syncProperties: true
         P.SelectPreference { 
             id: rippleStyle
@@ -149,7 +149,7 @@ P.ObjectPreferenceGroup {
     }
     P.ObjectPreferenceGroup {
         data: PreferenceGroupIndicator { toggle: rippleBurstMode; level: 2 }
-        defaultValue: widget.defaultSettings
+        defaultValue: control.itemIn
         syncProperties: true
         // --- 多重触发 (Burst Mode) ---
         P.SwitchPreference {
@@ -196,7 +196,7 @@ P.ObjectPreferenceGroup {
         visible: rippleEffectEnabled.value
     }
     EasingConfigurator{
-        item: widget.defaultSettings
+        item: control.itemIn
         namePrefix: "ripple_"
         level: 2
         visible: rippleEffectEnabled.value

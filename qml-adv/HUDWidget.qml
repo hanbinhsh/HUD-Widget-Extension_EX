@@ -5,6 +5,7 @@ import NERvGear 1.0 as NVG
 import NERvGear.Templates 1.0 as T
 
 import "Launcher" as LC
+import "elements"
 
 import "utils.js" as Utils
 
@@ -20,6 +21,10 @@ T.Widget {
     readonly property var initialEnvironment: Utils.widgetEnvironment(ctx_widget)
     readonly property var initialFont: ({ family: "Source Han Sans SC", pixelSize: 24 })
     readonly property string defaultItemInteraction: defaultSettings.interaction ?? ""
+
+    // widget 层高级特效（独立于整体渐变/涟漪，键写入 defaultSettings.advancedEffect）
+    readonly property NVG.SettingsMap advancedEffectSettings: defaultSettings.advancedEffect ?? null
+    readonly property bool advancedEffectEnabled: Boolean(advancedEffectSettings?.enabled)
 
     readonly property Item interactionItem: makeInteractionItem(widget, settings, "interactionItem_NB")
     readonly property var hoverHandlers: new Map
@@ -63,264 +68,13 @@ T.Widget {
     }
     // --- 颜色渐变结束
 
-    // --- 涟漪效果实现 ---
-    Timer {
-        id: burstTimer
-        property real targetX: 0
-        property real targetY: 0
-        property int remainingCount: 0
-        
-        repeat: true
-        // 只有当开启涟漪且剩余次数大于0时才触发
-        onTriggered: {
-            if (remainingCount > 0) {
-                internalCreateRipple(targetX, targetY);
-                remainingCount--;
-            } else {
-                stop();
-            }
-        }
+    // --- 涟漪效果（已抽到 GlobalRippleController.qml，与 EX 启动器共用）---
+    GlobalRippleController {
+        id: globalRipple
+        settings: widget.defaultSettings
+        maskItem: itemView
     }
-    // 1. 涟漪逻辑控制
-    function triggerGlobalRipple(x, y) {
-        // 1. 立即生成第一个涟漪
-        internalCreateRipple(x, y);
-
-        // 2. 如果开启了连发模式
-        if (defaultSettings.rippleBurstMode) {
-            // 配置定时器参数
-            burstTimer.targetX = x;
-            burstTimer.targetY = y;
-            // 剩余次数 = 总次数 - 1 (因为刚刚已经生成了一个)
-            burstTimer.remainingCount = (defaultSettings.rippleBurstCount ?? 3) - 1;
-            burstTimer.interval = defaultSettings.rippleBurstInterval ?? 150;
-            burstTimer.restart(); // 重置并启动
-        }
-    }
-
-    function internalCreateRipple(x, y) {
-        if (globalRippleComponent.status === Component.Ready) {
-            
-            // 颜色逻辑 (每次生成都重新计算，这样如果是随机颜色，连发的每一个颜色都不一样)
-            var finalColor = defaultSettings.rippleColor ?? "#40FFFFFF";
-            if (defaultSettings.rippleColorMode === 1) { 
-                finalColor = Qt.hsla(Math.random(), 0.8, 0.6, 1.0);
-            }
-            
-            var bezier = [
-                (defaultSettings.ripple_bezierX1 ?? 25) / 100.0,
-                (defaultSettings.ripple_bezierY1 ?? 10) / 100.0,
-                (defaultSettings.ripple_bezierX2 ?? 25) / 100.0,
-                (defaultSettings.ripple_bezierY2 ?? 100) / 100.0,
-                1, 1
-            ];
-
-            // 动态创建涟漪对象
-            var ripple = globalRippleComponent.createObject(rippleContainer, {
-                "centerX": x, 
-                "centerY": y,
-                "color": finalColor,
-                "maxRadius": defaultSettings.maxRadius ?? 200,
-                "duration": defaultSettings.duration ?? 600,
-                
-                // 缓动参数
-                "easingType": defaultSettings.ripple_easingType ?? 1,
-                "easingAmplitude": (defaultSettings.ripple_easingAmplitude ?? 100) / 100.0,
-                "easingOvershoot": (defaultSettings.ripple_easingOvershoot ?? 170) / 100.0,
-                "easingPeriod": (defaultSettings.ripple_easingPeriod ?? 30) / 100.0,
-                "easingBezier": bezier,
-
-                "styleMode": defaultSettings.rippleStyle ?? 0, 
-                "strokeWidth": defaultSettings.strokeWidth ?? 2,
-                "shapeType": defaultSettings.rippleShape ?? 0, 
-                "sides": defaultSettings.ripplePolygonSides ?? 5,
-                "baseRotation": defaultSettings.rippleRotation ?? 0,
-                "randomizeRotation": defaultSettings.randomizeRippleRotation ?? false,
-                "rotationOffset": defaultSettings.rippleRotationSpeed ?? 0,
-                "shrinkMode": defaultSettings.rippleShrinkMode ?? false,
-            });
-        }
-    }
-
-    // 2. 涟漪显示层
-    Item {
-        id: globalRippleOverlay
-        anchors.fill: parent
-        z: 9999 
-        visible: defaultSettings.rippleEffectEnabled ?? false
-        enabled: false 
-
-        layer.enabled: defaultSettings.globalRippleMaskToContent ?? false
-        layer.samplerName: "maskSource"
-        layer.effect: OpacityMask {
-            anchors.fill: parent
-            source: rippleContainer
-            maskSource: itemView 
-        }
-
-        Item {
-            id: rippleContainer
-            anchors.fill: parent
-            clip: !(defaultSettings.globalRippleMaskToContent ?? false)
-        }
-    }
-
-    // 3. 涟漪个体组件
-    Component {
-        id: globalRippleComponent
-        Item {
-            id: rippleItem
-            
-            // --- 基础参数 ---
-            property real centerX: 0
-            property real centerY: 0
-            property color color: "white"
-            property real maxRadius: 100
-            property int duration: 600
-            
-            // --- 缓动参数 ---
-            property int easingType: Easing.OutQuad
-            property real easingAmplitude: 1.0
-            property real easingOvershoot: 1.7
-            property real easingPeriod: 0.3
-            property var easingBezier: [0.25, 0.1, 0.25, 1.0, 1, 1]
-
-            // --- 样式与特效 ---
-            property int styleMode: 0
-            property int strokeWidth: 2
-            property int shapeType: 0
-            property int sides: 5
-            property real baseRotation: 0
-            property real currentRadius: 0
-            property real currentOpacity: 1.0
-            property bool shrinkMode: false
-            property bool randomizeRotation: false
-            property real rotationOffset: 0
-            property real startRotation: randomizeRotation ? Math.random() * 360 : baseRotation
-            property real currentRotation: startRotation
-            
-            width: maxRadius * 2
-            height: maxRadius * 2
-            x: centerX - maxRadius
-            y: centerY - maxRadius
-
-            // --- 绘图逻辑 (Canvas) ---
-            Canvas {
-                id: rCanvas
-                anchors.fill: parent
-                renderStrategy: Canvas.Immediate
-                renderTarget: Canvas.Image
-
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-                    
-                    var alpha = rippleItem.currentOpacity;
-                    if (alpha <= 0.01) return;
-                    
-                    ctx.globalAlpha = alpha;
-                    drawShape(ctx, rippleItem.currentRadius, rippleItem.color);
-                    ctx.globalAlpha = 1.0;
-                }
-
-                function drawShape(ctx, r, paintColor) {
-                    if (r <= 0) return;
-                    ctx.beginPath();
-                    if (rippleItem.shapeType === 0) {
-                        ctx.arc(width/2, height/2, r, 0, 2 * Math.PI);
-                    } else {
-                        var cx = width / 2;
-                        var cy = height / 2;
-                        var sides = Math.max(3, rippleItem.sides);
-                        var angleStep = (2 * Math.PI) / sides;
-                        var rotRad = (rippleItem.currentRotation - 90) * Math.PI / 180;
-                        for (var i = 0; i < sides; i++) {
-                            var theta = i * angleStep + rotRad;
-                            var px = cx + r * Math.cos(theta);
-                            var py = cy + r * Math.sin(theta);
-                            if (i === 0) ctx.moveTo(px, py);
-                            else ctx.lineTo(px, py);
-                        }
-                        ctx.closePath();
-                    }
-                    if (rippleItem.styleMode === 0) { 
-                        ctx.fillStyle = paintColor; ctx.fill(); 
-                    } else { 
-                        ctx.strokeStyle = paintColor; ctx.lineWidth = rippleItem.strokeWidth; ctx.stroke(); 
-                    }
-                }
-            }
-
-            onCurrentRadiusChanged: rCanvas.requestPaint()
-            onCurrentOpacityChanged: rCanvas.requestPaint()
-
-            // --- 动画逻辑 ---
-            
-            // 1. 在组件创建完成时，动态配置动画参数并启动
-            Component.onCompleted: {
-                // 配置半径动画的缓动参数
-                setupEasing(radiusAnim);
-                // 启动动画
-                anim.start();
-            }
-
-            // 辅助函数：只设置需要的参数
-            function setupEasing(animation) {
-                animation.easing.type = rippleItem.easingType;
-
-                // 贝塞尔曲线 (Type 41)
-                if (rippleItem.easingType === Easing.BezierSpline) {
-                    animation.easing.bezierCurve = rippleItem.easingBezier;
-                } 
-                // Elastic (29-32) & Bounce (37-40) -> 需要 Amplitude
-                else if ((rippleItem.easingType >= 29 && rippleItem.easingType <= 32) || 
-                         (rippleItem.easingType >= 37 && rippleItem.easingType <= 40)) {
-                    animation.easing.amplitude = rippleItem.easingAmplitude;
-                    // Elastic 还需要 Period
-                    if (rippleItem.easingType <= 32) {
-                        animation.easing.period = rippleItem.easingPeriod;
-                    }
-                }
-                // Back (33-36) -> 需要 Overshoot
-                else if (rippleItem.easingType >= 33 && rippleItem.easingType <= 36) {
-                    animation.easing.overshoot = rippleItem.easingOvershoot;
-                }
-            }
-
-            ParallelAnimation {
-                id: anim
-                running: false // [修改] 默认为 false，由 onCompleted 启动
-                onFinished: rippleItem.destroy()
-
-                NumberAnimation { 
-                    id: radiusAnim
-                    target: rippleItem
-                    property: "currentRadius"
-                    from: rippleItem.shrinkMode ? rippleItem.maxRadius : 0
-                    to:   rippleItem.shrinkMode ? 0 : rippleItem.maxRadius
-                    duration: rippleItem.duration
-                }
-
-                NumberAnimation { 
-                    target: rippleItem
-                    property: "currentOpacity"
-                    from: rippleItem.shrinkMode ? 0.0 : 1.0
-                    to:   rippleItem.shrinkMode ? 1.0 : 0.0
-                    duration: rippleItem.duration
-                    easing.type: rippleItem.shrinkMode ? Easing.InQuad : Easing.OutQuad 
-                }
-
-                NumberAnimation {
-                    target: rippleItem
-                    property: "currentRotation"
-                    from: rippleItem.startRotation
-                    to:   rippleItem.startRotation + rippleItem.rotationOffset
-                    duration: rippleItem.duration
-                }
-            }
-        }
-    }
-    // --- 涟漪效果结束
+    function triggerGlobalRipple(srcItem, x, y) { globalRipple.triggerFromItem(srcItem, x, y) }
 
     //菜单中的编辑模式
     menu: Menu {
@@ -475,6 +229,9 @@ T.Widget {
             property bool targetVisible: true
             property bool widgetVisibilityAction: modelData.visibility == "action" ? 1 : 0
             property bool animationVisible: true
+            // 物品层高级特效（独立于基础设置，键写入 modelData.advancedEffect）
+            readonly property NVG.SettingsMap advancedEffectSettings: settings.advancedEffect ?? null
+            readonly property bool advancedEffectEnabled: Boolean(advancedEffectSettings?.enabled)
             view: itemView
             environment: Utils.itemEnvironment(thiz, initialEnvironment)
             settings: modelData
@@ -559,16 +316,14 @@ T.Widget {
             onPressed: {
                 if (actionSource.status) NVG.SystemCall.playSound(NVG.SFX.FeedbackClick)
                 animator.clickZoomSpinPress()
-                if (widget.defaultSettings.rippleEffectEnabled) {
-                    var enableGlobal = widget.defaultSettings.rippleEffectEnabled;
-                    if (enableGlobal) {
-                        if (widget) {
-                            var mappedPos = thiz.mapToItem(widget, mouse.x, mouse.y);
-                            widget.triggerGlobalRipple(mappedPos.x, mappedPos.y);
-                        } else {
-                            console.error("[Child] Error: 'widget' (root id) is not accessible or null!");
-                        }
+                // 涟漪仅为视觉效果，任何异常都不得中断点击/动作触发
+                try {
+                    if (widget.defaultSettings && widget.defaultSettings.rippleEffectEnabled
+                            && typeof widget.triggerGlobalRipple === "function") {
+                        widget.triggerGlobalRipple(thiz, mouse.x, mouse.y);
                     }
+                } catch (rippleErr) {
+                    console.log("[HUDWidget] ripple trigger skipped:", rippleErr);
                 }
             }
             onReleased:{
@@ -831,6 +586,37 @@ T.Widget {
                     }
                 }
             }
+            // 物品层高级特效叠加（完整特效集，复用 ImageEffectStack；镜像 CraftElement 的实现）
+            // 把物品内容(itemContent)捕获为纹理，叠加完整特效；仅在 advancedEffect.enabled 时实例化/渲染
+            ShaderEffectSource {
+                id: itemAdvFxSource
+                anchors.fill: parent
+                sourceItem: itemContent
+                live: thiz.advancedEffectEnabled
+                hideSource: false
+                visible: false
+            }
+            Loader {
+                id: itemAdvFxLoader
+                anchors.fill: itemAdvFxSource
+                active: thiz.advancedEffectEnabled && Boolean(thiz.advancedEffectSettings)
+                sourceComponent: Item {
+                    anchors.fill: parent
+                    ColorCycleGradient {
+                        id: itemAdvColorCycle
+                        settings: thiz.advancedEffectSettings
+                        viewExposed: thiz.NVG.View.exposed
+                    }
+                    ImageEffectStack {
+                        sourceItem: itemAdvFxSource
+                        settings: thiz.advancedEffectSettings
+                        dataSource: thiz.dataSource
+                        itemPressed: thiz.pressed
+                        itemHovered: thiz.containsMouse
+                        gradient: itemAdvColorCycle.gradient
+                    }
+                }
+            }
         }
 
         onDeselectRequest: currentTarget = null
@@ -846,6 +632,36 @@ T.Widget {
                 elements.append(elemSettings);
 
                 model.append(itemSettings);
+            }
+        }
+    }
+
+    // widget 层高级特效叠加（完整特效集，复用 ImageEffectStack；镜像 CraftElement/物品层）
+    // 捕获整个 itemView（所有物品）为纹理，叠加完整特效；仅在 advancedEffect.enabled 时实例化/渲染
+    ShaderEffectSource {
+        id: widgetAdvFxSource
+        anchors.fill: parent
+        sourceItem: itemView
+        live: widget.advancedEffectEnabled
+        hideSource: false
+        visible: false
+    }
+    Loader {
+        id: widgetAdvFxLoader
+        anchors.fill: widgetAdvFxSource
+        active: widget.advancedEffectEnabled && Boolean(widget.advancedEffectSettings)
+        sourceComponent: Item {
+            anchors.fill: parent
+            ColorCycleGradient {
+                id: widgetAdvColorCycle
+                settings: widget.advancedEffectSettings
+                viewExposed: widget.NVG.View.exposed
+            }
+            ImageEffectStack {
+                sourceItem: widgetAdvFxSource
+                settings: widget.advancedEffectSettings
+                itemHovered: widget.NVG.View.hovered
+                gradient: widgetAdvColorCycle.gradient
             }
         }
     }

@@ -463,7 +463,7 @@ NVG.Window {
                                 case 1: return layoutTransformSetting.contentHeight + 56;
                                 case 2: return layoutActionSetting.contentHeight + 56;
                                 case 3: return layoutColorSetting.contentHeight + 56;
-                                case 4: return layoutAdvanced.height + 56;
+                                case 4: return layoutAdvanced.contentHeight + 56;
                                 return 0;
                             }
                             header:TabBar {
@@ -605,44 +605,11 @@ NVG.Window {
                                         id: layoutColorSetting
                                     }
                                 }
-                                //高级特效（独立开关 + 完整特效面板）
+                                //高级特效（独立开关 + 完整特效面板，已抽到可复用组件，与物品层共用）
                                 Item {
-                                    Flickable {
-                                        anchors.fill: parent
-                                        contentWidth: width
-                                        contentHeight: layoutAdvanced.height
-                                        topMargin: 16
-                                        bottomMargin: 16
-                                        Column {
-                                            id: layoutAdvanced
-                                            width: parent.width
-                                            P.ObjectPreferenceGroup {
-                                                syncProperties: true
-                                                enabled: currentElement
-                                                width: parent.width
-                                                defaultValue: currentElement?.advancedEffect ?? null
-                                                //主开关：启用高级特效
-                                                P.SwitchPreference {
-                                                    id: pAdvEffect
-                                                    name: "enabled"
-                                                    label: qsTr("Enable Advanced Effects")
-                                                    onPreferenceEdited: {
-                                                        if (!currentElement.advancedEffect) {
-                                                            const map = NVG.Settings.createMap(currentElement);
-                                                            map.enabled = value;
-                                                            currentElement.advancedEffect = map;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            //完整特效面板（颜色/特效/混合遮罩）
-                                            EffectPreferencePanel {
-                                                width: parent.width
-                                                visible: pAdvEffect.value
-                                                settingsTarget: currentElement?.advancedEffect ?? null
-                                                groupEnabled: currentElement
-                                            }
-                                        }
+                                    AdvancedEffectPreferenceGroup {
+                                        id: layoutAdvanced
+                                        item: currentElement
                                     }
                                 }
                             }

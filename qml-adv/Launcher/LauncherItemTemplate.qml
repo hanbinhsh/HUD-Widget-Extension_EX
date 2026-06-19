@@ -214,4 +214,15 @@ Item{
         opacity: (opaADV/100.0)/((settings.eXLADVDecrease ?? 1000)/1000)
         z: settings.eXLADVZ ?? -1
     }
+    // 编辑态（设置面板打开）下，点击该启动器项即选中它并显示红框；
+    // 同时拦截点击，避免落到 eXLauncherView 的全屏 MouseArea 触发点击事件。
+    // 非编辑态时禁用，元素照常接收点击/动作。
+    MouseArea {
+        anchors.fill: parent
+        z: 9998
+        enabled: eXLauncherView.editing
+        visible: enabled
+        acceptedButtons: Qt.LeftButton
+        onClicked: if (view) view.currentTarget = thiz
+    }
 }

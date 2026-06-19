@@ -9,6 +9,7 @@ import QtQuick.Window 2.2
 
 import "."
 import ".."
+import "../settings"
 import "LauncherSettings"
 import "../utils.js" as Utils
 import "../impl" as Impl
@@ -24,7 +25,22 @@ NVG.Window {
     minimumWidth: 360
     maximumWidth: 360
     minimumHeight: 700
-    //transientParent: eXLauncherView.window
+    // 让设置窗口浮在启动器视图之上。
+    // 注意：eXLauncherView 本身就是 NVG.View（窗口根），其 NVG.View 附加属性（"所在的 view"）为 undefined，
+    // 不能像 HUD 的 widget(T.Widget) 那样用 widget.NVG.View.window。改用 QtQuick.Window 的 Window.window
+    // 附加属性直接取它所在的 QWindow；?? null 防止 undefined 赋值给 QWindow* 报错。
+    transientParent: eXLauncherView.Window.window ?? null
+    // 启动器视图是置顶覆盖层，被动的 transientParent 未必能压过，需主动置顶。
+    // 注意：改 flags 会让窗口重建；Windows 下若不「显式」带上标题/最小/最大/关闭等装饰位，
+    // 重建后这些按钮会丢失（之前 `flags |= StaysOnTop` 就是这样把顶栏弄没了）。
+    // 故这里显式列全装饰位 + 置顶位，再 raise()+requestActivate()。
+    Component.onCompleted: {
+        eXLDialog.flags = Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+                | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint
+                | Qt.WindowStaysOnTopHint;
+        eXLDialog.raise();
+        eXLDialog.requestActivate();
+    }
     onClosing: saveSettings()
     function saveSettings() {
         if (NVG.Settings.isModified(eXLauncherView.eXLSettings)){
