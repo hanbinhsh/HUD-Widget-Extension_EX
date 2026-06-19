@@ -65,9 +65,9 @@ T.Data {
                 
                 // [修改] 调用单例的方法
                 SteamService.requestUpdate(cfg.steamId, duration);
-                
-                // [修改] 从单例读取数据
-                var d = SteamService.cacheData;
+
+                // [修改] 按本元素配置的 steamId 读取（多账号互不串）
+                var d = SteamService.getData(cfg.steamId);
                 var type = cfg.fieldType || 0;
                 
                 switch(type) {
@@ -133,12 +133,13 @@ T.Data {
                 
                 // [修改] 调用单例
                 SteamService.requestUpdate(cfg.steamId, duration);
-                
+
                 var type = cfg.sizeType || 0;
-                // [修改] 读取单例
-                if (type === 1) current = SteamService.cacheData.avatarMedium;
-                else if (type === 2) current = SteamService.cacheData.avatarIcon;
-                else current = SteamService.cacheData.avatarFull;
+                // [修改] 按本元素配置的 steamId 读取
+                var da = SteamService.getData(cfg.steamId);
+                if (type === 1) current = da.avatarMedium;
+                else if (type === 2) current = da.avatarIcon;
+                else current = da.avatarFull;
                 
                 status = T.Value.Ready;
             } else { status = T.Value.Null; }
@@ -154,14 +155,15 @@ T.Data {
 
         update.preference: P.PreferenceGroup {
             P.TextFieldPreference {
+                id: pGameSteamId
                 name: "steamId"; label: qsTr("SteamID64"); hint: "e.g. 76561198xxxxxxxxx"; display: P.TextFieldPreference.ExpandControl
             }
             // 1. 选择游戏 (动态列表)
             P.SelectPreference {
                 name: "gameIndex"
                 label: qsTr("Select Game")
-                // [修改] 读取单例的模型
-                model: SteamService.gameListModel
+                // [修改] 按当前配置的 steamId 读取该账号的游戏列表（随 ID 与拉取结果刷新）
+                model: SteamService.getGames(pGameSteamId.value)
                 defaultValue: 0
             }
             // 2. 选择属性 (包含XML中所有游戏相关字段)
@@ -200,8 +202,8 @@ T.Data {
 
                 var idx = cfg.gameIndex || 0;
                 var type = cfg.infoType || 0;
-                // [修改] 读取单例
-                var games = SteamService.cacheData.games;
+                // [修改] 按本元素配置的 steamId 读取
+                var games = SteamService.getData(cfg.steamId).games;
 
                 if (games && idx >= 0 && idx < games.length) {
                     var g = games[idx];
